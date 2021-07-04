@@ -10,6 +10,8 @@ using std::min;
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma comment( lib, "IndyCore" )
+#pragma comment( lib, "IndySystem" )
 
 //---------------------------------------------------------------------------
 namespace Modbus {
