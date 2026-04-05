@@ -29,4 +29,18 @@ latex/
 *.~*
 *.twfd
 *.twopts
-twfiles.@@@
+*.@@@
+~$*.*
+*.tmp
+
+# Build artifacts
+build/
+
+# CTest temporary files
+Testing/
+
+# Python virtual environment
+.venv/
+
+# Claude Code personal config
+.claude/
