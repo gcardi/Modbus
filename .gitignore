@@ -1,10 +1,10 @@
 __astcache/
 __history/
 __recovery/
-Docs/
+# Docs/
 Win32/
 Win64/
-html/
+# html/
 latex/
 *.bak
 *.dcp
