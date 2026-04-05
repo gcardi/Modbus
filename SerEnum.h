@@ -1,3 +1,17 @@
+/**
+ * @file SerEnum.h
+ * @brief Serial port enumeration utilities using the Windows SetupAPI.
+ *
+ * @details Provides SvcApp::Utils::EnumSerialPort(), a function template that enumerates
+ *  all COM ports present in the system by querying the Windows SetupAPI device information
+ *  set for GUID_DEVINTERFACE_COMPORT.  For each port found, a caller-supplied functor is
+ *  invoked with the port name and device description, and its return value is appended to
+ *  the output iterator.
+ *
+ *  The default functor, BuildSerialPortInfoTupleFnctr, packages the name and description
+ *  into a boost::tuple<String,String>.
+ */
+
 //---------------------------------------------------------------------------
 
 #ifndef SerEnumH
@@ -16,13 +30,51 @@ namespace SvcApp {
 namespace Utils {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.
+ *
+ * @details When passed as the @p Fn argument to EnumSerialPort(), each discovered port is
+ *  represented as a @c boost::tuple<String,String> where the first element is the port name
+ *  (e.g., "COM3") and the second element is the human-readable device description.
+ */
 struct BuildSerialPortInfoTupleFnctr {
+    /**
+     * @brief Creates a tuple from the port name and device description.
+     * @tparam T1 Type of the port name (typically @c String).
+     * @tparam T2 Type of the device description (typically @c String).
+     * @param Name  COM port name (e.g., "COM3").
+     * @param Descr Device description from the Windows registry.
+     * @return A boost::tuple containing (@p Name, @p Descr).
+     */
     template<typename T1, typename T2>
     boost::tuple<T1,T2> operator()( T1 const & Name, T2 const & Descr ) {
         return boost::make_tuple( Name, Descr );
     }
 };
 
+/**
+ * @brief Enumerates all COM ports currently present in the system.
+ *
+ * @details Uses the Windows SetupAPI (SetupDiGetClassDevs with GUID_DEVINTERFACE_COMPORT)
+ *  to iterate over installed COM port devices.  For each device that has a valid "PortName"
+ *  registry value, the functor @p Fn is called with the port name and device description,
+ *  and the return value is written to the output iterator @p Out.
+ *
+ * @tparam OutputIterator Output iterator type whose value type matches the return type of @p Fn.
+ * @tparam TF             Functor type callable as @c Fn(String portName, String description).
+ * @param Out Output iterator that receives one entry per discovered COM port.
+ * @param Fn  Functor invoked for each port (default: BuildSerialPortInfoTupleFnctr).
+ *
+ * @throws std::runtime_error (via RaiseLastOSError) if SetupDiGetClassDevs fails.
+ *
+ * @par Example
+ * @code
+ *   std::vector<boost::tuple<String,String>> ports;
+ *   SvcApp::Utils::EnumSerialPort( std::back_inserter(ports) );
+ *   for ( auto& p : ports )
+ *       ShowMessage( p.get<0>() + " — " + p.get<1>() );
+ * @endcode
+ */
 template<typename OutputIterator, typename TF>
 void EnumSerialPort( OutputIterator Out, TF Fn = BuildSerialPortInfoTupleFnctr() )
 {

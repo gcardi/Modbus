@@ -1,3 +1,12 @@
+/**
+ * @file ModbusTCP_Indy.h
+ * @brief Modbus::Master::TCPProtocolIndy — Embarcadero Indy TIdTCPClient transport for Modbus TCP.
+ *
+ * @details Provides a Modbus TCP master implementation using the Embarcadero Indy
+ *  (Internet Direct) TIdTCPClient component.  This is the preferred transport when
+ *  building C++Builder / RAD Studio VCL applications that already use the Indy library.
+ */
+
 //---------------------------------------------------------------------------
 
 #ifndef ModbusTCP_IndyH
@@ -22,8 +31,23 @@ namespace Modbus {
 namespace Master {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Embarcadero Indy TIdTCPClient-based TCP implementation of the Modbus master protocol.
+ *
+ * @details Uses a TIdTCPClient instance (managed via std::unique_ptr) for the TCP connection.
+ *  Indy handles hostname resolution, connection management, and blocking I/O internally,
+ *  making this implementation straightforward and VCL-friendly.
+ *
+ *  @note Requires the Embarcadero Indy library (IndyCore, IndyProtocols, IndySystem).
+ *        This transport is only available in C++Builder / RAD Studio environments.
+ */
 class TCPProtocolIndy : public TCPProtocol {
 public:
+    /**
+     * @brief Constructs the protocol object with the specified server address.
+     * @param Host Server hostname or IP address (default: "localhost").
+     * @param Port Server TCP port (default: 502).
+     */
     TCPProtocolIndy( String Host = String( DEFAULT_MODBUS_TCPIP_HOST ),
                      uint16_t Port = DEFAULT_MODBUS_TCPIP_PORT );
 protected:

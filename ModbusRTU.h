@@ -1,3 +1,15 @@
+/**
+ * @file ModbusRTU.h
+ * @brief ERTUParametersError and Modbus::Master::RTUProtocol — serial RS-485 RTU transport.
+ *
+ * @details RTUProtocol implements the Modbus RTU framing protocol over a Win32 serial (COM)
+ *  port.  It uses CRC16 framing, supports configurable baud rate, parity, data bits and
+ *  stop bits, and performs automatic retry on CRC errors or timeouts.
+ *
+ *  An optional flow-event callback (TFlowEvent) allows the caller to observe raw TX and RX
+ *  frames for diagnostics or logging.
+ */
+
 //---------------------------------------------------------------------------
 
 #ifndef ModbusRTUH
@@ -16,14 +28,21 @@
 #include "CommPort.h"
 #include "Modbus.h"
 
+/** @brief Windows FILETIME units per microsecond (100 ns = 10 ticks). */
 #define FT_MICROSECOND   ( 10UI64 )
+/** @brief Windows FILETIME units per millisecond. */
 #define FT_MILLISECOND   ( 1000UI64 * FT_MICROSECOND )
+/** @brief Windows FILETIME units per second. */
 #define FT_SECOND        ( 1000UI64 * FT_MILLISECOND )
+/** @brief Windows FILETIME units per minute. */
 #define FT_MINUTE        ( 60UI64 * FT_SECOND )
+/** @brief Windows FILETIME units per hour. */
 #define FT_HOUR          ( 60UI64 * FT_MINUTE )
+/** @brief Windows FILETIME units per day. */
 #define FT_DAY           ( 24UI64 * FT_HOUR )
 
 #if !defined( MODBUS_RTU_DEFAULT_RETRY_COUNT )
+  /** @brief Default number of retransmission attempts for RTU transactions. Override before including this header. */
   #define  MODBUS_RTU_DEFAULT_RETRY_COUNT  3
 #endif
 
@@ -31,9 +50,16 @@
 namespace Modbus {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Exception thrown when invalid serial port parameters are supplied to RTUProtocol.
+ *
+ * @details Raised for example when an unsupported parity, stop-bit count, or baud rate
+ *  is configured before opening the port.
+ */
 class ERTUParametersError : public EBaseException
 {
 public:
+    /** @brief Constructs with a descriptive message. */
     ERTUParametersError( String Msg ) : EBaseException( Msg ) {}
 };
 
@@ -41,31 +67,82 @@ public:
 namespace Master {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Modbus RTU master protocol over a Win32 serial (COM) port.
+ *
+ * @details RTUProtocol frames Modbus requests using the RTU encoding:
+ *  each PDU is preceded by the slave address byte and terminated with a two-byte CRC16
+ *  (little-endian, using the standard Modbus CRC16 polynomial).
+ *
+ *  Features:
+ *  - Configurable serial port (name, baud rate, parity, data bits, stop bits).
+ *  - Automatic retry on timeout or CRC error; retry count defaults to MODBUS_RTU_DEFAULT_RETRY_COUNT.
+ *  - Optional TX-echo cancellation for half-duplex RS-485 adapters that loop back transmitted bytes.
+ *  - Optional TFlowEvent callback to observe raw TX/RX frames for diagnostics.
+ *  - CancelTXEcho, RetryCount, and TimeoutValue exposed as C++Builder __property members.
+ *
+ *  @note Open the port by calling Protocol::Open() before issuing any requests.
+ *        Close it with Protocol::Close() when done, or use a SessionManager guard.
+ */
 class RTUProtocol : public Protocol {
 public:
+    /** @brief Container type for raw RTU frame bytes. */
     using FrameCont = std::vector<uint8_t>;
 
+    /** @brief Indicates whether a flow event relates to a transmitted or received frame. */
     enum class FlowDirection { RX, TX };
 
+    /**
+     * @brief Signature of the optional frame-flow diagnostic callback.
+     * @details Called once for each transmitted frame (FlowDirection::TX) immediately
+     *  before it is written to the COM port, and once for each received frame
+     *  (FlowDirection::RX) immediately after it passes CRC validation.
+     */
     using TFlowEvent =
        void __fastcall ( __closure * )(
            RTUProtocol& Sender, FlowDirection Dir, const FrameCont& Frame
        );
 
+    /**
+     * @brief Constructs the RTU protocol object.
+     * @param RetryCount Maximum number of retransmission attempts per transaction
+     *                   (default: MODBUS_RTU_DEFAULT_RETRY_COUNT = 3).
+     */
     explicit RTUProtocol( int RetryCount = MODBUS_RTU_DEFAULT_RETRY_COUNT );
+
+    /** @brief Destructor; closes the serial port if it is still open. */
     ~RTUProtocol();
 
+    /** @brief Returns the COM port name (e.g., L"COM1"). */
     String GetCommPort() const;
+    /** @brief Sets the COM port name (e.g., L"COM3"). Must be called before Open(). */
     void SetCommPort( String Val );
+
+    /** @brief Returns the configured baud rate (e.g., 9600, 19200). */
     int GetCommSpeed() const;
+    /** @brief Sets the baud rate. Must be called before Open(). */
     void SetCommSpeed( int Val );
+
+    /** @brief Returns the configured parity (NOPARITY, ODDPARITY, EVENPARITY, etc.). */
     int GetCommParity() const;
+    /** @brief Sets the parity. Must be called before Open(). */
     void SetCommParity( int Val );
+
+    /** @brief Returns the configured data bits (typically 8). */
     int GetCommBits() const;
+    /** @brief Sets the data bits. Must be called before Open(). */
     void SetCommBits( int Val );
+
+    /** @brief Returns the configured stop bits (ONESTOPBIT, TWOSTOPBITS, etc.). */
     int GetCommStopBits() const;
+    /** @brief Sets the stop bits. Must be called before Open(). */
     void SetCommStopBits( int Val );
 
+    /**
+     * @brief Installs a frame-flow diagnostic callback and returns the previous one.
+     * @param EventHandler New callback (pass @c nullptr to remove the current one).
+     * @return The previously installed callback, or @c nullptr if none was installed.
+     */
     TFlowEvent SetFlowEventHandler( TFlowEvent EventHandler );
 
 protected:
@@ -178,11 +255,26 @@ private:
                         RegDataType* Data );
 
 public:
+    /**
+     * @brief Computes and appends the Modbus CRC16 to an output iterator range.
+     * @tparam OutputIterator Output iterator type (must accept uint8_t values).
+     * @tparam InputIterator  Input iterator type over the frame bytes to checksum.
+     * @param Out   Output iterator to receive the two CRC bytes (LSB first).
+     * @param Begin Iterator to the start of the frame data.
+     * @param End   Iterator past the end of the frame data.
+     * @return Iterator past the written CRC bytes.
+     */
     template<typename OutputIterator, typename InputIterator>
     static OutputIterator WriteCRC( OutputIterator Out,
                                     InputIterator Begin, InputIterator End );
+
+    /** @brief When @c true, the protocol reads back and discards echoed TX bytes (half-duplex RS-485). */
     __property bool CancelTXEcho = { read = cancelTXEcho_, write = cancelTXEcho_ };
+
+    /** @brief Maximum number of retransmission attempts on timeout or CRC error. */
     __property int RetryCount = { read = retryCount_, write = retryCount_ };
+
+    /** @brief Per-character read timeout in milliseconds used by the serial port. */
     __property unsigned TimeoutValue = { read = timeoutValue_, write = timeoutValue_ };
 };
 //---------------------------------------------------------------------------

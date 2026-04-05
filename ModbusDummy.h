@@ -1,3 +1,13 @@
+/**
+ * @file ModbusDummy.h
+ * @brief Modbus::Master::DummyProtocol — no-op stub implementation for unit testing.
+ *
+ * @details DummyProtocol implements the full Protocol interface with empty bodies.
+ *  All read operations leave their output buffers unchanged; all write operations are
+ *  silently discarded.  This allows Modbus master logic to be exercised in unit tests
+ *  without requiring physical hardware or a live network connection.
+ */
+
 //---------------------------------------------------------------------------
 
 #ifndef ModbusDummyH
@@ -11,8 +21,21 @@ namespace Modbus {
 namespace Master {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief No-op Modbus master protocol stub for unit testing without hardware.
+ *
+ * @details Every Modbus request method is a safe no-op:
+ *  - DoReadHoldingRegisters / DoReadInputRegisters: leave @p Data buffer unchanged.
+ *  - DoPresetSingleRegister / DoPresetMultipleRegisters / DoMaskWrite4XRegister: discarded.
+ *  - DoOpen() sets the internal connected flag to @c true.
+ *  - DoClose() sets the internal connected flag to @c false.
+ *  - DoIsConnected() returns the current flag state.
+ *
+ *  @note No exceptions are ever thrown by DummyProtocol.
+ */
 class DummyProtocol : public Protocol {
 public:
+    /** @brief Default constructor. */
     DummyProtocol() {}
 protected:
     virtual String DoGetProtocolName() const override { return _D( "Dummy Modbus" ); }

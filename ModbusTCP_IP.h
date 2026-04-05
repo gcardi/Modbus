@@ -1,3 +1,14 @@
+/**
+ * @file ModbusTCP_IP.h
+ * @brief TCPIPContext and TCPIPProtocol — MBAP (Modbus Application Protocol) framing over TCP/UDP.
+ *
+ * @details Defines:
+ *  - Modbus::TCPIPContext: extends Context with an explicit MBAP transaction identifier.
+ *  - Modbus::Master::TCPIPProtocol: abstract base implementing all Modbus function codes
+ *    (FC03, FC04, FC06, FC16, FC22) over a byte-stream/datagram transport.  Concrete subclasses
+ *    provide the actual I/O by implementing DoWrite() and DoRead().
+ */
+
 //---------------------------------------------------------------------------
 
 #ifndef ModbusTCP_IPH
@@ -9,7 +20,10 @@
 //#include "ExceptUtils.h"
 #include "Modbus.h"
 
+/** @brief Default Modbus TCP/UDP server hostname used when none is specified. */
 #define  DEFAULT_MODBUS_TCPIP_HOST  "localhost"
+
+/** @brief Default Modbus TCP/UDP port number (IANA assigned Modbus port). */
 #define  DEFAULT_MODBUS_TCPIP_PORT  502
 
 //---------------------------------------------------------------------------
@@ -17,11 +31,27 @@ namespace Modbus {
 //---------------------------------------------------------------------------
 
 
+/**
+ * @brief Modbus context extended with an explicit MBAP transaction identifier.
+ *
+ * @details In Modbus TCP/UDP the MBAP header contains a two-byte Transaction Identifier
+ *  that the master sets and the slave echoes back.  TCPIPContext stores this value so that
+ *  TCPIPProtocol can validate that a response corresponds to the request that was sent.
+ *
+ *  The transaction identifier is typically a monotonically increasing sequence number
+ *  managed by the caller.
+ */
 class TCPIPContext : public Context {
 public:
+    /**
+     * @brief Constructs a TCP/IP context.
+     * @param SlaveAddr     Modbus unit identifier (slave address).
+     * @param TransactionId MBAP transaction identifier (default 0).
+     */
     TCPIPContext( SlaveAddrType SlaveAddr, TransactionIdType TransactionId = 0 )
         : Context( SlaveAddr ), transactionId_( TransactionId ) {}
 protected:
+    /** @brief Returns the stored MBAP transaction identifier. */
     virtual TransactionIdType DoGetTransactionIdentifier() const override {
         return transactionId_;
     }
@@ -33,28 +63,74 @@ private:
 namespace Master {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Abstract Modbus master protocol implementing MBAP framing over a byte-stream or datagram transport.
+ *
+ * @details TCPIPProtocol handles the complete MBAP (Modbus Application Protocol) layer:
+ *  building request frames, sending them via DoWrite(), reading responses via DoRead(),
+ *  and validating the MBAP header fields (transaction ID, protocol ID = 0, unit identifier)
+ *  in each response.
+ *
+ *  Concrete subclasses must implement:
+ *  - DoGetHost() / DoSetHost()
+ *  - DoGetPort() / DoSetPort()
+ *  - DoOpen() / DoClose() / DoIsConnected()
+ *  - DoWrite() — sends the entire request datagram or stream segment.
+ *  - DoRead()  — reads exactly @p Length bytes from the response stream or datagram cache.
+ *
+ *  All Modbus function codes supported by this library (FC03, FC04, FC06, FC16, FC22) are
+ *  implemented here and are available to all TCP and UDP subclasses.
+ */
 class TCPIPProtocol : public Protocol {
 public:
+    /** @brief Returns the hostname or IP address of the Modbus server. */
     String GetHost() const;
+
+    /** @brief Sets the hostname or IP address of the Modbus server. */
     void SetHost( String Val );
+
+    /** @brief Returns the TCP/UDP port number (default 502). */
     uint16_t GetPort() const;
+
+    /** @brief Sets the TCP/UDP port number. */
     void SetPort( uint16_t Val );
 protected:
-    using BMAPTransactionIdType = uint16_t;
-    using BMAPProtocolType = uint16_t;
-    using BMAPDataLengthType = uint16_t;
-    using BMAPUnitIdType = uint8_t;
+    using BMAPTransactionIdType = uint16_t;  ///< MBAP Transaction Identifier field type.
+    using BMAPProtocolType      = uint16_t;  ///< MBAP Protocol Identifier field type (always 0 for Modbus).
+    using BMAPDataLengthType    = uint16_t;  ///< MBAP Length field type.
+    using BMAPUnitIdType        = uint8_t;   ///< MBAP Unit Identifier field type.
 
+    /** @brief Returns a string describing host and port for diagnostic purposes. */
     virtual String DoGetProtocolParamsStr() const override;
 
+    /** @brief Returns the current server hostname (implemented by concrete subclass). */
     virtual String DoGetHost() const = 0;
+    /** @brief Sets the server hostname (implemented by concrete subclass). */
     virtual void DoSetHost( String Val ) = 0;
 
+    /** @brief Returns the current server port (implemented by concrete subclass). */
     virtual uint16_t DoGetPort() const = 0;
+    /** @brief Sets the server port (implemented by concrete subclass). */
     virtual void DoSetPort( uint16_t Val ) = 0;
 
+    /**
+     * @brief Clears the receive-side input buffer (optional; no-op by default).
+     * @details UDP subclasses override this to discard stale cached datagrams.
+     */
     virtual void DoInputBufferClear() {}
+
+    /**
+     * @brief Sends the complete MBAP request frame to the server.
+     * @param OutBuffer Byte array containing the fully assembled MBAP request.
+     */
     virtual void DoWrite( TBytes const OutBuffer ) = 0;
+
+    /**
+     * @brief Reads exactly @p Length bytes from the server response into @p InBuffer.
+     * @param[out] InBuffer Buffer to receive the data; resized to @p Length.
+     * @param      Length   Number of bytes to read.
+     * @throws EBaseException on timeout or I/O error.
+     */
     virtual void DoRead( TBytes& InBuffer, size_t Length ) = 0;
 
 //    DoReadCoilStatus

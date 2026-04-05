@@ -1,3 +1,17 @@
+/**
+ * @file Modbus.h
+ * @brief Core Modbus definitions: enumerations, exception hierarchy, Context, and Protocol base class.
+ *
+ * @details This header defines the fundamental building blocks of the Modbus Master Library:
+ *  - FunctionCode and ExceptionCode enumerations (standard Modbus protocol codes).
+ *  - Context: identifies a transaction target (slave address + optional transaction ID).
+ *  - Exception classes: EBaseException, EContextException, EProtocolException,
+ *    EProtocolStdException and its typed aliases (EIllegalFunction, EIllegalDataAddress, etc.).
+ *  - Master::Protocol: abstract base class for all Modbus master transport implementations.
+ *  - Master::SessionManager: RAII helper that calls Protocol::Open() on construction
+ *    and Protocol::Close() on destruction.
+ */
+
 //---------------------------------------------------------------------------
 
 #ifndef ModbusH
@@ -17,8 +31,15 @@
 namespace Modbus {
 //---------------------------------------------------------------------------
 
+/** @brief Dumps a byte array to the debugger output as a hex string (debug helper). */
 extern void DebugBytesToHex( String Prologue, TBytes Data );
 
+/**
+ * @brief Standard Modbus function codes as defined by the Modbus specification.
+ *
+ * @details Only a subset of these function codes is implemented by this library.
+ *  Unsupported codes are listed for completeness and possible future extension.
+ */
 enum class FunctionCode {
     ReadCoilStatus = 1,
     ReadInputStatus = 2,
@@ -46,6 +67,12 @@ enum class FunctionCode {
     ReadFIFOQueue = 24
 };
 
+/**
+ * @brief Standard Modbus exception codes returned by a slave when a request cannot be fulfilled.
+ *
+ * @details Each enumerator maps directly to the numeric code transmitted in a Modbus
+ *  exception response frame (function code | 0x80).
+ */
 enum class ExceptionCode {
    IllegalFunction = 1,      // The function code received in the query
                              // is not an allowable action for the slave.
@@ -96,19 +123,39 @@ enum class ExceptionCode {
 
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Identifies the target of a Modbus transaction.
+ *
+ * @details A Context carries at minimum the slave address (unit identifier).
+ *  Subclasses such as TCPIPContext also carry a MBAP transaction identifier used
+ *  when matching TCP/UDP responses to their originating requests.
+ *
+ *  The base implementation returns a zero transaction identifier; override
+ *  DoGetTransactionIdentifier() in a subclass when the transport needs it.
+ */
 class Context {
 public:
-    using SlaveAddrType = uint8_t;
-    using TransactionIdType = uint16_t;
+    using SlaveAddrType = uint8_t;       ///< Type used for the Modbus slave (unit) address.
+    using TransactionIdType = uint16_t;  ///< Type used for the MBAP transaction identifier.
 
+    /**
+     * @brief Constructs a Context with the given slave address.
+     * @param SlaveAddr Modbus slave (unit) address (1–247 for RTU; 0–255 for TCP/UDP).
+     */
     explicit Context( SlaveAddrType SlaveAddr ) : slaveAddr_( SlaveAddr ) {}
     virtual ~Context() = default;
+
+    /** @brief Returns the slave (unit) address. */
     SlaveAddrType GetSlaveAddr() const { return DoGetSlaveAddr(); }
+
+    /** @brief Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP). */
     TransactionIdType GetTransactionIdentifier() const {
         return DoGetTransactionIdentifier();
     }
 protected:
+    /** @brief Virtual implementation hook for GetSlaveAddr(). */
     virtual SlaveAddrType DoGetSlaveAddr() const { return slaveAddr_; }
+    /** @brief Virtual implementation hook for GetTransactionIdentifier(). Returns 0 by default. */
     virtual TransactionIdType DoGetTransactionIdentifier() const {
         return TransactionIdType();
     }
@@ -117,8 +164,15 @@ private:
 };
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Base exception class for all Modbus library exceptions.
+ *
+ * @details Derives from Embarcadero/VCL @c Exception.  All exceptions thrown by
+ *  the library are instances of EBaseException or one of its subclasses.
+ */
 class EBaseException : public Exception {
 public:
+    /** @brief Constructs with a plain message string. */
     explicit EBaseException( String Message )
       : Exception(
             _D( "Modbus exception %s" )
@@ -132,8 +186,15 @@ public:
 };
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Exception that also carries the Modbus Context in which it was raised.
+ *
+ * @details Use GetContext() to retrieve the slave address and transaction ID that
+ *  were active when the error occurred.
+ */
 class EContextException : public EBaseException {
 public:
+    /** @brief Constructs with a Context and a plain message. */
     explicit EContextException( Context const & Context, String Message )
        : EBaseException( Message )
        , context_( Context ) {}
@@ -147,9 +208,16 @@ public:
 };
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Exception representing a well-formed Modbus exception response from a slave.
+ *
+ * @details The slave returned an exception response frame (function code | 0x80).
+ *  GetCode() provides the ExceptionCode that the slave reported.
+ */
 class EProtocolException : public EContextException
 {
 public:
+    /** @brief Constructs with Context, the Modbus ExceptionCode, and a message string. */
     EProtocolException( Context const & Context, ExceptionCode Code, String Message )
        : EContextException( Context, Message )
        , code_( Code ) {}
@@ -181,10 +249,24 @@ extern void RaiseStandardException( Context const & Context,
 
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Typed Modbus protocol exception parameterised on a specific ExceptionCode.
+ *
+ * @details This template is instantiated once for each standard Modbus exception code and
+ *  then aliased to a named exception type (EIllegalFunction, EIllegalDataAddress, etc.).
+ *  This allows catch blocks to distinguish exception codes without inspecting GetCode().
+ *
+ * @tparam Code The specific Modbus ExceptionCode this exception represents.
+ */
 template<ExceptionCode Code>
 class EProtocolStdException : public EProtocolException
 {
 public:
+    /**
+     * @brief Constructs the exception with an optional descriptive prefix.
+     * @param Context  The active Modbus context when the error occurred.
+     * @param Prefix   Optional prefix prepended to the standard code description text.
+     */
     EProtocolStdException( Context const & Context, String Prefix = String() )
         : EProtocolException(
             Context,
@@ -197,64 +279,109 @@ public:
     {}
 };
 
+/** @brief Thrown when the slave reports ExceptionCode::IllegalFunction (FC not allowed). */
 using
   EIllegalFunction =
     EProtocolStdException<ExceptionCode::IllegalFunction>;
 
+/** @brief Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range). */
 using
   EIllegalDataAddress =
     EProtocolStdException<ExceptionCode::IllegalDataAddress>;
 
+/** @brief Thrown when the slave reports ExceptionCode::IllegalDataValue (value not allowed). */
 using
   EIllegalDataValue =
     EProtocolStdException<ExceptionCode::IllegalDataValue>;
 
+/** @brief Thrown when the slave reports ExceptionCode::SlaveDeviceFailure (unrecoverable error). */
 using
   ESlaveDeviceFailure =
     EProtocolStdException<ExceptionCode::SlaveDeviceFailure>;
 
+/** @brief Thrown when the slave returns ExceptionCode::Acknowledge (long-duration command accepted). */
 using
   EAcknowledge =
     EProtocolStdException<ExceptionCode::Acknowledge>;
 
+/** @brief Thrown when the slave reports ExceptionCode::SlaveDeviceBusy (busy processing). */
 using
   ESlaveDeviceBusy =
     EProtocolStdException<ExceptionCode::SlaveDeviceBusy>;
 
+/** @brief Thrown when the slave reports ExceptionCode::NegativeAcknowledge (cannot perform program function). */
 using
   ENegativeAcknowledge =
     EProtocolStdException<ExceptionCode::NegativeAcknowledge>;
 
+/** @brief Thrown when the slave reports ExceptionCode::MemoryParityError (extended memory parity error). */
 using
   EMemoryParityError =
     EProtocolStdException<ExceptionCode::MemoryParityError>;
 
-using CoilAddrType = uint16_t;
-using CoilCountType = uint16_t;
-using CoilDataType = uint8_t;
+using CoilAddrType  = uint16_t;  ///< Type for a coil (discrete output) address.
+using CoilCountType = uint16_t;  ///< Type for the number of coils in a request.
+using CoilDataType  = uint8_t;   ///< Type for packed coil data bytes.
 
-using RegAddrType = uint16_t;
-using RegCountType = uint16_t;
-using RegDataType = uint16_t;
+using RegAddrType  = uint16_t;   ///< Type for a holding/input register address.
+using RegCountType = uint16_t;   ///< Type for the number of registers in a request.
+using RegDataType  = uint16_t;   ///< Type for a single register value (16-bit word).
 
 //---------------------------------------------------------------------------
 namespace Master {
 //---------------------------------------------------------------------------
 
+/**
+ * @brief Abstract base class for all Modbus master transport implementations.
+ *
+ * @details Protocol defines the uniform Modbus master API.  Concrete subclasses supply
+ *  the transport (TCP, UDP, RTU, or Dummy) by implementing the @c Do…() virtual methods.
+ *
+ *  All public request methods (ReadHoldingRegisters, PresetMultipleRegisters, etc.) forward
+ *  to their protected @c Do…() counterparts which must be overridden in subclasses.
+ *
+ *  @note Open() and Close() are idempotent: calling Open() when already connected, or
+ *        Close() when already disconnected, is a safe no-op.
+ */
 class Protocol {
 public:
     Protocol();
     virtual ~Protocol();
 
+    /**
+     * @brief Opens the communication channel (e.g., connects TCP socket, opens COM port).
+     * @details Idempotent — has no effect if the protocol is already connected.
+     * @throws EBaseException on failure to establish the connection.
+     */
     void Open();
+
+    /**
+     * @brief Closes the communication channel.
+     * @details Idempotent — has no effect if the protocol is already disconnected.
+     */
     void Close();
+
+    /** @brief Returns @c true if the communication channel is currently open/connected. */
     bool IsConnected() const { return DoIsConnected(); }
 
+    /** @brief Returns a human-readable protocol name (e.g., "Modbus TCP (WinSock)"). */
     String GetProtocolName() const { return DoGetProtocolName(); }
+
+    /** @brief Returns a human-readable string describing the protocol parameters (host:port, COM port settings, etc.). */
     String GetProtocolParamsStr() const { return DoGetProtocolParamsStr(); }
 
 //    ReadCoilStatus
 //    ReadInputStatus
+
+    /**
+     * @brief Reads one or more holding registers (FC03).
+     * @param Context    Transaction context (slave address, transaction ID).
+     * @param StartAddr  Zero-based start register address.
+     * @param PointCount Number of registers to read (max 125 for TCP/UDP, hardware-limited for RTU).
+     * @param[out] Data  Pointer to output buffer; must hold at least @p PointCount elements.
+     * @throws EIllegalDataAddress if the address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
     void ReadHoldingRegisters( Context const & Context,
                                RegAddrType StartAddr, RegCountType PointCount,
                                RegDataType* Data )
@@ -262,6 +389,15 @@ public:
         DoReadHoldingRegisters( Context, StartAddr, PointCount, Data );
     }
 
+    /**
+     * @brief Reads one or more input registers (FC04).
+     * @param Context    Transaction context (slave address, transaction ID).
+     * @param StartAddr  Zero-based start register address.
+     * @param PointCount Number of input registers to read.
+     * @param[out] Data  Pointer to output buffer; must hold at least @p PointCount elements.
+     * @throws EIllegalDataAddress if the address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
     void ReadInputRegisters( Context const & Context,
                              RegAddrType StartAddr, RegCountType PointCount,
                              RegDataType* Data )
@@ -270,7 +406,14 @@ public:
     }
 
 //    ForceSingleCoil
-//    PresetSingleRegister
+    /**
+     * @brief Writes a single holding register (FC06).
+     * @param Context Transaction context (slave address, transaction ID).
+     * @param Addr    Zero-based register address.
+     * @param Data    16-bit value to write.
+     * @throws EIllegalDataAddress if the address is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
     void PresetSingleRegister( Context const & Context,
                                RegAddrType Addr, RegDataType Data )
     {
@@ -285,6 +428,16 @@ public:
 //    ProgramController
 //    PollController
 //    ForceMultipleCoils
+
+    /**
+     * @brief Writes multiple consecutive holding registers (FC16).
+     * @param Context    Transaction context (slave address, transaction ID).
+     * @param StartAddr  Zero-based start register address.
+     * @param PointCount Number of registers to write.
+     * @param Data       Pointer to source buffer holding at least @p PointCount elements.
+     * @throws EIllegalDataAddress if the address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
     void PresetMultipleRegisters( Context const & Context,
                                   RegAddrType StartAddr, RegCountType PointCount,
                                   const RegDataType* Data )
@@ -296,7 +449,17 @@ public:
 //    ResetCommLink
 //    ReadGeneralReference
 //    WriteGeneralReference
-//    MaskWrite4XRegister
+
+    /**
+     * @brief Performs a masked write on a single holding register (FC22).
+     * @details The slave computes: Result = (CurrentValue AND AndMask) OR (OrMask AND NOT AndMask).
+     * @param Context Transaction context (slave address, transaction ID).
+     * @param Addr    Zero-based register address.
+     * @param AndMask AND mask to apply to the current register value.
+     * @param OrMask  OR mask to apply after the AND operation.
+     * @throws EIllegalDataAddress if the address is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
     void MaskWrite4XRegister( Context const & Context,
                               RegAddrType Addr, RegDataType AndMask,
                               RegDataType OrMask )
@@ -357,15 +520,35 @@ private:
 };
 //---------------------------------------------------------------------------
 
+/**
+ * @brief RAII session guard for a Modbus::Master::Protocol.
+ *
+ * @details On construction, calls Protocol::Open().  On destruction, calls Protocol::Close().
+ *  This ensures the communication channel is always properly closed even when exceptions
+ *  are thrown inside the guarded scope.
+ *
+ *  SessionManager is non-copyable and non-movable.
+ *
+ * @note Because Protocol::Open() and Protocol::Close() are idempotent, nesting
+ *       SessionManager instances for the same Protocol object is safe.
+ */
 class SessionManager  {
 public:
+    /**
+     * @brief Constructs a SessionManager and opens the protocol.
+     * @param Protocol The Modbus master protocol instance to manage.
+     * @throws EBaseException if opening the protocol fails.
+     */
     explicit SessionManager( Protocol& Protocol )
       : protocol_( Protocol ) { protocol_.Open(); }
+
+    /** @brief Destroys the SessionManager and closes the protocol. */
     ~SessionManager() { protocol_.Close(); }
-    SessionManager( SessionManager const & Rhs ) = delete;
-    SessionManager& operator=( SessionManager const & Rhs ) = delete;
-    SessionManager( SessionManager&& Rhs ) = delete;
-    SessionManager& operator=( SessionManager&& Rhs ) = delete;
+
+    SessionManager( SessionManager const & Rhs ) = delete;             ///< Non-copyable.
+    SessionManager& operator=( SessionManager const & Rhs ) = delete;  ///< Non-copyable.
+    SessionManager( SessionManager&& Rhs ) = delete;                   ///< Non-movable.
+    SessionManager& operator=( SessionManager&& Rhs ) = delete;        ///< Non-movable.
 private:
     Protocol& protocol_;
 };
