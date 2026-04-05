@@ -21,10 +21,10 @@ namespace Master {
 
 class UDPProtocolIndy : public UDPProtocol {
 public:
-    UDPProtocolIndy( String Host = _T( DEFAULT_MODBUS_TCPIP_HOST ),
+    UDPProtocolIndy( String Host = String( DEFAULT_MODBUS_TCPIP_HOST ),
                      uint16_t Port = DEFAULT_MODBUS_TCPIP_PORT );
 protected:
-    virtual String DoGetProtocolName() const override { return _T( "Modbus UDP (Indy)" ); }
+    virtual String DoGetProtocolName() const override { return _D( "Modbus UDP (Indy)" ); }
 
     virtual String DoGetHost() const override;
     virtual void DoSetHost( String Val ) override;

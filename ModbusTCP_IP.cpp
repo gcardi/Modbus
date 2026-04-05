@@ -33,7 +33,7 @@ String TCPIPProtocol::GetHost() const
 
 void TCPIPProtocol::SetHost( String Val )
 {
-    RaiseExceptionIfIsConnected( _T( "Unable to change host" ) );
+    RaiseExceptionIfIsConnected( _D( "Unable to change host" ) );
     DoSetHost( Val );
 }
 //---------------------------------------------------------------------------
@@ -46,7 +46,7 @@ uint16_t TCPIPProtocol::GetPort() const
 
 void TCPIPProtocol::SetPort( uint16_t Val )
 {
-    RaiseExceptionIfIsConnected( _T( "Unable to change port" ) );
+    RaiseExceptionIfIsConnected( _D( "Unable to change port" ) );
     DoSetPort( Val );
 }
 //---------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void TCPIPProtocol::RaiseExceptionIfBMAPIsNotValid( Context const & Context,
                                                     TBytes const Buffer )
 {
     if ( GetLength( Buffer ) < GetBMAPHeaderLength() ) {
-        throw EContextException( Context, _T( "Invalid BMAP length" ) );
+        throw EContextException( Context, _D( "Invalid BMAP length" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -67,15 +67,15 @@ void TCPIPProtocol::RaiseExceptionIfBMAPIsNotEQ( Context const & Context,
     RaiseExceptionIfBMAPIsNotValid( Context, LBuffer );
     RaiseExceptionIfBMAPIsNotValid( Context, RBuffer );
     if ( GetBMAPTransactionIdentifier( LBuffer ) != GetBMAPTransactionIdentifier( RBuffer ) ) {
-        throw EContextException( Context, _T( "Invalid BMAP Transaction Identifier" ) );
+        throw EContextException( Context, _D( "Invalid BMAP Transaction Identifier" ) );
     }
 
     BMAPProtocolType const LBMAPProtocol = GetBMAPProtocol( LBuffer );
     if ( LBMAPProtocol != GetBMAPProtocol( RBuffer ) || LBMAPProtocol ) {
-        throw EContextException( Context, _T( "Invalid BMAP Protocol" ) );
+        throw EContextException( Context, _D( "Invalid BMAP Protocol" ) );
     }
     if ( GetBMAPUnitIdentifier( LBuffer ) != GetBMAPUnitIdentifier( RBuffer ) ) {
-        throw EContextException( Context, _T( "Invalid BMAP Unit Identifier" ) );
+        throw EContextException( Context, _D( "Invalid BMAP Unit Identifier" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void TCPIPProtocol::RaiseExceptionIfReplyIsNotValid( Context const & Context,
             throw EContextException(
                 Context,
                 Format(
-                    _T( "Invalid Function Code: expected 0x%.2X, read 0x%.2X" )
+                    _D( "Invalid Function Code: expected 0x%.2X, read 0x%.2X" )
                   , ARRAYOFCONST( (
                         ( static_cast<int>( ExpectedFunctionCode ) & 0xFF ),
                         ( static_cast<int>( FnCode ) & 0xFF )
@@ -103,7 +103,7 @@ void TCPIPProtocol::RaiseExceptionIfReplyIsNotValid( Context const & Context,
         }
     }
     else {
-        throw EContextException( Context, _T( "reply is too short" ) );
+        throw EContextException( Context, _D( "reply is too short" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -241,7 +241,7 @@ int TCPIPProtocol::GetPayloadLength( Context const & Context,
         throw EContextException(
             Context,
             Format(
-                _T( "Invalid received frame lenght %d" )
+                _D( "Invalid received frame lenght %d" )
               , ARRAYOFCONST( (
                     DataLength
                 ) )
@@ -254,7 +254,7 @@ int TCPIPProtocol::GetPayloadLength( Context const & Context,
 
 String TCPIPProtocol::DoGetProtocolParamsStr() const
 {
-    return Format( _T( "%s:%u" ), ARRAYOFCONST( ( GetHost(), GetPort() ) ) );
+    return Format( _D( "%s:%u" ), ARRAYOFCONST( ( GetHost(), GetPort() ) ) );
 }
 
 //---------------------------------------------------------------------------
@@ -301,7 +301,7 @@ void TCPIPProtocol::DoReadHoldingRegisters( Context const & Context,
                                             RegCountType PointCount,
                                             RegDataType* Data )
 {
-    RaiseExceptionIfIsNotConnected( _T( "ReadHoldingRegisters failed" ) );
+    RaiseExceptionIfIsNotConnected( _D( "ReadHoldingRegisters failed" ) );
 
     ReadRegisters( FunctionCode::ReadHoldingRegisters, Context, StartAddr,
                    PointCount, Data );
@@ -313,7 +313,7 @@ void TCPIPProtocol::DoReadInputRegisters( Context const & Context,
                                           RegCountType PointCount,
                                           RegDataType* Data )
 {
-    RaiseExceptionIfIsNotConnected( _T( "ReadInputRegisters failed" ) );
+    RaiseExceptionIfIsNotConnected( _D( "ReadInputRegisters failed" ) );
 
     ReadRegisters( FunctionCode::ReadInputRegisters, Context, StartAddr,
                    PointCount, Data );
@@ -327,7 +327,7 @@ void TCPIPProtocol::DoReadInputRegisters( Context const & Context,
 void TCPIPProtocol::DoPresetSingleRegister( Context const & Context,
                                             RegAddrType Addr, RegDataType Data )
 {
-    RaiseExceptionIfIsNotConnected( _T( "PresetSingleRegister failed" ) );
+    RaiseExceptionIfIsNotConnected( _D( "PresetSingleRegister failed" ) );
 
     // Send
     TBytes OutBuffer;
@@ -400,7 +400,7 @@ void TCPIPProtocol::DoPresetMultipleRegisters( Context const & Context,
                                                RegCountType PointCount,
                                                RegDataType const * Data )
 {
-    RaiseExceptionIfIsNotConnected( _T( "PresetMultipleRegister failed" ) );
+    RaiseExceptionIfIsNotConnected( _D( "PresetMultipleRegister failed" ) );
 
     // Send
     TBytes OutBuffer;
@@ -467,7 +467,7 @@ void TCPIPProtocol::DoMaskWrite4XRegister( Context const & Context,
                                            RegDataType AndMask,
                                            RegDataType OrMask )
 {
-    RaiseExceptionIfIsNotConnected( _T( "MaskWrite4XRegister failed" ) );
+    RaiseExceptionIfIsNotConnected( _D( "MaskWrite4XRegister failed" ) );
 
     // Send
     TBytes OutBuffer;

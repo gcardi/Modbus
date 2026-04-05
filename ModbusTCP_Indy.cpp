@@ -78,7 +78,7 @@ void TCPProtocolIndy::DoInputBufferClear()
 
 void TCPProtocolIndy::DoWrite( TBytes const OutBuffer )
 {
-//DebugBytesToHex( _T( "TCP TX: " ), OutBuffer );
+//DebugBytesToHex( _D( "TCP TX: " ), OutBuffer );
     idTCPClient_->IOHandler->Write( OutBuffer, OutBuffer.Length, OutBuffer.Low );
 }
 //---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ void TCPProtocolIndy::DoWrite( TBytes const OutBuffer )
 void TCPProtocolIndy::DoRead( TBytes & InBuffer, size_t Length )
 {
     idTCPClient_->IOHandler->ReadBytes( InBuffer, Length, false );
-//DebugBytesToHex( _T( "TCP RX: " ), InBuffer );
+//DebugBytesToHex( _D( "TCP RX: " ), InBuffer );
 }
 
 //---------------------------------------------------------------------------

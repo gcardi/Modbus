@@ -71,7 +71,7 @@ void EnumSerialPort( OutputIterator Out, TF Fn = BuildSerialPortInfoTupleFnctr()
             extern String RegQueryValueString( HKEY Key, String Name );
 
             String const PortName =
-                RegQueryValueString( DeviceKey.Handle, _T( "PortName" ) );
+                RegQueryValueString( DeviceKey.Handle, _D( "PortName" ) );
             if ( !PortName.IsEmpty() ) {
                 BYTE Buffer[2048];
                 String Description;

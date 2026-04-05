@@ -75,7 +75,7 @@ enum class ExceptionCode {
                              // determine if processing is completed.
 
    SlaveDeviceBusy = 6,      // The slave is engaged in processing a
-                             // long–duration program command. The
+                             // longï¿½duration program command. The
                              // master should retransmit the message
                              // later when the slave is free.
 
@@ -121,12 +121,12 @@ class EBaseException : public Exception {
 public:
     explicit EBaseException( String Message )
       : Exception(
-            _T( "Modbus exception %s" )
+            _D( "Modbus exception %s" )
           , ARRAYOFCONST( ( Message ) )
         ) {}
 	EBaseException( String Msg, TVarRec *Args, int Args_High )
       : Exception(
-            _T( "Modbus exception %s" )
+            _D( "Modbus exception %s" )
           , ARRAYOFCONST( ( Format( Msg, Args, Args_High ) ) )
         ) {}
 };
@@ -192,7 +192,7 @@ public:
             Prefix.IsEmpty() ?
               GetExceptionCodeText( Code )
             :
-              Format( _T( "%s: %s" ), ARRAYOFCONST( ( Prefix, GetExceptionCodeText( Code ) ) ) )
+              Format( _D( "%s: %s" ), ARRAYOFCONST( ( Prefix, GetExceptionCodeText( Code ) ) ) )
           )
     {}
 };

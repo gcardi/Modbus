@@ -15,7 +15,7 @@ class DummyProtocol : public Protocol {
 public:
     DummyProtocol() {}
 protected:
-    virtual String DoGetProtocolName() const override { return _T( "Dummy Modbus" ); }
+    virtual String DoGetProtocolName() const override { return _D( "Dummy Modbus" ); }
     virtual String DoGetProtocolParamsStr() const override { return String(); }
     virtual void DoOpen() override { active_ = true; }
     virtual void DoClose() override { active_ = false; }

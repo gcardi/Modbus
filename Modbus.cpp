@@ -14,43 +14,43 @@ void DebugBytesToHex( String Prologue, TBytes Data )
 #if defined( _DEBUG )
     auto SB = std::make_unique<TStringBuilder>( Prologue );
     for ( auto Val : Data ) {
-        SB->AppendFormat( _T( "%.2X " ), ARRAYOFCONST( ( Val ) ) );
+        SB->AppendFormat( _D( "%.2X " ), ARRAYOFCONST( ( Val ) ) );
     }
     ::OutputDebugString( SB->ToString().c_str() );
 #endif
 }
 
 static const String ExceptionCodeText[8] = {
-    _T( "Illegal Function" ),
-    _T( "Illegal Data Address" ),
-    _T( "Illegal Data Value" ),
-    _T( "Slave Device Failure" ),
-    _T( "Acknowledge" ),
-    _T( "Slave Device Busy" ),
-    _T( "Negative Acknowledge" ),
-    _T( "Memory Parity Error" ),
+    _D( "Illegal Function" ),
+    _D( "Illegal Data Address" ),
+    _D( "Illegal Data Value" ),
+    _D( "Slave Device Failure" ),
+    _D( "Acknowledge" ),
+    _D( "Slave Device Busy" ),
+    _D( "Negative Acknowledge" ),
+    _D( "Memory Parity Error" ),
 };
 
 static const String ExceptionCodeDescription[8] = {
-    _T( "The function code received in the query "
+    _D( "The function code received in the query "
         "is not an allowable action for the slave. "
         "If a Poll Program Complete command "
         "was issued, this code indicates that no "
         "program function preceded it." ),
 
-    _T( "The data address received in the query "
+    _D( "The data address received in the query "
         "is not an allowable address for the "
         "slave." ),
 
-    _T( "A value contained in the query data "
+    _D( "A value contained in the query data "
         "field is not an allowable value for the "
         "slave." ),
 
-    _T( "An unrecoverable error occurred while "
+    _D( "An unrecoverable error occurred while "
         "the slave was attempting to perform the "
         "requested action." ),
 
-    _T( "The slave has accepted the request "
+    _D( "The slave has accepted the request "
         "and is processing it, but a long duration "
         "of time will be required to do so. This "
         "response is returned to prevent a "
@@ -59,12 +59,12 @@ static const String ExceptionCodeDescription[8] = {
         "Poll Program Complete message to "
         "determine if processing is completed." ),
 
-    _T( "The slave is engaged in processing a "
-        "long–duration program command. The "
+    _D( "The slave is engaged in processing a "
+        "longï¿½duration program command. The "
         "master should retransmit the message "
         "later when the slave is free." ),
 
-    _T( "The slave cannot perform the program "
+    _D( "The slave cannot perform the program "
         "function received in the query. This "
         "code is returned for an unsuccessful "
         "programming request using function "
@@ -72,7 +72,7 @@ static const String ExceptionCodeDescription[8] = {
         "should request diagnostic or error "
         "information from the slave." ),
 
-    _T( "The slave attempted to read extended "
+    _D( "The slave attempted to read extended "
         "memory, but detected a parity error in "
         "the memory. The master can retry the "
         "request, but service may be required on "
@@ -96,15 +96,15 @@ void RaiseFunctionCodeNotImplementedException( FunctionCode Code )
 {
     throw EBaseException(
         Format(
-            _T( "Function code %.2Xh not implemented" )
+            _D( "Function code %.2Xh not implemented" )
           , ARRAYOFCONST( ( static_cast<int>( Code ) ) )
         )
     );
 
 /*
-    throw EBaseException( String( _T( "Function code " ) ) +
+    throw EBaseException( String( _D( "Function code " ) ) +
                           IntToHex( static_cast<int>( Code ), 2 ) +
-                          String( _T( "H not implemented!" ) ) );
+                          String( _D( "H not implemented!" ) ) );
 */
 }
 //---------------------------------------------------------------------------
@@ -123,7 +123,7 @@ void RaiseStandardException( Context const & Context, ExceptionCode Code,
         case ExceptionCode::MemoryParityError:   throw EMemoryParityError( Context, Prefix );
         default:
             throw EProtocolException(
-                Context, Code, _T( "Unknown Modbus exception code" )
+                Context, Code, _D( "Unknown Modbus exception code" )
             );
     }
 }
@@ -145,7 +145,7 @@ Protocol::~Protocol()
 void Protocol::Open()
 {
     if ( !IsConnected() ) {
-    //RaiseExceptionIfIsConnected( _T( "connection already open" ) );
+    //RaiseExceptionIfIsConnected( _D( "connection already open" ) );
         DoOpen();
     }
 }
@@ -154,7 +154,7 @@ void Protocol::Open()
 void Protocol::Close()
 {
     if ( IsConnected() ) {
-    //RaiseExceptionIfIsNotConnected( _T( "connection already closed" ) );
+    //RaiseExceptionIfIsNotConnected( _D( "connection already closed" ) );
         DoClose();
     }
 }
@@ -225,7 +225,7 @@ void Protocol::RaiseExceptionIfIsConnected( String Msg ) const
     if ( IsConnected() ) {
         throw EBaseException(
             Format(
-                _T( "The connection is already estabilished: %s" )
+                _D( "The connection is already estabilished: %s" )
               , ARRAYOFCONST( ( Msg ) )
             )
         );
@@ -238,7 +238,7 @@ void Protocol::RaiseExceptionIfIsNotConnected( String Msg ) const
     if ( !IsConnected() ) {
         throw EBaseException(
             Format(
-                _T( "The connection was already previously close: %s" )
+                _D( "The connection was already previously close: %s" )
               , ARRAYOFCONST( ( Msg ) )
             )
         );

@@ -79,15 +79,15 @@ String ECommError::FormatErrorMessage( ErrorType Err )
                 0
           );
     if ( !Ret )
-        return String( _T ( "FormatErrorMessage failed!" ) );
+        return String( _D( "FormatErrorMessage failed!" ) );
 
     ECommErrorLocalFree LocalFreeObj( Buffer );
 
-//    return _T( "Serial port failed with code " ) +
-//           String( Err ) + _T( ", " ) + ErrorString[Err] + _T( ": " ) +
+//    return _D( "Serial port failed with code " ) +
+//           String( Err ) + _D( ", " ) + ErrorString[Err] + _D( ": " ) +
 //           String( static_cast<PTCHAR>( Buffer ) );
     return Format(
-               _T( "Serial port failed with code %d, %s: %s" ),
+               _D( "Serial port failed with code %d, %s: %s" ),
                ARRAYOFCONST( (
                     static_cast<int>( Err )
                   , ErrorString[static_cast<size_t>( Err )]
@@ -115,7 +115,7 @@ String ECommError::FormatErrorMessage( ErrorType Err )
 /////               any of the values are set by the user.
 TCommPort::TCommPort( DWORD ReadTimeOut, DWORD WriteTimeOut )
   : m_CommOpen( false ),
-    m_CommPort( _T( "\\\\.\\COM1" ) ),
+    m_CommPort( _D( "\\\\.\\COM1" ) ),
     m_hCom(0),
     m_readTimeOut( ReadTimeOut ),
     m_writeTimeOut( WriteTimeOut )

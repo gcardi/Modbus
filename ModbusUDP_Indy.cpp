@@ -83,7 +83,7 @@ void UDPProtocolIndy::DoInputBufferClear()
 void UDPProtocolIndy::DoWrite( TBytes const OutBuffer )
 {
 #if defined( _DEBUG )
-DebugBytesToHex( _T( "UDP TX: " ), OutBuffer );
+DebugBytesToHex( _D( "UDP TX: " ), OutBuffer );
 #endif
     idUDPClient_->SendBuffer( OutBuffer );
     recvBufferSize_ = idUDPClient_->ReceiveBuffer( recvBuffer_ );
@@ -93,12 +93,12 @@ DebugBytesToHex( _T( "UDP TX: " ), OutBuffer );
 void UDPProtocolIndy::DoRead( TBytes & InBuffer, size_t Length )
 {
     if ( recvBufferSize_ - recvBufferPos_ < Length ) {
-        throw EBaseException( _T( "UDP read timeout" ) );
+        throw EBaseException( _D( "UDP read timeout" ) );
     }
     InBuffer = recvBuffer_.CopyRange( recvBufferPos_, Length );
     recvBufferPos_ += Length;
 #if defined( _DEBUG )
-DebugBytesToHex( _T( "UDP RX: " ), InBuffer );
+DebugBytesToHex( _D( "UDP RX: " ), InBuffer );
 #endif
 }
 

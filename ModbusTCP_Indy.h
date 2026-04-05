@@ -24,10 +24,10 @@ namespace Master {
 
 class TCPProtocolIndy : public TCPProtocol {
 public:
-    TCPProtocolIndy( String Host = _T( DEFAULT_MODBUS_TCPIP_HOST ),
+    TCPProtocolIndy( String Host = String( DEFAULT_MODBUS_TCPIP_HOST ),
                      uint16_t Port = DEFAULT_MODBUS_TCPIP_PORT );
 protected:
-    virtual String DoGetProtocolName() const override { return _T( "Modbus TCP (Indy)" ); }
+    virtual String DoGetProtocolName() const override { return _D( "Modbus TCP (Indy)" ); }
     virtual String DoGetHost() const override;
     virtual void DoSetHost( String Val ) override;
     virtual uint16_t DoGetPort() const override;

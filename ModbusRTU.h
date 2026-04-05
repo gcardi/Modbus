@@ -69,7 +69,7 @@ public:
     TFlowEvent SetFlowEventHandler( TFlowEvent EventHandler );
 
 protected:
-    virtual String DoGetProtocolName() const override { return _T( "Modbus RTU" ); }
+    virtual String DoGetProtocolName() const override { return _D( "Modbus RTU" ); }
     virtual String DoGetProtocolParamsStr() const override;
     virtual void DoOpen() override;
     virtual void DoClose() override;
@@ -248,7 +248,7 @@ void RTUProtocol::ShowBuffer( const P& Prefix, It Begin, It End )
 {
     String Msg = String( Prefix );
     while ( Begin != End ) {
-        Msg += IntToHex( int( *Begin++ ) & 0xFF, 2 ) + String( _T( ' ' ) );
+        Msg += IntToHex( int( *Begin++ ) & 0xFF, 2 ) + String( _D( ' ' ) );
     }
     ::OutputDebugString( Msg.c_str() );
 }
@@ -282,7 +282,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
 #if defined ( _DEBUG ) && defined( VIEW_RTU_PROTOCOL_DIAG )
     ShowBuffer(
         Format(
-            _T( "TX(%s): " ), ARRAYOFCONST( ( commPort_.GetCommPort().c_str() ) )
+            _D( "TX(%s): " ), ARRAYOFCONST( ( commPort_.GetCommPort().c_str() ) )
         ),
         TxFrame.begin(), TxFrame.end()
     );
@@ -324,7 +324,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
 
             if ( ( Char & 0x80 ) && Idx == 1 ) {
 //#if defined( _DEBUG )
-//::OutputDebugString( Format( _T( "%.2X" ), ARRAYOFCONST( ( int( Char ) ) ) ).c_str() );
+//::OutputDebugString( Format( _D( "%.2X" ), ARRAYOFCONST( ( int( Char ) ) ) ).c_str() );
 //endif
                 RxFramelength = 5;
             }
@@ -336,7 +336,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
         else if ( !BytesRead ) {
             throw EContextException(
                 Context,
-                _T( "Timeout error" )
+                _D( "Timeout error" )
             );
         }
         else {
@@ -350,7 +350,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
 #if defined ( _DEBUG ) && defined( VIEW_RTU_PROTOCOL_DIAG )
     ShowBuffer(
         Format(
-            _T( "RX(%s): " ), ARRAYOFCONST( ( commPort_.GetCommPort().c_str() ) )
+            _D( "RX(%s): " ), ARRAYOFCONST( ( commPort_.GetCommPort().c_str() ) )
         ),
         RxFrame.begin(), RxFrame.end()
     );
@@ -365,7 +365,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
             return false;
         }
         else {
-            throw EContextException( Context, _T( "Bad CRC (RX)" ) );
+            throw EContextException( Context, _D( "Bad CRC (RX)" ) );
         }
     }
 
@@ -374,7 +374,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
             return false;
         }
         else {
-            throw EContextException( Context, _T( "Slave address mismatch" ) );
+            throw EContextException( Context, _D( "Slave address mismatch" ) );
         }
     }
 
@@ -387,7 +387,7 @@ bool RTUProtocol::SendAndReceiveFramesInt( Context const & Context,
                 RaiseStandardException( Context, ExceptionCode( RxFrame[2] ) );
             }
             else {
-                throw EContextException( Context, _T( "Function code mismatch" ) );
+                throw EContextException( Context, _D( "Function code mismatch" ) );
             }
         }
     }

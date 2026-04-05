@@ -113,7 +113,7 @@ unsigned int RTUProtocol::GetParityBitCount() const
         case EVENPARITY:
             return 1;
         default:
-            throw ERTUParametersError( _T( "Invalid parity setting" ) );
+            throw ERTUParametersError( _D( "Invalid parity setting" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -127,7 +127,7 @@ unsigned int RTUProtocol::GetStopBitCount() const
         case TWOSTOPBITS:
             return 2;
         default:
-            throw ERTUParametersError( _T( "Invalid stop bit setting" ) );
+            throw ERTUParametersError( _D( "Invalid stop bit setting" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -143,12 +143,12 @@ RTUProtocol::TFlowEvent RTUProtocol::SetFlowEventHandler( TFlowEvent EventHandle
 String RTUProtocol::ParityToStr( int Val )
 {
     switch ( Val ) {
-        case NOPARITY:     return _T( "N" );
-        case ODDPARITY:    return _T( "O" );
-        case EVENPARITY:   return _T( "E" );
-        case MARKPARITY:   return _T( "M" );
-        case SPACEPARITY:  return _T( "S" );
-        default:           return _T( "-" );
+        case NOPARITY:     return _D( "N" );
+        case ODDPARITY:    return _D( "O" );
+        case EVENPARITY:   return _D( "E" );
+        case MARKPARITY:   return _D( "M" );
+        case SPACEPARITY:  return _D( "S" );
+        default:           return _D( "-" );
     }
 }
 //---------------------------------------------------------------------------
@@ -156,10 +156,10 @@ String RTUProtocol::ParityToStr( int Val )
 String RTUProtocol::StopBitsToStr( int Val )
 {
     switch ( Val ) {
-        case ONESTOPBIT:   return _T( "1" );
-        case ONE5STOPBITS: return _T( "1.5" );
-        case TWOSTOPBITS:  return _T( "2" );
-        default:           return _T( "-" );
+        case ONESTOPBIT:   return _D( "1" );
+        case ONE5STOPBITS: return _D( "1.5" );
+        case TWOSTOPBITS:  return _D( "2" );
+        default:           return _D( "-" );
     }
 }
 //---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ String RTUProtocol::DoGetProtocolParamsStr() const
 {
     return
         Format(
-            _T( "%s:%d,%s,%d,%s" )
+            _D( "%s:%d,%s,%d,%s" )
           , ARRAYOFCONST( (
                 ExtractFileName( GetCommPort() ),
                 GetCommSpeed(),
@@ -231,7 +231,7 @@ void RTUProtocol::ReadRegisters( FunctionCode FnCode, Context const & Context,
         static_cast<FrameCont::size_type>( *RxInIt++ );
 
     if ( RxByteCount !=  ExpectedRxFramelength - 5 ) {
-        throw EContextException( Context, _T( "Byte count mismatch" ) );
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
     }
 
     while ( PointCount-- ) {
@@ -250,7 +250,7 @@ void RTUProtocol::DoReadHoldingRegisters( Context const & Context,
 /*
     if ( PointCount > 125 ) {
         throw EContextException(
-            Context, _T( "Too many points have been requested" )
+            Context, _D( "Too many points have been requested" )
         );
     }
 
@@ -279,7 +279,7 @@ void RTUProtocol::DoReadHoldingRegisters( Context const & Context,
         static_cast<FrameCont::size_type>( *RxInIt++ );
 
     if ( RxByteCount !=  ExpectedRxFramelength - 5 ) {
-        throw EContextException( Context, _T( "Byte count mismatch" ) );
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
     }
 
     while ( PointCount-- ) {
@@ -331,13 +331,13 @@ void RTUProtocol::DoPresetSingleRegister( Context const & Context,
     RegAddrType ReadAddr;
     FrameCont::const_iterator RxInIt = Read( RxFrame.begin(), ReadAddr );
     if ( ReadAddr != Addr ) {
-        throw EContextException( Context, _T( "Address mismatch" ) );
+        throw EContextException( Context, _D( "Address mismatch" ) );
     }
 
     RegDataType ReadData;
     RxInIt = Read( RxInIt, ReadData );
     if ( ReadData != Data ) {
-        throw EContextException( Context, _T( "Data mismatch" ) );
+        throw EContextException( Context, _D( "Data mismatch" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -385,7 +385,7 @@ void RTUProtocol::DoPresetMultipleRegisters( Context const & Context,
 {
     if ( PointCount > 123 ) {
         throw EContextException(
-            Context, _T( "Too many points have been requested" )
+            Context, _D( "Too many points have been requested" )
         );
     }
 
@@ -422,13 +422,13 @@ void RTUProtocol::DoPresetMultipleRegisters( Context const & Context,
     RegAddrType ReadStartAddr;
     FrameCont::const_iterator RxInIt = Read( RxFrame.begin(), ReadStartAddr );
     if ( ReadStartAddr != StartAddr ) {
-        throw EContextException( Context, _T( "Start address mismatch" ) );
+        throw EContextException( Context, _D( "Start address mismatch" ) );
     }
 
     RegCountType ReadPointCount;
     RxInIt = Read( RxInIt, ReadPointCount );
     if ( ReadPointCount != PointCount ) {
-        throw EContextException( Context, _T( "Point count mismatch" ) );
+        throw EContextException( Context, _D( "Point count mismatch" ) );
     }
 }
 //---------------------------------------------------------------------------
@@ -486,18 +486,18 @@ void RTUProtocol::DoMaskWrite4XRegister( Context const & Context,
     RegAddrType ReadAddr;
     FrameCont::const_iterator RxInIt = Read( RxFrame.begin(), ReadAddr );
     if ( ReadAddr != Addr ) {
-        throw EContextException( Context, _T( "Address mismatch" ) );
+        throw EContextException( Context, _D( "Address mismatch" ) );
     }
 
     RegDataType ReadData;
     RxInIt = Read( RxInIt, ReadData );
     if ( ReadData != AndMask ) {
-        throw EContextException( Context, _T( "And Mask mismatch" ) );
+        throw EContextException( Context, _D( "And Mask mismatch" ) );
     }
 
     RxInIt = Read( RxInIt, ReadData );
     if ( ReadData != OrMask ) {
-        throw EContextException( Context, _T( "Or Mask mismatch" ) );
+        throw EContextException( Context, _D( "Or Mask mismatch" ) );
     }
 }
 //---------------------------------------------------------------------------
