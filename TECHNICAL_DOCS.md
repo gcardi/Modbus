@@ -1,5 +1,7 @@
 # Modbus Technical Documentation
 
+Doxygen reference: [Detailed API Documentation](https://gcardi.github.io/Modbus/index.html)
+
 ## 1. Scope
 
 This document provides technical guidance for the Modbus repository with emphasis on:
