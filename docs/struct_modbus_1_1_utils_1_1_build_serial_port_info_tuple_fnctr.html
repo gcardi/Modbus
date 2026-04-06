@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Modbus Master Library: SvcApp::Utils::BuildSerialPortInfoTupleFnctr Struct Reference</title>
+<title>Modbus Master Library: Modbus::Utils::BuildSerialPortInfoTupleFnctr Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,15 +71,15 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a href="namespace_svc_app.html">SvcApp</a></li><li class="navelem"><a href="namespace_svc_app_1_1_utils.html">Utils</a></li><li class="navelem"><a href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a></li>  </ul>
+<li class="navelem"><a href="namespace_modbus.html">Modbus</a></li><li class="navelem"><a href="namespace_modbus_1_1_utils.html">Utils</a></li><li class="navelem"><a href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">SvcApp::Utils::BuildSerialPortInfoTupleFnctr Struct Reference</div></div>
+<a href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">Modbus::Utils::BuildSerialPortInfoTupleFnctr Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -90,16 +90,16 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a529ab49771a49907e7c1c458d0950c84" id="r_a529ab49771a49907e7c1c458d0950c84"><td class="memTemplParams" colspan="2">template&lt;typename T1, typename T2&gt; </td></tr>
-<tr class="memitem:a529ab49771a49907e7c1c458d0950c84 template"><td class="memItemLeft">boost::tuple&lt; T1, T2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a529ab49771a49907e7c1c458d0950c84">operator()</a> (T1 const &amp;Name, T2 const &amp;Descr)</td></tr>
-<tr class="memdesc:a529ab49771a49907e7c1c458d0950c84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a tuple from the port name and device description.  <br /></td></tr>
+<tr class="memitem:af5310cb08d2abed78b894a2c0e59029e" id="r_af5310cb08d2abed78b894a2c0e59029e"><td class="memTemplParams" colspan="2">template&lt;typename T1, typename T2&gt; </td></tr>
+<tr class="memitem:af5310cb08d2abed78b894a2c0e59029e template"><td class="memItemLeft">boost::tuple&lt; T1, T2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#af5310cb08d2abed78b894a2c0e59029e">operator()</a> (T1 const &amp;Name, T2 const &amp;Descr)</td></tr>
+<tr class="memdesc:af5310cb08d2abed78b894a2c0e59029e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a tuple from the port name and device description.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Default functor for EnumSerialPort that packages the port name and description into a boost::tuple. </p>
-<p>When passed as the <code class="param">Fn</code> argument to <a class="el" href="namespace_svc_app_1_1_utils.html#a25cec939146a446ffa4a1211909af0ec" title="Enumerates all COM ports currently present in the system.">EnumSerialPort()</a>, each discovered port is represented as a <code>boost::tuple&lt;String,String&gt;</code> where the first element is the port name (e.g., "COM3") and the second element is the human-readable device description. </p>
+<p>When passed as the <code class="param">Fn</code> argument to <a class="el" href="namespace_modbus_1_1_utils.html#aaef4a763b2cfe26b4f47c3cd1be5eae1" title="Enumerates all COM ports currently present in the system.">EnumSerialPort()</a>, each discovered port is represented as a <code>boost::tuple&lt;String,String&gt;</code> where the first element is the port name (e.g., "COM3") and the second element is the human-readable device description. </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a529ab49771a49907e7c1c458d0950c84" name="a529ab49771a49907e7c1c458d0950c84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a529ab49771a49907e7c1c458d0950c84">&#9670;&#160;</a></span>operator()()</h2>
+<a id="af5310cb08d2abed78b894a2c0e59029e" name="af5310cb08d2abed78b894a2c0e59029e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5310cb08d2abed78b894a2c0e59029e">&#9670;&#160;</a></span>operator()()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -110,7 +110,7 @@ template&lt;typename T1, typename T2&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">boost::tuple&lt; T1, T2 &gt; SvcApp::Utils::BuildSerialPortInfoTupleFnctr::operator() </td>
+          <td class="memname">boost::tuple&lt; T1, T2 &gt; Modbus::Utils::BuildSerialPortInfoTupleFnctr::operator() </td>
           <td>(</td>
           <td class="paramtype">T1 const &amp;</td>          <td class="paramname"><span class="paramname"><em>Name</em></span>, </td>
         </tr>

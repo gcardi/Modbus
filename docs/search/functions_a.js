@@ -8,6 +8,6 @@ var searchData=
   ['readholdingregisters_5',['ReadHoldingRegisters',['../class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a',1,'Modbus::Master::Protocol']]],
   ['readinputregisters_6',['ReadInputRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aac436153729a31f5d257c64cd8aa81ec',1,'Modbus::Master::Protocol']]],
   ['readstring_7',['ReadString',['../class_t_comm_port.html#ad03f24b708412feb4819df9c3d749865',1,'TCommPort']]],
-  ['regqueryvaluestring_8',['RegQueryValueString',['../namespace_svc_app_1_1_utils.html#a7e60f67edb8ea36d11f97bcdb9153658',1,'SvcApp::Utils']]],
+  ['regqueryvaluestring_8',['RegQueryValueString',['../namespace_modbus_1_1_utils.html#a3117824aae5906b757a495a271c8af11',1,'Modbus::Utils']]],
   ['rtuprotocol_9',['RTUProtocol',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#a1abfdde97342ff6c6db64917384f1f9f',1,'Modbus::Master::RTUProtocol']]]
 ];

@@ -2,7 +2,7 @@
  * @file SerEnum.h
  * @brief Serial port enumeration utilities using the Windows SetupAPI.
  *
- * @details Provides SvcApp::Utils::EnumSerialPort(), a function template that enumerates
+ * @details Provides Modbus::Utils::EnumSerialPort(), a function template that enumerates
  *  all COM ports present in the system by querying the Windows SetupAPI device information
  *  set for GUID_DEVINTERFACE_COMPORT.  For each port found, a caller-supplied functor is
  *  invoked with the port name and device description, and its return value is appended to
@@ -25,7 +25,7 @@
 #include <boost/tuple/tuple.hpp>
 
 //---------------------------------------------------------------------------
-namespace SvcApp {
+namespace Modbus {
 //---------------------------------------------------------------------------
 namespace Utils {
 //---------------------------------------------------------------------------
@@ -70,7 +70,7 @@ struct BuildSerialPortInfoTupleFnctr {
  * @par Example
  * @code
  *   std::vector<boost::tuple<String,String>> ports;
- *   SvcApp::Utils::EnumSerialPort( std::back_inserter(ports) );
+ *   Modbus::Utils::EnumSerialPort( std::back_inserter(ports) );
  *   for ( auto& p : ports )
  *       ShowMessage( p.get<0>() + " — " + p.get<1>() );
  * @endcode
@@ -146,6 +146,6 @@ void EnumSerialPort( OutputIterator Out, TF Fn = BuildSerialPortInfoTupleFnctr()
 //---------------------------------------------------------------------------
 } // End of namespace Utils
 //---------------------------------------------------------------------------
-} // End of namespace SvcApp
+} // End of namespace Modbus
 //---------------------------------------------------------------------------
 #endif

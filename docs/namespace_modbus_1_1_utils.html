@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Modbus Master Library: SvcApp::Utils Namespace Reference</title>
+<title>Modbus Master Library: Modbus::Utils Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,7 +71,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a href="namespace_svc_app.html">SvcApp</a></li><li class="navelem"><a href="namespace_svc_app_1_1_utils.html">Utils</a></li>  </ul>
+<li class="navelem"><a href="namespace_modbus.html">Modbus</a></li><li class="navelem"><a href="namespace_modbus_1_1_utils.html">Utils</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div id="doc-content">
@@ -79,25 +79,25 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">SvcApp::Utils Namespace Reference</div></div>
+  <div class="headertitle"><div class="title">Modbus::Utils Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:BuildSerialPortInfoTupleFnctr" id="r_BuildSerialPortInfoTupleFnctr"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.  <a href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html#details">More...</a><br /></td></tr>
+<tr class="memitem:BuildSerialPortInfoTupleFnctr" id="r_BuildSerialPortInfoTupleFnctr"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.  <a href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7e60f67edb8ea36d11f97bcdb9153658" id="r_a7e60f67edb8ea36d11f97bcdb9153658"><td class="memItemLeft">String&#160;</td><td class="memItemRight"><a class="el" href="#a7e60f67edb8ea36d11f97bcdb9153658">RegQueryValueString</a> (HKEY Key, String Name)</td></tr>
-<tr class="memitem:a25cec939146a446ffa4a1211909af0ec" id="r_a25cec939146a446ffa4a1211909af0ec"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator, typename TF&gt; </td></tr>
-<tr class="memitem:a25cec939146a446ffa4a1211909af0ec template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a25cec939146a446ffa4a1211909af0ec">EnumSerialPort</a> (OutputIterator Out, TF Fn=<a class="el" href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a>())</td></tr>
-<tr class="memdesc:a25cec939146a446ffa4a1211909af0ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerates all COM ports currently present in the system.  <br /></td></tr>
+<tr class="memitem:a3117824aae5906b757a495a271c8af11" id="r_a3117824aae5906b757a495a271c8af11"><td class="memItemLeft">String&#160;</td><td class="memItemRight"><a class="el" href="#a3117824aae5906b757a495a271c8af11">RegQueryValueString</a> (HKEY Key, String Name)</td></tr>
+<tr class="memitem:aaef4a763b2cfe26b4f47c3cd1be5eae1" id="r_aaef4a763b2cfe26b4f47c3cd1be5eae1"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator, typename TF&gt; </td></tr>
+<tr class="memitem:aaef4a763b2cfe26b4f47c3cd1be5eae1 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aaef4a763b2cfe26b4f47c3cd1be5eae1">EnumSerialPort</a> (OutputIterator Out, TF Fn=<a class="el" href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a>())</td></tr>
+<tr class="memdesc:aaef4a763b2cfe26b4f47c3cd1be5eae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerates all COM ports currently present in the system.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a25cec939146a446ffa4a1211909af0ec" name="a25cec939146a446ffa4a1211909af0ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25cec939146a446ffa4a1211909af0ec">&#9670;&#160;</a></span>EnumSerialPort()</h2>
+<a id="aaef4a763b2cfe26b4f47c3cd1be5eae1" name="aaef4a763b2cfe26b4f47c3cd1be5eae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaef4a763b2cfe26b4f47c3cd1be5eae1">&#9670;&#160;</a></span>EnumSerialPort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -105,14 +105,14 @@ Functions</h2></td></tr>
 template&lt;typename OutputIterator, typename TF&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void SvcApp::Utils::EnumSerialPort </td>
+          <td class="memname">void Modbus::Utils::EnumSerialPort </td>
           <td>(</td>
           <td class="paramtype">OutputIterator</td>          <td class="paramname"><span class="paramname"><em>Out</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">TF</td>          <td class="paramname"><span class="paramname"><em>Fn</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a>()</span>&#160;)</td>
+          <td class="paramtype">TF</td>          <td class="paramname"><span class="paramname"><em>Fn</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a>()</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -129,7 +129,7 @@ template&lt;typename OutputIterator, typename TF&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Out</td><td>Output iterator that receives one entry per discovered COM port. </td></tr>
-    <tr><td class="paramname">Fn</td><td>Functor invoked for each port (default: <a class="el" href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html" title="Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.">BuildSerialPortInfoTupleFnctr</a>).</td></tr>
+    <tr><td class="paramname">Fn</td><td>Functor invoked for each port (default: <a class="el" href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html" title="Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.">BuildSerialPortInfoTupleFnctr</a>).</td></tr>
   </table>
   </dd>
 </dl>
@@ -140,22 +140,22 @@ template&lt;typename OutputIterator, typename TF&gt; </div>
   </dd>
 </dl>
 <dl class="section user"><dt>Example</dt><dd><div class="fragment"><div class="line">std::vector&lt;boost::tuple&lt;String,String&gt;&gt; ports;</div>
-<div class="line"><a class="code hl_function" href="#a25cec939146a446ffa4a1211909af0ec">SvcApp::Utils::EnumSerialPort</a>( std::back_inserter(ports) );</div>
+<div class="line"><a class="code hl_function" href="#aaef4a763b2cfe26b4f47c3cd1be5eae1">Modbus::Utils::EnumSerialPort</a>( std::back_inserter(ports) );</div>
 <div class="line"><span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; p : ports )</div>
 <div class="line">    ShowMessage( p.get&lt;0&gt;() + <span class="stringliteral">&quot; — &quot;</span> + p.get&lt;1&gt;() );</div>
-<div class="ttc" id="anamespace_svc_app_1_1_utils_html_a25cec939146a446ffa4a1211909af0ec"><div class="ttname"><a href="#a25cec939146a446ffa4a1211909af0ec">SvcApp::Utils::EnumSerialPort</a></div><div class="ttdeci">void EnumSerialPort(OutputIterator Out, TF Fn=BuildSerialPortInfoTupleFnctr())</div><div class="ttdoc">Enumerates all COM ports currently present in the system.</div><div class="ttdef"><b>Definition</b> SerEnum.h:79</div></div>
+<div class="ttc" id="anamespace_modbus_1_1_utils_html_aaef4a763b2cfe26b4f47c3cd1be5eae1"><div class="ttname"><a href="#aaef4a763b2cfe26b4f47c3cd1be5eae1">Modbus::Utils::EnumSerialPort</a></div><div class="ttdeci">void EnumSerialPort(OutputIterator Out, TF Fn=BuildSerialPortInfoTupleFnctr())</div><div class="ttdoc">Enumerates all COM ports currently present in the system.</div><div class="ttdef"><b>Definition</b> SerEnum.h:79</div></div>
 </div><!-- fragment --> </dd></dl>
 
 </div>
 </div>
-<a id="a7e60f67edb8ea36d11f97bcdb9153658" name="a7e60f67edb8ea36d11f97bcdb9153658"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e60f67edb8ea36d11f97bcdb9153658">&#9670;&#160;</a></span>RegQueryValueString()</h2>
+<a id="a3117824aae5906b757a495a271c8af11" name="a3117824aae5906b757a495a271c8af11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3117824aae5906b757a495a271c8af11">&#9670;&#160;</a></span>RegQueryValueString()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">String SvcApp::Utils::RegQueryValueString </td>
+          <td class="memname">String Modbus::Utils::RegQueryValueString </td>
           <td>(</td>
           <td class="paramtype">HKEY</td>          <td class="paramname"><span class="paramname"><em>Key</em></span>, </td>
         </tr>

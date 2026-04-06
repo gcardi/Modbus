@@ -10,7 +10,7 @@ var searchData=
   ['eillegalfunction_7',['EIllegalFunction',['../namespace_modbus.html#aaca11ad66613968beb425474fd53c62c',1,'Modbus']]],
   ['ememoryparityerror_8',['EMemoryParityError',['../namespace_modbus.html#adf1ff33e81f20d1f6ac020db6e28716d',1,'Modbus']]],
   ['enegativeacknowledge_9',['ENegativeAcknowledge',['../namespace_modbus.html#a318446c7b45d8da1a66c3734dce6548e',1,'Modbus']]],
-  ['enumserialport_10',['EnumSerialPort',['../namespace_svc_app_1_1_utils.html#a25cec939146a446ffa4a1211909af0ec',1,'SvcApp::Utils']]],
+  ['enumserialport_10',['EnumSerialPort',['../namespace_modbus_1_1_utils.html#aaef4a763b2cfe26b4f47c3cd1be5eae1',1,'Modbus::Utils']]],
   ['eprotocolexception_11',['EProtocolException',['../class_modbus_1_1_e_protocol_exception.html',1,'Modbus::EProtocolException'],['../class_modbus_1_1_e_protocol_exception.html#a55b27e1561c71374959472a3ae7183be',1,'Modbus::EProtocolException::EProtocolException(Context const &amp;Context, ExceptionCode Code, String Message)'],['../class_modbus_1_1_e_protocol_exception.html#ac440f481c7d5ab1c59240a9df39092c2',1,'Modbus::EProtocolException::EProtocolException(Context const &amp;Context, ExceptionCode Code, String Msg, TVarRec *Args, int Args_High)']]],
   ['eprotocolstdexception_12',['EProtocolStdException',['../class_modbus_1_1_e_protocol_std_exception.html',1,'Modbus::EProtocolStdException&lt; Code &gt;'],['../class_modbus_1_1_e_protocol_std_exception.html#a416520eb1ed0ca5063c1a0c7015b4f11',1,'Modbus::EProtocolStdException::EProtocolStdException()']]],
   ['eprotocolstdexception_3c_20exceptioncode_3a_3aacknowledge_20_3e_13',['EProtocolStdException&lt; ExceptionCode::Acknowledge &gt;',['../class_modbus_1_1_e_protocol_std_exception.html',1,'Modbus']]],

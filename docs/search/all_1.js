@@ -10,6 +10,6 @@ var searchData=
   ['bmapprotocoltype_7',['BMAPProtocolType',['../class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a88227fe22b066536222426184ffb6d78',1,'Modbus::Master::TCPIPProtocol']]],
   ['bmaptransactionidtype_8',['BMAPTransactionIdType',['../class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a4fbb0415c2c03e9ea40b8d9f3080f53d',1,'Modbus::Master::TCPIPProtocol']]],
   ['bmapunitidtype_9',['BMAPUnitIdType',['../class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#ad8aeca943fb13b35b752c01f14ab3580',1,'Modbus::Master::TCPIPProtocol']]],
-  ['buildserialportinfotuplefnctr_10',['BuildSerialPortInfoTupleFnctr',['../struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html',1,'SvcApp::Utils']]],
+  ['buildserialportinfotuplefnctr_10',['BuildSerialPortInfoTupleFnctr',['../struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html',1,'Modbus::Utils']]],
   ['bytesavailable_11',['BytesAvailable',['../class_t_comm_port.html#a6c2e3d1655433bdcbacb9613e5b66bd8',1,'TCommPort']]]
 ];

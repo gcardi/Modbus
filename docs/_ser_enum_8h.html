@@ -117,23 +117,23 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:SvcApp_3A_3AUtils_3A_3ABuildSerialPortInfoTupleFnctr" id="r_SvcApp_3A_3AUtils_3A_3ABuildSerialPortInfoTupleFnctr"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">SvcApp::Utils::BuildSerialPortInfoTupleFnctr</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.  <a href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html#details">More...</a><br /></td></tr>
+<tr class="memitem:Modbus_3A_3AUtils_3A_3ABuildSerialPortInfoTupleFnctr" id="r_Modbus_3A_3AUtils_3A_3ABuildSerialPortInfoTupleFnctr"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">Modbus::Utils::BuildSerialPortInfoTupleFnctr</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default functor for EnumSerialPort that packages the port name and description into a boost::tuple.  <a href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:SvcApp" id="r_SvcApp"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespace_svc_app.html">SvcApp</a></td></tr>
-<tr class="memitem:SvcApp_3A_3AUtils" id="r_SvcApp_3A_3AUtils"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespace_svc_app_1_1_utils.html">SvcApp::Utils</a></td></tr>
+<tr class="memitem:Modbus" id="r_Modbus"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespace_modbus.html">Modbus</a></td></tr>
+<tr class="memitem:Modbus_3A_3AUtils" id="r_Modbus_3A_3AUtils"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespace_modbus_1_1_utils.html">Modbus::Utils</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a25cec939146a446ffa4a1211909af0ec" id="r_a25cec939146a446ffa4a1211909af0ec"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator, typename TF&gt; </td></tr>
-<tr class="memitem:a25cec939146a446ffa4a1211909af0ec template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespace_svc_app_1_1_utils.html#a25cec939146a446ffa4a1211909af0ec">SvcApp::Utils::EnumSerialPort</a> (OutputIterator Out, TF Fn=<a class="el" href="struct_svc_app_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a>())</td></tr>
-<tr class="memdesc:a25cec939146a446ffa4a1211909af0ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerates all COM ports currently present in the system.  <br /></td></tr>
+<tr class="memitem:aaef4a763b2cfe26b4f47c3cd1be5eae1" id="r_aaef4a763b2cfe26b4f47c3cd1be5eae1"><td class="memTemplParams" colspan="2">template&lt;typename OutputIterator, typename TF&gt; </td></tr>
+<tr class="memitem:aaef4a763b2cfe26b4f47c3cd1be5eae1 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespace_modbus_1_1_utils.html#aaef4a763b2cfe26b4f47c3cd1be5eae1">Modbus::Utils::EnumSerialPort</a> (OutputIterator Out, TF Fn=<a class="el" href="struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html">BuildSerialPortInfoTupleFnctr</a>())</td></tr>
+<tr class="memdesc:aaef4a763b2cfe26b4f47c3cd1be5eae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerates all COM ports currently present in the system.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Serial port enumeration utilities using the Windows SetupAPI. </p>
-<p>Provides <a class="el" href="namespace_svc_app_1_1_utils.html#a25cec939146a446ffa4a1211909af0ec" title="Enumerates all COM ports currently present in the system.">SvcApp::Utils::EnumSerialPort()</a>, a function template that enumerates all COM ports present in the system by querying the Windows SetupAPI device information set for GUID_DEVINTERFACE_COMPORT. For each port found, a caller-supplied functor is invoked with the port name and device description, and its return value is appended to the output iterator.</p>
+<p>Provides <a class="el" href="namespace_modbus_1_1_utils.html#aaef4a763b2cfe26b4f47c3cd1be5eae1" title="Enumerates all COM ports currently present in the system.">Modbus::Utils::EnumSerialPort()</a>, a function template that enumerates all COM ports present in the system by querying the Windows SetupAPI device information set for GUID_DEVINTERFACE_COMPORT. For each port found, a caller-supplied functor is invoked with the port name and device description, and its return value is appended to the output iterator.</p>
 <p>The default functor, BuildSerialPortInfoTupleFnctr, packages the name and description into a boost::tuple&lt;String,String&gt;. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->

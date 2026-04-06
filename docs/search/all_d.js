@@ -23,7 +23,5 @@ var searchData=
   ['setupcomm_20',['SETUPCOMM',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86aa9671bf686dbc12b7452f3daa38f2746c',1,'ECommError']]],
   ['slaveaddrtype_21',['SlaveAddrType',['../class_modbus_1_1_context.html#aa0cdb0cbaf68e5e9b072de1cbc20b204',1,'Modbus::Context']]],
   ['slavedevicebusy_22',['SlaveDeviceBusy',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7a0d96982b40497bb2f861897a4b147ed1',1,'Modbus']]],
-  ['slavedevicefailure_23',['SlaveDeviceFailure',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7ab193d73f99f26e65a639329d216f7583',1,'Modbus']]],
-  ['svcapp_24',['SvcApp',['../namespace_svc_app.html',1,'']]],
-  ['svcapp_3a_3autils_25',['Utils',['../namespace_svc_app_1_1_utils.html',1,'SvcApp']]]
+  ['slavedevicefailure_23',['SlaveDeviceFailure',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7ab193d73f99f26e65a639329d216f7583',1,'Modbus']]]
 ];

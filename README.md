@@ -16,6 +16,7 @@ This repository hosts a Modbus Master library implemented in C++ for Embarcadero
 - `ModbusRTU.*`: implementation of Modbus RTU over serial (`CommPort` helper, CRC, frame format).
 - `ModbusTCP_IP.*`: Modbus TCP/BMAP frame layer with validation and parsing.
 - `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`: Indy-based TCP/UDP transport classes.
+- `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`: WinSock2-based TCP/UDP transport classes.
 - `ModbusDummy.*`: no-op implementation for testing.
 - `CommPort.*`: serial control layer for RTU.
 - `SerEnum.*`: serial port enumeration utilities.
@@ -58,9 +59,9 @@ Abstract base class exposing:
 
 ### Modbus TCP/IP
 
-- `Modbus::Master::TCPIPProtocol` BMAP layer
-- `Modbus::Master::TCPProtocolIndy` (TCP)
-- `Modbus::Master::UDPProtocolIndy` (UDP)
+- `Modbus::Master::TCPIPProtocol` MBAP framing layer
+- `Modbus::Master::TCPProtocolIndy` / `Modbus::Master::TCPProtocolWinSock` (TCP)
+- `Modbus::Master::UDPProtocolIndy` / `Modbus::Master::UDPProtocolWinSock` (UDP)
 - Defaults: host `localhost`, port `502`.
 
 ### Dummy Protocol
@@ -118,7 +119,7 @@ For a server-demo, run an emulator or physical slave, then connect from the clie
 ## Build & Usage
 
 - Target C++Builder / RAD Studio (Windows).
-- Add all sources to project: `Modbus.h/cpp`, `ModbusRTU.*`, `ModbusTCP_IP.*`, `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`, `ModbusDummy.*`, `CommPort.*`, `SerEnum.*`.
+- Add all sources to project: `Modbus.h/cpp`, `ModbusRTU.*`, `ModbusTCP_IP.*`, `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`, `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`, `ModbusDummy.*`, `CommPort.*`, `SerEnum.*`.
 - Required Indy units: `IdTCPClient`, `IdUDPClient`, `IdIOHandler`, `IdIOHandlerSocket`.
 - Optional: `boost::crc` for RTU CRC.
 - C++17 compatible compiler settings are recommended.

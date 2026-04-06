@@ -18,7 +18,7 @@ var searchData=
   ['regaddrtype_15',['RegAddrType',['../namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b',1,'Modbus']]],
   ['regcounttype_16',['RegCountType',['../namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be',1,'Modbus']]],
   ['regdatatype_17',['RegDataType',['../namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd',1,'Modbus']]],
-  ['regqueryvaluestring_18',['RegQueryValueString',['../namespace_svc_app_1_1_utils.html#a7e60f67edb8ea36d11f97bcdb9153658',1,'SvcApp::Utils']]],
+  ['regqueryvaluestring_18',['RegQueryValueString',['../namespace_modbus_1_1_utils.html#a3117824aae5906b757a495a271c8af11',1,'Modbus::Utils']]],
   ['reportslave_19',['ReportSlave',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37aeabb66043058779c8b3e49dc7b3cfe9c',1,'Modbus']]],
   ['resetcommlink_20',['ResetCommLink',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a23b8019edd758aab91ad0cd4ec4cd579',1,'Modbus']]],
   ['retrycount_21',['RetryCount',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#afc0c9d3bdb20491297f33d5770973968',1,'Modbus::Master::RTUProtocol']]],
