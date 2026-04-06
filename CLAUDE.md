@@ -109,3 +109,52 @@ CMake test build details and known pitfalls (SysInit.o linking, PCH2 force-inclu
 **Compiler compatibility:** `[[noreturn]]` attribute placement differs between BCC32 and BCC32C/BCC64 — see existing exception class declarations for the guarded pattern.
 
 **C++ standard:** C++23 (CMake build), C++17 minimum.
+
+## Maintenance Template
+
+Use this section as an operational checklist whenever project tooling, architecture, or conventions change.
+
+### Update Triggers
+
+Update this file in the same PR whenever any of the following changes:
+
+- Build commands, required environment setup, or compiler flags
+- Installed RAD Studio versions, BDS registry keys, or `RootDir` paths
+- Test build flow, test runner command, or test fixture behavior
+- Public architecture (new transport, renamed classes, changed layering)
+- Exception model, key types (`Context`, `TCPIPContext`), or namespaces
+- Coding conventions (macro usage, compatibility notes, language standard)
+- Documentation commands/locations (Doxygen path, output directories)
+
+### Validation Checklist
+
+Before merging docs updates, verify:
+
+- Every command in this file runs as written on a clean shell
+- Version numbers and paths match what is installed on disk
+- Referenced docs still exist: `Test/README-cmake.md`, `TECHNICAL_DOCS.md`, `README.md`
+- Architecture bullets still match current headers and implementation files
+- Convention examples are still accurate and compile in this codebase
+
+### Ownership
+
+- Treat this file as code: review changes with the same rigor as source edits
+- Require a docs update when PRs modify build/test/convention behavior
+- Assign a maintainer (or CODEOWNERS entry) to review this file
+
+### PR Template Snippet (Optional)
+
+Copy into your PR template to reduce drift:
+
+```markdown
+## CLAUDE.md Impact
+
+- [ ] No impact
+- [ ] Updated `CLAUDE.md` to reflect this PR
+- [ ] I validated any changed commands locally
+```
+
+### Suggested Review Cadence
+
+- Quick pass each release (or monthly if releases are infrequent)
+- Immediate update after toolchain upgrades (new BDS version/install path)
