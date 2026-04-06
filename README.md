@@ -8,6 +8,8 @@
 
 This repository hosts a Modbus Master library implemented in C++ for Embarcadero C++Builder and RAD Studio. The library supports Modbus RTU, Modbus TCP/UDP and a dummy protocol. It provides a protocol-agnostic API for reading and writing Modbus registers and coils from a master application.
 
+For a deeper project-oriented reference, see [Technical Documentation](TECHNICAL_DOCS.md).
+
 ## Architecture
 
 - `Modbus.h`: core types, exceptions, `Context` and `Master::Protocol` interface.
