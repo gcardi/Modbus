@@ -12,9 +12,10 @@ This repository hosts a Modbus Master library implemented in C++ for Embarcadero
 
 - `Modbus.h`: core types, exceptions, `Context` and `Master::Protocol` interface.
 - `ModbusRTU.*`: implementation of Modbus RTU over serial (`CommPort` helper, CRC, frame format).
-- `ModbusTCP_IP.*`: Modbus TCP/BMAP frame layer with validation and parsing.
-- `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`: Indy-based TCP/UDP transport classes.
-- `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`: WinSock2-based TCP/UDP transport classes.
+- `ModbusTCP_IP.*`: shared Modbus TCP/MBAP framing and validation layer.
+- `ModbusTCP.*`, `ModbusUDP.*`: marker base classes for TCP and UDP transports.
+- `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`: Indy concrete classes (`TCPProtocolIndy`, `UDPProtocolIndy`).
+- `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`: WinSock concrete classes (`TCPProtocolWinSock`, `UDPProtocolWinSock`).
 - `ModbusDummy.*`: no-op implementation for testing.
 - `CommPort.*`: serial control layer for RTU.
 - `SerEnum.*`: serial port enumeration utilities.
@@ -58,8 +59,9 @@ Abstract base class exposing:
 ### Modbus TCP/IP
 
 - `Modbus::Master::TCPIPProtocol` MBAP framing layer
-- `Modbus::Master::TCPProtocolIndy` / `Modbus::Master::TCPProtocolWinSock` (TCP)
-- `Modbus::Master::UDPProtocolIndy` / `Modbus::Master::UDPProtocolWinSock` (UDP)
+- Marker base classes: `Modbus::Master::TCPProtocol` and `Modbus::Master::UDPProtocol`
+- Indy concrete classes: `Modbus::Master::TCPProtocolIndy` (TCP), `Modbus::Master::UDPProtocolIndy` (UDP)
+- WinSock concrete classes: `Modbus::Master::TCPProtocolWinSock` (TCP), `Modbus::Master::UDPProtocolWinSock` (UDP)
 - Defaults: host `localhost`, port `502`.
 
 ### Dummy Protocol
