@@ -145,20 +145,20 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a7f0c37b2ce7643ddf75f0ef0e93b5a8a" id="r_a7f0c37b2ce7643ddf75f0ef0e93b5a8a"><td class="memItemLeft">virtual String&#160;</td><td class="memItemRight"><a class="el" href="#a7f0c37b2ce7643ddf75f0ef0e93b5a8a">DoGetProtocolName</a> () const override</td></tr>
 <tr class="memitem:a7c7abc6a2d6e163abf43cbcc87946163" id="r_a7c7abc6a2d6e163abf43cbcc87946163"><td class="memItemLeft">virtual String&#160;</td><td class="memItemRight"><a class="el" href="#a7c7abc6a2d6e163abf43cbcc87946163">DoGetProtocolParamsStr</a> () const override</td></tr>
-<tr class="memitem:aa0c194b306a74d296312198820fc5110" id="r_aa0c194b306a74d296312198820fc5110"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa0c194b306a74d296312198820fc5110">DoOpen</a> () override</td></tr>
-<tr class="memdesc:aa0c194b306a74d296312198820fc5110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for opening the communication channel (NVI implementation hook).  <br /></td></tr>
-<tr class="memitem:a188a0ea3a512d932d0f2fa0f9b794780" id="r_a188a0ea3a512d932d0f2fa0f9b794780"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780">DoClose</a> () override</td></tr>
-<tr class="memdesc:a188a0ea3a512d932d0f2fa0f9b794780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for closing the communication channel (NVI implementation hook).  <br /></td></tr>
-<tr class="memitem:ab965543615bc70413c83736bd0a149eb" id="r_ab965543615bc70413c83736bd0a149eb"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ab965543615bc70413c83736bd0a149eb">DoIsConnected</a> () const override</td></tr>
-<tr class="memdesc:ab965543615bc70413c83736bd0a149eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
-<tr class="memitem:a1d67652fc8cb1f2cb4e6575e858da586" id="r_a1d67652fc8cb1f2cb4e6575e858da586"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a1d67652fc8cb1f2cb4e6575e858da586">DoReadCoilStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data) override</td></tr>
-<tr class="memdesc:a1d67652fc8cb1f2cb4e6575e858da586"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for reading holding registers (FC03).  <br /></td></tr>
-<tr class="memitem:a828284a17f417193023c5fef0f0671bc" id="r_a828284a17f417193023c5fef0f0671bc"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a828284a17f417193023c5fef0f0671bc">DoReadInputStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data) override</td></tr>
-<tr class="memitem:a04bfd932d119919a0d904f2ab4942ff2" id="r_a04bfd932d119919a0d904f2ab4942ff2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a04bfd932d119919a0d904f2ab4942ff2">DoReadHoldingRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
-<tr class="memitem:a79ed2ac0006d4816bd60e25722f25cc9" id="r_a79ed2ac0006d4816bd60e25722f25cc9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a79ed2ac0006d4816bd60e25722f25cc9">DoReadInputRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
-<tr class="memitem:afac53c5c0846487ac53451d63388695d" id="r_afac53c5c0846487ac53451d63388695d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#afac53c5c0846487ac53451d63388695d">DoPresetSingleRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> Data) override</td></tr>
-<tr class="memitem:acb053d205a1f50aa2639916e3702569c" id="r_acb053d205a1f50aa2639916e3702569c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#acb053d205a1f50aa2639916e3702569c">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
-<tr class="memitem:a99cd9d421d9f7f48c1eedfca7e7fae5c" id="r_a99cd9d421d9f7f48c1eedfca7e7fae5c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a99cd9d421d9f7f48c1eedfca7e7fae5c">DoMaskWrite4XRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> AndMask, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> OrMask) override</td></tr>
+<tr class="memitem:a108ab34d38ea8cd8e9207f28b3436bf9" id="r_a108ab34d38ea8cd8e9207f28b3436bf9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a108ab34d38ea8cd8e9207f28b3436bf9">DoOpen</a> () noexcept override</td></tr>
+<tr class="memdesc:a108ab34d38ea8cd8e9207f28b3436bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for opening the communication channel (NVI implementation hook).  <br /></td></tr>
+<tr class="memitem:a2e731075adfc63897087952f7a851e2d" id="r_a2e731075adfc63897087952f7a851e2d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a2e731075adfc63897087952f7a851e2d">DoClose</a> () noexcept override</td></tr>
+<tr class="memdesc:a2e731075adfc63897087952f7a851e2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for closing the communication channel (NVI implementation hook).  <br /></td></tr>
+<tr class="memitem:a8059283bd51ba446ddcd062fda7ed67f" id="r_a8059283bd51ba446ddcd062fda7ed67f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a8059283bd51ba446ddcd062fda7ed67f">DoIsConnected</a> () const noexcept override</td></tr>
+<tr class="memdesc:a8059283bd51ba446ddcd062fda7ed67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
+<tr class="memitem:a68003e5fdaf0b7ff711bf5ae4801983b" id="r_a68003e5fdaf0b7ff711bf5ae4801983b"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a68003e5fdaf0b7ff711bf5ae4801983b">DoReadCoilStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data) noexcept override</td></tr>
+<tr class="memdesc:a68003e5fdaf0b7ff711bf5ae4801983b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for reading holding registers (FC03).  <br /></td></tr>
+<tr class="memitem:a9cf996f7e75b63e05215f316b43bf316" id="r_a9cf996f7e75b63e05215f316b43bf316"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a9cf996f7e75b63e05215f316b43bf316">DoReadInputStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data) noexcept override</td></tr>
+<tr class="memitem:aeb1c978d139f63f2120bf6db25d52859" id="r_aeb1c978d139f63f2120bf6db25d52859"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aeb1c978d139f63f2120bf6db25d52859">DoReadHoldingRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) noexcept override</td></tr>
+<tr class="memitem:a278cc17ffd8760e5bf3c6667a8320ae0" id="r_a278cc17ffd8760e5bf3c6667a8320ae0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a278cc17ffd8760e5bf3c6667a8320ae0">DoReadInputRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) noexcept override</td></tr>
+<tr class="memitem:a0e8d9bd1901f0773ff719b3d2c042f5d" id="r_a0e8d9bd1901f0773ff719b3d2c042f5d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a0e8d9bd1901f0773ff719b3d2c042f5d">DoPresetSingleRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> Data) noexcept override</td></tr>
+<tr class="memitem:afc3bc091d0d60921450b828ad6e5e792" id="r_afc3bc091d0d60921450b828ad6e5e792"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afc3bc091d0d60921450b828ad6e5e792">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) noexcept override</td></tr>
+<tr class="memitem:a8f5313b6cb9dcb3f01f2e8f157a7d5fc" id="r_a8f5313b6cb9dcb3f01f2e8f157a7d5fc"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a8f5313b6cb9dcb3f01f2e8f157a7d5fc">DoMaskWrite4XRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> AndMask, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> OrMask) noexcept override</td></tr>
 <tr class="inherit_header pro_methods_class_modbus_1_1_master_1_1_protocol"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_modbus_1_1_master_1_1_protocol')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="class_modbus_1_1_master_1_1_protocol.html">Modbus::Master::Protocol</a></td></tr>
 <tr class="memitem:aee74d5b3e3583918e151cdcd58c0fbb0 inherit pro_methods_class_modbus_1_1_master_1_1_protocol" id="r_aee74d5b3e3583918e151cdcd58c0fbb0"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aee74d5b3e3583918e151cdcd58c0fbb0">RaiseExceptionIfIsConnected</a> (String SubMsg) const</td></tr>
 <tr class="memitem:aa6291d3f7e9cbf30dd0b77e0b3d8ae0f inherit pro_methods_class_modbus_1_1_master_1_1_protocol" id="r_aa6291d3f7e9cbf30dd0b77e0b3d8ae0f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aa6291d3f7e9cbf30dd0b77e0b3d8ae0f">RaiseExceptionIfIsNotConnected</a> (String SubMsg) const</td></tr>
@@ -173,9 +173,9 @@ Protected Member Functions</h2></td></tr>
 <li>DoPresetSingleRegister / DoPresetMultipleRegisters / DoMaskWrite4XRegister: discarded.</li>
 </ul>
 </li>
-<li><a class="el" href="#aa0c194b306a74d296312198820fc5110" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a> sets the internal connected flag to <code>true</code>.</li>
-<li><a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a> sets the internal connected flag to <code>false</code>.</li>
-<li><a class="el" href="#ab965543615bc70413c83736bd0a149eb" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a> returns the current flag state.</li>
+<li><a class="el" href="#a108ab34d38ea8cd8e9207f28b3436bf9" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a> sets the internal connected flag to <code>true</code>.</li>
+<li><a class="el" href="#a2e731075adfc63897087952f7a851e2d" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a> sets the internal connected flag to <code>false</code>.</li>
+<li><a class="el" href="#a8059283bd51ba446ddcd062fda7ed67f" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a> returns the current flag state.</li>
 </ul>
 <p>Use case: Exercise <a class="el" href="namespace_modbus.html">Modbus</a> master business logic in unit tests without requiring physical hardware, a live network, or a <a class="el" href="namespace_modbus.html">Modbus</a> slave.</p>
 <dl class="section note"><dt>Note</dt><dd>No exceptions are ever thrown by <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html" title="No-op Modbus master protocol stub for unit testing without hardware.">DummyProtocol</a>. </dd></dl>
@@ -208,8 +208,8 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a188a0ea3a512d932d0f2fa0f9b794780" name="a188a0ea3a512d932d0f2fa0f9b794780"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a188a0ea3a512d932d0f2fa0f9b794780">&#9670;&#160;</a></span>DoClose()</h2>
+<a id="a2e731075adfc63897087952f7a851e2d" name="a2e731075adfc63897087952f7a851e2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e731075adfc63897087952f7a851e2d">&#9670;&#160;</a></span>DoClose()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -226,13 +226,13 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Pure virtual hook for closing the communication channel (NVI implementation hook). </p>
-<p>Subclasses override this to provide transport-specific close logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a> method calls this; subclasses must implement <a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a>. This should cleanly release all transport resources. </p>
+<p>Subclasses override this to provide transport-specific close logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a> method calls this; subclasses must implement <a class="el" href="#a2e731075adfc63897087952f7a851e2d" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a>. This should cleanly release all transport resources. </p>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a71857c504ce9a0b3c81168ed248a0210">Modbus::Master::Protocol</a>.</p>
 
@@ -292,8 +292,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab965543615bc70413c83736bd0a149eb" name="ab965543615bc70413c83736bd0a149eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab965543615bc70413c83736bd0a149eb">&#9670;&#160;</a></span>DoIsConnected()</h2>
+<a id="a8059283bd51ba446ddcd062fda7ed67f" name="a8059283bd51ba446ddcd062fda7ed67f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8059283bd51ba446ddcd062fda7ed67f">&#9670;&#160;</a></span>DoIsConnected()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -310,21 +310,21 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Pure virtual hook for checking connection state (NVI implementation hook). </p>
-<p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#ab965543615bc70413c83736bd0a149eb" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
+<p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#a8059283bd51ba446ddcd062fda7ed67f" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if the channel is open/connected; false otherwise. </dd></dl>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aec70ce324d4e598f40eaf573bcab43ea">Modbus::Master::Protocol</a>.</p>
 
 </div>
 </div>
-<a id="a99cd9d421d9f7f48c1eedfca7e7fae5c" name="a99cd9d421d9f7f48c1eedfca7e7fae5c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99cd9d421d9f7f48c1eedfca7e7fae5c">&#9670;&#160;</a></span>DoMaskWrite4XRegister()</h2>
+<a id="a8f5313b6cb9dcb3f01f2e8f157a7d5fc" name="a8f5313b6cb9dcb3f01f2e8f157a7d5fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5313b6cb9dcb3f01f2e8f157a7d5fc">&#9670;&#160;</a></span>DoMaskWrite4XRegister()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -355,7 +355,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -364,8 +364,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa0c194b306a74d296312198820fc5110" name="aa0c194b306a74d296312198820fc5110"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0c194b306a74d296312198820fc5110">&#9670;&#160;</a></span>DoOpen()</h2>
+<a id="a108ab34d38ea8cd8e9207f28b3436bf9" name="a108ab34d38ea8cd8e9207f28b3436bf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a108ab34d38ea8cd8e9207f28b3436bf9">&#9670;&#160;</a></span>DoOpen()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -382,13 +382,13 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Pure virtual hook for opening the communication channel (NVI implementation hook). </p>
-<p>Subclasses override this to provide transport-specific open logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a> method calls this; subclasses must implement <a class="el" href="#aa0c194b306a74d296312198820fc5110" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a>. Only implement connection logic here; validation and retry logic are handled by the public interface.</p>
+<p>Subclasses override this to provide transport-specific open logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a> method calls this; subclasses must implement <a class="el" href="#a108ab34d38ea8cd8e9207f28b3436bf9" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a>. Only implement connection logic here; validation and retry logic are handled by the public interface.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on failure to open the channel. </td></tr>
@@ -400,8 +400,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="acb053d205a1f50aa2639916e3702569c" name="acb053d205a1f50aa2639916e3702569c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb053d205a1f50aa2639916e3702569c">&#9670;&#160;</a></span>DoPresetMultipleRegisters()</h2>
+<a id="afc3bc091d0d60921450b828ad6e5e792" name="afc3bc091d0d60921450b828ad6e5e792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc3bc091d0d60921450b828ad6e5e792">&#9670;&#160;</a></span>DoPresetMultipleRegisters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -432,7 +432,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -441,8 +441,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="afac53c5c0846487ac53451d63388695d" name="afac53c5c0846487ac53451d63388695d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afac53c5c0846487ac53451d63388695d">&#9670;&#160;</a></span>DoPresetSingleRegister()</h2>
+<a id="a0e8d9bd1901f0773ff719b3d2c042f5d" name="a0e8d9bd1901f0773ff719b3d2c042f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e8d9bd1901f0773ff719b3d2c042f5d">&#9670;&#160;</a></span>DoPresetSingleRegister()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -468,7 +468,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -477,8 +477,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1d67652fc8cb1f2cb4e6575e858da586" name="a1d67652fc8cb1f2cb4e6575e858da586"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d67652fc8cb1f2cb4e6575e858da586">&#9670;&#160;</a></span>DoReadCoilStatus()</h2>
+<a id="a68003e5fdaf0b7ff711bf5ae4801983b" name="a68003e5fdaf0b7ff711bf5ae4801983b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68003e5fdaf0b7ff711bf5ae4801983b">&#9670;&#160;</a></span>DoReadCoilStatus()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -509,7 +509,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -527,8 +527,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a04bfd932d119919a0d904f2ab4942ff2" name="a04bfd932d119919a0d904f2ab4942ff2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04bfd932d119919a0d904f2ab4942ff2">&#9670;&#160;</a></span>DoReadHoldingRegisters()</h2>
+<a id="aeb1c978d139f63f2120bf6db25d52859" name="aeb1c978d139f63f2120bf6db25d52859"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb1c978d139f63f2120bf6db25d52859">&#9670;&#160;</a></span>DoReadHoldingRegisters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -559,7 +559,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -568,8 +568,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a79ed2ac0006d4816bd60e25722f25cc9" name="a79ed2ac0006d4816bd60e25722f25cc9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a79ed2ac0006d4816bd60e25722f25cc9">&#9670;&#160;</a></span>DoReadInputRegisters()</h2>
+<a id="a278cc17ffd8760e5bf3c6667a8320ae0" name="a278cc17ffd8760e5bf3c6667a8320ae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278cc17ffd8760e5bf3c6667a8320ae0">&#9670;&#160;</a></span>DoReadInputRegisters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -600,7 +600,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -609,8 +609,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a828284a17f417193023c5fef0f0671bc" name="a828284a17f417193023c5fef0f0671bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a828284a17f417193023c5fef0f0671bc">&#9670;&#160;</a></span>DoReadInputStatus()</h2>
+<a id="a9cf996f7e75b63e05215f316b43bf316" name="a9cf996f7e75b63e05215f316b43bf316"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf996f7e75b63e05215f316b43bf316">&#9670;&#160;</a></span>DoReadInputStatus()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -641,7 +641,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

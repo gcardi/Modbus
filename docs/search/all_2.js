@@ -4,7 +4,7 @@ var searchData=
   ['clearcommerror_1',['CLEARCOMMERROR',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86aae3095df84d64329082d49dfbb2d7c422',1,'ECommError']]],
   ['close_2',['Close',['../class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472',1,'Modbus::Master::Protocol']]],
   ['close_5ferror_3',['CLOSE_ERROR',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86aa85cc80aafad797774419498fa1a2d472',1,'ECommError']]],
-  ['closecommport_4',['CloseCommPort',['../class_t_comm_port.html#a1c458fd9537dd0358c1dd59b56a300a7',1,'TCommPort']]],
+  ['closecommport_4',['CloseCommPort',['../class_t_comm_port.html#af12193952646db08d04d8290a2bbd92e',1,'TCommPort']]],
   ['coiladdrtype_5',['CoilAddrType',['../namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98',1,'Modbus']]],
   ['coilcounttype_6',['CoilCountType',['../namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e',1,'Modbus']]],
   ['coildatatype_7',['CoilDataType',['../namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd',1,'Modbus']]],

@@ -272,7 +272,7 @@ Protected Member Functions</h2></td></tr>
 <p>Pure virtual hook for closing the communication channel (NVI implementation hook). </p>
 <p>Subclasses override this to provide transport-specific close logic. The public non-virtual <a class="el" href="#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a> method calls this; subclasses must implement <a class="el" href="#a71857c504ce9a0b3c81168ed248a0210" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a>, not override <a class="el" href="#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a>. This should cleanly release all transport resources. </p>
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a188a0ea3a512d932d0f2fa0f9b794780">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae865258269ea0e45d7fda6beff2f7863">Modbus::Master::RTUProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#a0c773b16849d878ce14786058bd54a4c">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a468ae69f61bb714e39684490dae1659b">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#acbeb4f9e342231ce79c907500adb0b11">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a4839b313271fe4f75ecb7d79902c525d">Modbus::Master::UDPProtocolWinSock</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a2e731075adfc63897087952f7a851e2d">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae865258269ea0e45d7fda6beff2f7863">Modbus::Master::RTUProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#a0c773b16849d878ce14786058bd54a4c">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a468ae69f61bb714e39684490dae1659b">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#acbeb4f9e342231ce79c907500adb0b11">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a4839b313271fe4f75ecb7d79902c525d">Modbus::Master::UDPProtocolWinSock</a>.</p>
 
 </div>
 </div>
@@ -357,7 +357,7 @@ Protected Member Functions</h2></td></tr>
 <p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#aec70ce324d4e598f40eaf573bcab43ea" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if the channel is open/connected; false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#ab965543615bc70413c83736bd0a149eb">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ad89da45979c553cff2c39b6f2a0a8f24">Modbus::Master::RTUProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#a3367265f3a33b777daf6287c2ec7cac3">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a473944a3d83d228eabdd17f92de946b3">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#a2fbf2e4f32f7a9213f175483c70d360c">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a67fb065d1d43c2238dcb96bb6c53c9de">Modbus::Master::UDPProtocolWinSock</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a8059283bd51ba446ddcd062fda7ed67f">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a082c01028821e610f293b816c996ff12">Modbus::Master::RTUProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#a55c5c1c80c7293cddf89d4d96ea15ec5">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a6ebf6b3d6001ad90eee0181fa72a14ae">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#a2da0cf6b33064944179be1049e79b124">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#aaf706541e013b1cda16e3efd4c432ee3">Modbus::Master::UDPProtocolWinSock</a>.</p>
 
 </div>
 </div>
@@ -398,7 +398,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a99cd9d421d9f7f48c1eedfca7e7fae5c">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a9118c3eab66331d410c0acd2587c14a3">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#af264c4886dc00df7b57a395dd74c60df">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a8f5313b6cb9dcb3f01f2e8f157a7d5fc">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a9118c3eab66331d410c0acd2587c14a3">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#af264c4886dc00df7b57a395dd74c60df">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -434,7 +434,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#aa0c194b306a74d296312198820fc5110">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#aa18582b43c176864ce62d090853d4774">Modbus::Master::RTUProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#acfc584e93924df990385f7617fcbd51a">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a470c36c50bd94d8181801d776465769a">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#a86cbf1c6c7d507053ebbafc6eac0383e">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a4d4b882d1e18d385b31ec67688116b06">Modbus::Master::UDPProtocolWinSock</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a108ab34d38ea8cd8e9207f28b3436bf9">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#aa18582b43c176864ce62d090853d4774">Modbus::Master::RTUProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#acfc584e93924df990385f7617fcbd51a">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a470c36c50bd94d8181801d776465769a">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#a86cbf1c6c7d507053ebbafc6eac0383e">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a4d4b882d1e18d385b31ec67688116b06">Modbus::Master::UDPProtocolWinSock</a>.</p>
 
 </div>
 </div>
@@ -475,7 +475,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#acb053d205a1f50aa2639916e3702569c">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ac285f7c1572760c04900e069190c8b22">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a1fc2c145fe0d59a9ac80322476291cfb">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#afc3bc091d0d60921450b828ad6e5e792">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ac285f7c1572760c04900e069190c8b22">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a1fc2c145fe0d59a9ac80322476291cfb">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -511,7 +511,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#afac53c5c0846487ac53451d63388695d">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a5f7332d554d60676c8b9b3a9472a5fb3">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#ace80ae81cb83a8e31b102f39e21dfec6">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a0e8d9bd1901f0773ff719b3d2c042f5d">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a5f7332d554d60676c8b9b3a9472a5fb3">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#ace80ae81cb83a8e31b102f39e21dfec6">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -561,7 +561,7 @@ Protected Member Functions</h2></td></tr>
 <li>Extract the register values and populate the Data buffer. </li>
 </ol>
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a1d67652fc8cb1f2cb4e6575e858da586">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a442d2c132d30be73f2ce4e0c4b5babfc">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#aa468fe59bb50034ce7f8afc1ed972be9">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a68003e5fdaf0b7ff711bf5ae4801983b">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a442d2c132d30be73f2ce4e0c4b5babfc">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#aa468fe59bb50034ce7f8afc1ed972be9">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -602,7 +602,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a04bfd932d119919a0d904f2ab4942ff2">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a2d3d41657e027d5e60901b260417cac8">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a5739096364adebf7cb99c40682549222">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#aeb1c978d139f63f2120bf6db25d52859">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a2d3d41657e027d5e60901b260417cac8">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a5739096364adebf7cb99c40682549222">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -643,7 +643,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a79ed2ac0006d4816bd60e25722f25cc9">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a0a36fc6f8f2fd06ff23a6baa28eb170c">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a8a69a4b8b64d44faf6c6efcee751cd7f">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a278cc17ffd8760e5bf3c6667a8320ae0">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a0a36fc6f8f2fd06ff23a6baa28eb170c">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a8a69a4b8b64d44faf6c6efcee751cd7f">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -684,7 +684,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a828284a17f417193023c5fef0f0671bc">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae24fa32f2844b84a506f68a65374165d">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a69cc9da467509a2d1225eb0ad7a27de6">Modbus::Master::TCPIPProtocol</a>.</p>
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a9cf996f7e75b63e05215f316b43bf316">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae24fa32f2844b84a506f68a65374165d">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a69cc9da467509a2d1225eb0ad7a27de6">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -706,7 +706,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -733,7 +733,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -760,7 +760,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

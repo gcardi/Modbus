@@ -112,22 +112,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6dd57711c04d12ecb45e75cb6f2e8d28" id="r_a6dd57711c04d12ecb45e75cb6f2e8d28"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6dd57711c04d12ecb45e75cb6f2e8d28">Context</a> (<a class="el" href="#aa0cdb0cbaf68e5e9b072de1cbc20b204">SlaveAddrType</a> SlaveAddr)</td></tr>
 <tr class="memdesc:a6dd57711c04d12ecb45e75cb6f2e8d28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="class_modbus_1_1_context.html" title="Identifies the target of a Modbus transaction.">Context</a> with the given slave address.  <br /></td></tr>
 <tr class="memitem:a14d7b190ad2a83e7ccec849b2ff1f084" id="r_a14d7b190ad2a83e7ccec849b2ff1f084"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a14d7b190ad2a83e7ccec849b2ff1f084">~Context</a> ()=default</td></tr>
-<tr class="memitem:a357e33294d06a4c198967d8422d39f26" id="r_a357e33294d06a4c198967d8422d39f26"><td class="memItemLeft"><a class="el" href="#aa0cdb0cbaf68e5e9b072de1cbc20b204">SlaveAddrType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a357e33294d06a4c198967d8422d39f26">GetSlaveAddr</a> () const</td></tr>
-<tr class="memdesc:a357e33294d06a4c198967d8422d39f26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the slave (unit) address.  <br /></td></tr>
-<tr class="memitem:a1b8d9c4e4e0c61f0a1c5265eaa4b7600" id="r_a1b8d9c4e4e0c61f0a1c5265eaa4b7600"><td class="memItemLeft"><a class="el" href="#a0708adb08d68bb7441833aee17b6ba99">TransactionIdType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1b8d9c4e4e0c61f0a1c5265eaa4b7600">GetTransactionIdentifier</a> () const</td></tr>
-<tr class="memdesc:a1b8d9c4e4e0c61f0a1c5265eaa4b7600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP).  <br /></td></tr>
+<tr class="memitem:a5d899fcaec4a137ac74d053332f8104c" id="r_a5d899fcaec4a137ac74d053332f8104c"><td class="memItemLeft"><a class="el" href="#aa0cdb0cbaf68e5e9b072de1cbc20b204">SlaveAddrType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5d899fcaec4a137ac74d053332f8104c">GetSlaveAddr</a> () const noexcept</td></tr>
+<tr class="memdesc:a5d899fcaec4a137ac74d053332f8104c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the slave (unit) address.  <br /></td></tr>
+<tr class="memitem:a6076e97cddc50787ccd126b5125031a2" id="r_a6076e97cddc50787ccd126b5125031a2"><td class="memItemLeft"><a class="el" href="#a0708adb08d68bb7441833aee17b6ba99">TransactionIdType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6076e97cddc50787ccd126b5125031a2">GetTransactionIdentifier</a> () const noexcept</td></tr>
+<tr class="memdesc:a6076e97cddc50787ccd126b5125031a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP).  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a73f30898e9d579d60eb411e784d7a68d" id="r_a73f30898e9d579d60eb411e784d7a68d"><td class="memItemLeft">virtual <a class="el" href="#aa0cdb0cbaf68e5e9b072de1cbc20b204">SlaveAddrType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a73f30898e9d579d60eb411e784d7a68d">DoGetSlaveAddr</a> () const</td></tr>
-<tr class="memdesc:a73f30898e9d579d60eb411e784d7a68d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual implementation hook for <a class="el" href="#a357e33294d06a4c198967d8422d39f26" title="Returns the slave (unit) address.">GetSlaveAddr()</a>.  <br /></td></tr>
-<tr class="memitem:a82d94118d7e74134190a3e51302b77ca" id="r_a82d94118d7e74134190a3e51302b77ca"><td class="memItemLeft">virtual <a class="el" href="#a0708adb08d68bb7441833aee17b6ba99">TransactionIdType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a82d94118d7e74134190a3e51302b77ca">DoGetTransactionIdentifier</a> () const</td></tr>
-<tr class="memdesc:a82d94118d7e74134190a3e51302b77ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual implementation hook for <a class="el" href="#a1b8d9c4e4e0c61f0a1c5265eaa4b7600" title="Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP).">GetTransactionIdentifier()</a>. Returns 0 by default.  <br /></td></tr>
+<tr class="memitem:a039a7e3dc47fff301743105e93cefaff" id="r_a039a7e3dc47fff301743105e93cefaff"><td class="memItemLeft">virtual <a class="el" href="#aa0cdb0cbaf68e5e9b072de1cbc20b204">SlaveAddrType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a039a7e3dc47fff301743105e93cefaff">DoGetSlaveAddr</a> () const noexcept</td></tr>
+<tr class="memdesc:a039a7e3dc47fff301743105e93cefaff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual implementation hook for <a class="el" href="#a5d899fcaec4a137ac74d053332f8104c" title="Returns the slave (unit) address.">GetSlaveAddr()</a>.  <br /></td></tr>
+<tr class="memitem:a520f9cb80d2b56f536f7285ffa55c45a" id="r_a520f9cb80d2b56f536f7285ffa55c45a"><td class="memItemLeft">virtual <a class="el" href="#a0708adb08d68bb7441833aee17b6ba99">TransactionIdType</a>&#160;</td><td class="memItemRight"><a class="el" href="#a520f9cb80d2b56f536f7285ffa55c45a">DoGetTransactionIdentifier</a> () const noexcept</td></tr>
+<tr class="memdesc:a520f9cb80d2b56f536f7285ffa55c45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual implementation hook for <a class="el" href="#a6076e97cddc50787ccd126b5125031a2" title="Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP).">GetTransactionIdentifier()</a>. Returns 0 by default.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Identifies the target of a <a class="el" href="namespace_modbus.html">Modbus</a> transaction. </p>
 <p>A <a class="el" href="class_modbus_1_1_context.html" title="Identifies the target of a Modbus transaction.">Context</a> carries at minimum the slave address (unit identifier). Subclasses such as <a class="el" href="class_modbus_1_1_t_c_p_i_p_context.html" title="Modbus context extended with an explicit MBAP transaction identifier.">TCPIPContext</a> also carry a MBAP transaction identifier used when matching TCP/UDP responses to their originating requests.</p>
-<p>The base implementation returns a zero transaction identifier; override <a class="el" href="#a82d94118d7e74134190a3e51302b77ca" title="Virtual implementation hook for GetTransactionIdentifier(). Returns 0 by default.">DoGetTransactionIdentifier()</a> in a subclass when the transport needs it. </p>
+<p>The base implementation returns a zero transaction identifier; override <a class="el" href="#a520f9cb80d2b56f536f7285ffa55c45a" title="Virtual implementation hook for GetTransactionIdentifier(). Returns 0 by default.">DoGetTransactionIdentifier()</a> in a subclass when the transport needs it. </p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
 <a id="aa0cdb0cbaf68e5e9b072de1cbc20b204" name="aa0cdb0cbaf68e5e9b072de1cbc20b204"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0cdb0cbaf68e5e9b072de1cbc20b204">&#9670;&#160;</a></span>SlaveAddrType</h2>
@@ -221,8 +221,8 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a73f30898e9d579d60eb411e784d7a68d" name="a73f30898e9d579d60eb411e784d7a68d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73f30898e9d579d60eb411e784d7a68d">&#9670;&#160;</a></span>DoGetSlaveAddr()</h2>
+<a id="a039a7e3dc47fff301743105e93cefaff" name="a039a7e3dc47fff301743105e93cefaff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a039a7e3dc47fff301743105e93cefaff">&#9670;&#160;</a></span>DoGetSlaveAddr()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -239,17 +239,17 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Virtual implementation hook for <a class="el" href="#a357e33294d06a4c198967d8422d39f26" title="Returns the slave (unit) address.">GetSlaveAddr()</a>. </p>
+<p>Virtual implementation hook for <a class="el" href="#a5d899fcaec4a137ac74d053332f8104c" title="Returns the slave (unit) address.">GetSlaveAddr()</a>. </p>
 
 </div>
 </div>
-<a id="a82d94118d7e74134190a3e51302b77ca" name="a82d94118d7e74134190a3e51302b77ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82d94118d7e74134190a3e51302b77ca">&#9670;&#160;</a></span>DoGetTransactionIdentifier()</h2>
+<a id="a520f9cb80d2b56f536f7285ffa55c45a" name="a520f9cb80d2b56f536f7285ffa55c45a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a520f9cb80d2b56f536f7285ffa55c45a">&#9670;&#160;</a></span>DoGetTransactionIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -266,19 +266,19 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Virtual implementation hook for <a class="el" href="#a1b8d9c4e4e0c61f0a1c5265eaa4b7600" title="Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP).">GetTransactionIdentifier()</a>. Returns 0 by default. </p>
+<p>Virtual implementation hook for <a class="el" href="#a6076e97cddc50787ccd126b5125031a2" title="Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP).">GetTransactionIdentifier()</a>. Returns 0 by default. </p>
 
-<p>Reimplemented in <a class="el" href="class_modbus_1_1_t_c_p_i_p_context.html#a553814213c18d2a58f21f4889b6366b1">Modbus::TCPIPContext</a>.</p>
+<p>Reimplemented in <a class="el" href="class_modbus_1_1_t_c_p_i_p_context.html#a141c603331c83ac3a313cfd999b67262">Modbus::TCPIPContext</a>.</p>
 
 </div>
 </div>
-<a id="a357e33294d06a4c198967d8422d39f26" name="a357e33294d06a4c198967d8422d39f26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a357e33294d06a4c198967d8422d39f26">&#9670;&#160;</a></span>GetSlaveAddr()</h2>
+<a id="a5d899fcaec4a137ac74d053332f8104c" name="a5d899fcaec4a137ac74d053332f8104c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d899fcaec4a137ac74d053332f8104c">&#9670;&#160;</a></span>GetSlaveAddr()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -295,7 +295,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -304,8 +304,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1b8d9c4e4e0c61f0a1c5265eaa4b7600" name="a1b8d9c4e4e0c61f0a1c5265eaa4b7600"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b8d9c4e4e0c61f0a1c5265eaa4b7600">&#9670;&#160;</a></span>GetTransactionIdentifier()</h2>
+<a id="a6076e97cddc50787ccd126b5125031a2" name="a6076e97cddc50787ccd126b5125031a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6076e97cddc50787ccd126b5125031a2">&#9670;&#160;</a></span>GetTransactionIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -322,7 +322,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

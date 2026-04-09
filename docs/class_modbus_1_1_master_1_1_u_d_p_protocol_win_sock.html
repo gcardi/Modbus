@@ -167,16 +167,16 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a3ea2eff68e73876f5848207e453d808d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current server hostname (implemented by concrete subclass).  <br /></td></tr>
 <tr class="memitem:a103caebb4c051c0edf673b2af8919479" id="r_a103caebb4c051c0edf673b2af8919479"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a103caebb4c051c0edf673b2af8919479">DoSetHost</a> (String Val) override</td></tr>
 <tr class="memdesc:a103caebb4c051c0edf673b2af8919479"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the server hostname (implemented by concrete subclass).  <br /></td></tr>
-<tr class="memitem:aadcf27e6e8fafe0f13f244b22d529a55" id="r_aadcf27e6e8fafe0f13f244b22d529a55"><td class="memItemLeft">virtual uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#aadcf27e6e8fafe0f13f244b22d529a55">DoGetPort</a> () const override</td></tr>
-<tr class="memdesc:aadcf27e6e8fafe0f13f244b22d529a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current server port (implemented by concrete subclass).  <br /></td></tr>
+<tr class="memitem:a733182397715c9d6e72b3da6bd1db46e" id="r_a733182397715c9d6e72b3da6bd1db46e"><td class="memItemLeft">virtual uint16_t&#160;</td><td class="memItemRight"><a class="el" href="#a733182397715c9d6e72b3da6bd1db46e">DoGetPort</a> () const noexcept override</td></tr>
+<tr class="memdesc:a733182397715c9d6e72b3da6bd1db46e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current server port (implemented by concrete subclass).  <br /></td></tr>
 <tr class="memitem:a027daa093b2b4ce3c0395a10e4cbe368" id="r_a027daa093b2b4ce3c0395a10e4cbe368"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a027daa093b2b4ce3c0395a10e4cbe368">DoSetPort</a> (uint16_t Val) override</td></tr>
 <tr class="memdesc:a027daa093b2b4ce3c0395a10e4cbe368"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the server port (implemented by concrete subclass).  <br /></td></tr>
 <tr class="memitem:a4d4b882d1e18d385b31ec67688116b06" id="r_a4d4b882d1e18d385b31ec67688116b06"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a4d4b882d1e18d385b31ec67688116b06">DoOpen</a> () override</td></tr>
 <tr class="memdesc:a4d4b882d1e18d385b31ec67688116b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for opening the communication channel (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:a4839b313271fe4f75ecb7d79902c525d" id="r_a4839b313271fe4f75ecb7d79902c525d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a4839b313271fe4f75ecb7d79902c525d">DoClose</a> () override</td></tr>
 <tr class="memdesc:a4839b313271fe4f75ecb7d79902c525d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for closing the communication channel (NVI implementation hook).  <br /></td></tr>
-<tr class="memitem:a67fb065d1d43c2238dcb96bb6c53c9de" id="r_a67fb065d1d43c2238dcb96bb6c53c9de"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a67fb065d1d43c2238dcb96bb6c53c9de">DoIsConnected</a> () const override</td></tr>
-<tr class="memdesc:a67fb065d1d43c2238dcb96bb6c53c9de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
+<tr class="memitem:aaf706541e013b1cda16e3efd4c432ee3" id="r_aaf706541e013b1cda16e3efd4c432ee3"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#aaf706541e013b1cda16e3efd4c432ee3">DoIsConnected</a> () const noexcept override</td></tr>
+<tr class="memdesc:aaf706541e013b1cda16e3efd4c432ee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:a835a1a136f56f6980cc4d0905f63d3a4" id="r_a835a1a136f56f6980cc4d0905f63d3a4"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a835a1a136f56f6980cc4d0905f63d3a4">DoInputBufferClear</a> () override</td></tr>
 <tr class="memdesc:a835a1a136f56f6980cc4d0905f63d3a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the receive-side input buffer (optional; no-op by default).  <br /></td></tr>
 <tr class="memitem:a1236cc185a912bd9d94cf4d1d214a3f1" id="r_a1236cc185a912bd9d94cf4d1d214a3f1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a1236cc185a912bd9d94cf4d1d214a3f1">DoWrite</a> (TBytes const OutBuffer) override</td></tr>
@@ -345,8 +345,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="aadcf27e6e8fafe0f13f244b22d529a55" name="aadcf27e6e8fafe0f13f244b22d529a55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadcf27e6e8fafe0f13f244b22d529a55">&#9670;&#160;</a></span>DoGetPort()</h2>
+<a id="a733182397715c9d6e72b3da6bd1db46e" name="a733182397715c9d6e72b3da6bd1db46e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a733182397715c9d6e72b3da6bd1db46e">&#9670;&#160;</a></span>DoGetPort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -363,7 +363,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -431,8 +431,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a67fb065d1d43c2238dcb96bb6c53c9de" name="a67fb065d1d43c2238dcb96bb6c53c9de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67fb065d1d43c2238dcb96bb6c53c9de">&#9670;&#160;</a></span>DoIsConnected()</h2>
+<a id="aaf706541e013b1cda16e3efd4c432ee3" name="aaf706541e013b1cda16e3efd4c432ee3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf706541e013b1cda16e3efd4c432ee3">&#9670;&#160;</a></span>DoIsConnected()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -449,13 +449,13 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Pure virtual hook for checking connection state (NVI implementation hook). </p>
-<p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#a67fb065d1d43c2238dcb96bb6c53c9de" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
+<p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#aaf706541e013b1cda16e3efd4c432ee3" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if the channel is open/connected; false otherwise. </dd></dl>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aec70ce324d4e598f40eaf573bcab43ea">Modbus::Master::Protocol</a>.</p>
