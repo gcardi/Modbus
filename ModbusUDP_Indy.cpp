@@ -41,7 +41,7 @@ void UDPProtocolIndy::DoSetHost( String Val )
 }
 //---------------------------------------------------------------------------
 
-uint16_t UDPProtocolIndy::DoGetPort() const
+uint16_t UDPProtocolIndy::DoGetPort() const noexcept
 {
     return idUDPClient_->Port;
 }
@@ -65,7 +65,7 @@ void UDPProtocolIndy::DoClose()
 }
 //---------------------------------------------------------------------------
 
-bool UDPProtocolIndy::DoIsConnected() const
+bool UDPProtocolIndy::DoIsConnected() const noexcept
 {
     return idUDPClient_->Active;
 }

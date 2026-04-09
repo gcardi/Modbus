@@ -146,17 +146,17 @@ public:
     virtual ~Context() = default;
 
     /** @brief Returns the slave (unit) address. */
-    SlaveAddrType GetSlaveAddr() const { return DoGetSlaveAddr(); }
+    SlaveAddrType GetSlaveAddr() const noexcept { return DoGetSlaveAddr(); }
 
     /** @brief Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP). */
-    TransactionIdType GetTransactionIdentifier() const {
+    TransactionIdType GetTransactionIdentifier() const noexcept {
         return DoGetTransactionIdentifier();
     }
 protected:
     /** @brief Virtual implementation hook for GetSlaveAddr(). */
-    virtual SlaveAddrType DoGetSlaveAddr() const { return slaveAddr_; }
+    virtual SlaveAddrType DoGetSlaveAddr() const noexcept { return slaveAddr_; }
     /** @brief Virtual implementation hook for GetTransactionIdentifier(). Returns 0 by default. */
-    virtual TransactionIdType DoGetTransactionIdentifier() const {
+    virtual TransactionIdType DoGetTransactionIdentifier() const noexcept {
         return TransactionIdType();
     }
 private:
@@ -202,7 +202,7 @@ public:
                        int Args_High )
        : EBaseException( Msg, Args, Args_High )
        , context_( Context ) {}
-    Context const & GetContext() const { return context_; }
+    Context const & GetContext() const noexcept { return context_; }
 public:
     Context context_;
 };
@@ -225,7 +225,7 @@ public:
                         TVarRec *Args, int Args_High )
        : EContextException( Context, Msg, Args, Args_High )
        , code_( Code ) {}
-    ExceptionCode GetCode() const { return code_; }
+    ExceptionCode GetCode() const noexcept { return code_; }
 private:
     ExceptionCode code_;
 };
@@ -647,7 +647,14 @@ public:
       : protocol_( Protocol ) { protocol_.Open(); }
 
     /** @brief Destroys the SessionManager and closes the protocol. */
-    ~SessionManager() { protocol_.Close(); }
+    ~SessionManager()
+    {
+        try {
+            protocol_.Close();
+        }
+        catch ( ... ) {
+        }
+    }
 
     SessionManager( SessionManager const & Rhs ) = delete;             ///< Non-copyable.
     SessionManager& operator=( SessionManager const & Rhs ) = delete;  ///< Non-copyable.

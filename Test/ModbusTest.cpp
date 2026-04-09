@@ -308,8 +308,12 @@ struct ServerFixture {
     }
     ~ServerFixture()
     {
-        gServerStop = true;
-        thread_.join();
+        try {
+            gServerStop = true;
+            thread_.join();
+        }
+        catch ( ... ) {
+        }
     }
 private:
     std::thread        thread_;

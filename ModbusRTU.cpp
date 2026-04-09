@@ -56,7 +56,7 @@ void RTUProtocol::SetCommPort( String Val )
 }
 //---------------------------------------------------------------------------
 
-int RTUProtocol::GetCommSpeed() const
+int RTUProtocol::GetCommSpeed() const noexcept
 {
     return const_cast<TCommPort&>( commPort_ ).GetBaudRate();
 }
@@ -68,7 +68,7 @@ void RTUProtocol::SetCommSpeed( int Val )
 }
 //---------------------------------------------------------------------------
 
-int RTUProtocol::GetCommParity() const
+int RTUProtocol::GetCommParity() const noexcept
 {
     return const_cast<TCommPort&>( commPort_ ).GetParity();
 }
@@ -80,7 +80,7 @@ void RTUProtocol::SetCommParity( int Val )
 }
 //---------------------------------------------------------------------------
 
-int RTUProtocol::GetCommBits() const
+int RTUProtocol::GetCommBits() const noexcept
 {
     return const_cast<TCommPort&>( commPort_ ).GetByteSize();
 }
@@ -92,7 +92,7 @@ void RTUProtocol::SetCommBits( int Val )
 }
 //---------------------------------------------------------------------------
 
-int RTUProtocol::GetCommStopBits() const
+int RTUProtocol::GetCommStopBits() const noexcept
 {
     return const_cast<TCommPort&>( commPort_ ).GetStopBits();
 }
@@ -132,7 +132,7 @@ unsigned int RTUProtocol::GetStopBitCount() const
 }
 //---------------------------------------------------------------------------
 
-RTUProtocol::TFlowEvent RTUProtocol::SetFlowEventHandler( TFlowEvent EventHandler )
+RTUProtocol::TFlowEvent RTUProtocol::SetFlowEventHandler( TFlowEvent EventHandler ) noexcept
 {
     TFlowEvent Old = onFlowEvent_;
     onFlowEvent_ = EventHandler;
@@ -192,7 +192,7 @@ void RTUProtocol::DoClose()
 }
 //---------------------------------------------------------------------------
 
-bool RTUProtocol::DoIsConnected() const
+bool RTUProtocol::DoIsConnected() const noexcept
 {
     return const_cast<TCommPort&>( commPort_ ).GetConnected();
 }

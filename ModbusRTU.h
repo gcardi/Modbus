@@ -123,22 +123,22 @@ public:
     void SetCommPort( String Val );
 
     /** @brief Returns the configured baud rate (e.g., 9600, 19200). */
-    int GetCommSpeed() const;
+    int GetCommSpeed() const noexcept;
     /** @brief Sets the baud rate. Must be called before Open(). */
     void SetCommSpeed( int Val );
 
     /** @brief Returns the configured parity (NOPARITY, ODDPARITY, EVENPARITY, etc.). */
-    int GetCommParity() const;
+    int GetCommParity() const noexcept;
     /** @brief Sets the parity. Must be called before Open(). */
     void SetCommParity( int Val );
 
     /** @brief Returns the configured data bits (typically 8). */
-    int GetCommBits() const;
+    int GetCommBits() const noexcept;
     /** @brief Sets the data bits. Must be called before Open(). */
     void SetCommBits( int Val );
 
     /** @brief Returns the configured stop bits (ONESTOPBIT, TWOSTOPBITS, etc.). */
-    int GetCommStopBits() const;
+    int GetCommStopBits() const noexcept;
     /** @brief Sets the stop bits. Must be called before Open(). */
     void SetCommStopBits( int Val );
 
@@ -147,14 +147,14 @@ public:
      * @param EventHandler New callback (pass @c nullptr to remove the current one).
      * @return The previously installed callback, or @c nullptr if none was installed.
      */
-    TFlowEvent SetFlowEventHandler( TFlowEvent EventHandler );
+    TFlowEvent SetFlowEventHandler( TFlowEvent EventHandler ) noexcept;
 
 protected:
     virtual String DoGetProtocolName() const override { return _D( "Modbus RTU" ); }
     virtual String DoGetProtocolParamsStr() const override;
     virtual void DoOpen() override;
     virtual void DoClose() override;
-    virtual bool DoIsConnected() const override;
+    virtual bool DoIsConnected() const noexcept override;
 
     virtual void DoReadCoilStatus( Context const & Context,
                                    CoilAddrType StartAddr,

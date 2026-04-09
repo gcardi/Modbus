@@ -50,30 +50,30 @@ public:
 protected:
     virtual String DoGetProtocolName() const override { return _D( "Dummy Modbus" ); }
     virtual String DoGetProtocolParamsStr() const override { return String(); }
-    virtual void DoOpen() override { active_ = true; }
-    virtual void DoClose() override { active_ = false; }
-    virtual bool DoIsConnected() const override { return active_; }
+    virtual void DoOpen() noexcept override { active_ = true; }
+    virtual void DoClose() noexcept override { active_ = false; }
+    virtual bool DoIsConnected() const noexcept override { return active_; }
 
     virtual void DoReadCoilStatus( Context const & Context,
                                    CoilAddrType StartAddr,
                                    CoilCountType PointCount,
-                                   CoilDataType* Data ) override {}
+                                   CoilDataType* Data ) noexcept override {}
     virtual void DoReadInputStatus( Context const & Context,
                                     CoilAddrType StartAddr,
                                     CoilCountType PointCount,
-                                    CoilDataType* Data ) override {}
+                                    CoilDataType* Data ) noexcept override {}
 
     virtual void DoReadHoldingRegisters( Context const & Context,
                                          RegAddrType StartAddr,
                                          RegCountType PointCount,
-                                         RegDataType* Data ) override {}
+                                         RegDataType* Data ) noexcept override {}
     virtual void DoReadInputRegisters( Context const & Context,
                                        RegAddrType StartAddr,
                                        RegCountType PointCount,
-                                       RegDataType* Data ) override {}
+                                       RegDataType* Data ) noexcept override {}
 //    DoForceSingleCoil
     virtual void DoPresetSingleRegister( Context const & Context,
-                                         RegAddrType Addr, RegDataType Data ) override {}
+                                         RegAddrType Addr, RegDataType Data ) noexcept override {}
 //    DoReadExceptionStatus
 //    DoDiagnostics
 //    DoProgram484
@@ -87,7 +87,7 @@ protected:
     void DoPresetMultipleRegisters( Context const & Context,
                                     RegAddrType StartAddr,
                                     RegCountType PointCount,
-                                    const RegDataType* Data ) override {}
+                                    const RegDataType* Data ) noexcept override {}
 
 //    DoReportSlave
 //    DoProgram884_M84
@@ -98,7 +98,7 @@ protected:
     virtual void DoMaskWrite4XRegister( Context const & Context,
                                         RegAddrType Addr,
                                         RegDataType AndMask,
-                                        RegDataType OrMask ) override {}
+                                        RegDataType OrMask ) noexcept override {}
 //    DoReadWrite4XRegisters
 //    DoReadFIFOQueue
 private:

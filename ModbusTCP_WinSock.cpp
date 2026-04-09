@@ -26,8 +26,12 @@ TCPProtocolWinSock::TCPProtocolWinSock( String Host, uint16_t Port )
 
 TCPProtocolWinSock::~TCPProtocolWinSock()
 {
-    DoClose();
-    WSACleanup();
+    try {
+        DoClose();
+        WSACleanup();
+    }
+    catch ( ... ) {
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -43,7 +47,7 @@ void TCPProtocolWinSock::DoSetHost( String Val )
 }
 //---------------------------------------------------------------------------
 
-uint16_t TCPProtocolWinSock::DoGetPort() const
+uint16_t TCPProtocolWinSock::DoGetPort() const noexcept
 {
     return port_;
 }
@@ -124,7 +128,7 @@ void TCPProtocolWinSock::DoClose()
 }
 //---------------------------------------------------------------------------
 
-bool TCPProtocolWinSock::DoIsConnected() const
+bool TCPProtocolWinSock::DoIsConnected() const noexcept
 {
     return socket_ != INVALID_SOCKET;
 }

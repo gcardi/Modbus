@@ -63,11 +63,11 @@ protected:
 
     virtual String DoGetHost() const override;
     virtual void DoSetHost( String Val ) override;
-    virtual uint16_t DoGetPort() const override;
+    virtual uint16_t DoGetPort() const noexcept override;
     virtual void DoSetPort( uint16_t Val ) override;
     virtual void DoOpen() override;
     virtual void DoClose() override;
-    virtual bool DoIsConnected() const override;
+    virtual bool DoIsConnected() const noexcept override;
     virtual void DoInputBufferClear() override;
     virtual void DoWrite( TBytes const OutBuffer ) override;
     virtual void DoRead( TBytes & InBuffer, size_t Length ) override;

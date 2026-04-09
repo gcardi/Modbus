@@ -265,7 +265,7 @@ void TCommPort::OpenCommPort()
 /////    written :
 /////    remarks :
 /////    methods :  use API function to close the comm handle.
-void TCommPort::CloseCommPort()
+void TCommPort::CloseCommPort() noexcept
 {
     if ( m_CommOpen ) {
         if ( m_hCom != INVALID_HANDLE_VALUE ) {
@@ -315,7 +315,7 @@ void TCommPort::SetCommDCBProperties(DCB &properties)
 /////    written :  10/31/96 by H Howe
 /////    remarks :  Again, this function need not be used.
 /////    methods :  copy private dcb structure into the arg.
-void TCommPort::GetCommDCBProperties(DCB &properties)
+void TCommPort::GetCommDCBProperties(DCB &properties) const noexcept
 {
   properties = m_dcb;
 }
@@ -451,22 +451,22 @@ void TCommPort::SetStopBits(BYTE newStopBits)
 ///// end of TCommPort::SetParity()
 ////////////////////////////////////////////////////////////////////////////////
 
-unsigned int TCommPort::GetBaudRate()
+unsigned int TCommPort::GetBaudRate() const noexcept
 {
   return m_dcb.BaudRate;
 }
 
-BYTE TCommPort::GetByteSize()
+BYTE TCommPort::GetByteSize() const noexcept
 {
   return m_dcb.ByteSize;
 }
 
-BYTE TCommPort::GetParity()
+BYTE TCommPort::GetParity() const noexcept
 {
   return m_dcb.Parity;
 }
 
-BYTE TCommPort::GetStopBits()
+BYTE TCommPort::GetStopBits() const noexcept
 {
   return m_dcb.StopBits;
 }

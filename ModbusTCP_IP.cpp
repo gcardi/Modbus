@@ -108,26 +108,26 @@ void TCPIPProtocol::RaiseExceptionIfReplyIsNotValid( Context const & Context,
 }
 //---------------------------------------------------------------------------
 
-FunctionCode TCPIPProtocol::GetFunctionCode( TBytes const Buffer )
+FunctionCode TCPIPProtocol::GetFunctionCode( TBytes const Buffer ) noexcept
 {
     return FunctionCode( Buffer[MODBUS_TCP_IP_REPLY_FUNCTION_CODE_OFFSET] );
 }
 //---------------------------------------------------------------------------
 
-ExceptionCode TCPIPProtocol::GetExceptCode( TBytes const Buffer )
+ExceptionCode TCPIPProtocol::GetExceptCode( TBytes const Buffer ) noexcept
 {
     return ExceptionCode( Buffer[MODBUS_TCP_IP_REPLY_EXCEPTION_CODE_OFFSET] );
 }
 //---------------------------------------------------------------------------
 
-TCPIPProtocol::BMAPDataLengthType TCPIPProtocol::GetDataLength( TBytes const Buffer )
+TCPIPProtocol::BMAPDataLengthType TCPIPProtocol::GetDataLength( TBytes const Buffer ) noexcept
 {
     return Buffer[MODBUS_TCP_IP_REPLY_DATA_OFFSET];
 }
 //---------------------------------------------------------------------------
 
 TCPIPProtocol::BMAPTransactionIdType TCPIPProtocol::GetBMAPTransactionIdentifier(
-                                                 TBytes const Buffer )
+                                                 TBytes const Buffer ) noexcept
 {
     int const Idx = MODBUS_TCP_IP_BMAP_TRANSACTION_ID_OFFSET;
     return ( static_cast<BMAPTransactionIdType>( Buffer[Idx] ) << 8 ) |
@@ -136,7 +136,7 @@ TCPIPProtocol::BMAPTransactionIdType TCPIPProtocol::GetBMAPTransactionIdentifier
 //---------------------------------------------------------------------------
 
 TCPIPProtocol::BMAPProtocolType TCPIPProtocol::GetBMAPProtocol(
-                                                 TBytes const Buffer )
+                                                 TBytes const Buffer ) noexcept
 {
     const int Idx = MODBUS_TCP_IP_BMAP_PROTOCOL_OFFSET;
     return ( static_cast<BMAPProtocolType>( Buffer[Idx] << 8 ) ) |
@@ -145,7 +145,7 @@ TCPIPProtocol::BMAPProtocolType TCPIPProtocol::GetBMAPProtocol(
 //---------------------------------------------------------------------------
 
 TCPIPProtocol::BMAPDataLengthType TCPIPProtocol::GetBMAPDataLength(
-                                                 TBytes const Buffer )
+                                                 TBytes const Buffer ) noexcept
 {
     const int Idx = MODBUS_TCP_IP_BMAP_DATA_LENGTH_OFFSET;
     return ( static_cast<BMAPDataLengthType>( Buffer[Idx] << 8 ) ) |
@@ -154,7 +154,7 @@ TCPIPProtocol::BMAPDataLengthType TCPIPProtocol::GetBMAPDataLength(
 //---------------------------------------------------------------------------
 
 TCPIPProtocol::BMAPUnitIdType TCPIPProtocol::GetBMAPUnitIdentifier(
-                                                 TBytes const Buffer )
+                                                 TBytes const Buffer ) noexcept
 {
     return Buffer[MODBUS_TCP_IP_BMAP_UNIT_ID_OFFSET];
 }
@@ -200,7 +200,7 @@ int TCPIPProtocol::WriteBMAPHeader( TBytes & OutBuffer, int StartIdx,
 int TCPIPProtocol::WriteAddressPointCountPair( TBytes & OutBuffer,
                                                int StartIdx,
                                                RegAddrType StartAddr,
-                                               RegCountType PointCount )
+                                               RegCountType PointCount ) noexcept
 {
     OutBuffer[StartIdx++] = ( StartAddr >> 8 ) & 0xFF;   // Starting Address Hi
     OutBuffer[StartIdx++] = StartAddr & 0xFF;            // Starting Address Lo
@@ -211,7 +211,7 @@ int TCPIPProtocol::WriteAddressPointCountPair( TBytes & OutBuffer,
 //---------------------------------------------------------------------------
 
 int TCPIPProtocol::WriteData( TBytes & OutBuffer,
-                              int StartIdx, RegAddrType Data )
+                              int StartIdx, RegAddrType Data ) noexcept
 {
     OutBuffer[StartIdx++] = ( Data >> 8 ) & 0xFF;   // Data Hi
     OutBuffer[StartIdx++] = Data & 0xFF;            // Data Lo

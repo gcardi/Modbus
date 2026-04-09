@@ -39,7 +39,7 @@ void TCPProtocolIndy::DoSetHost( String Val )
 }
 //---------------------------------------------------------------------------
 
-uint16_t TCPProtocolIndy::DoGetPort() const
+uint16_t TCPProtocolIndy::DoGetPort() const noexcept
 {
     return idTCPClient_->Port;
 }
@@ -63,7 +63,7 @@ void TCPProtocolIndy::DoClose()
 }
 //---------------------------------------------------------------------------
 
-bool TCPProtocolIndy::DoIsConnected() const
+bool TCPProtocolIndy::DoIsConnected() const noexcept
 {
     return idTCPClient_.get() && idTCPClient_->IOHandler &&
            idTCPClient_->IOHandler->Connected();

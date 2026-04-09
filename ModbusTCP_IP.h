@@ -52,7 +52,7 @@ public:
         : Context( SlaveAddr ), transactionId_( TransactionId ) {}
 protected:
     /** @brief Returns the stored MBAP transaction identifier. */
-    virtual TransactionIdType DoGetTransactionIdentifier() const override {
+    virtual TransactionIdType DoGetTransactionIdentifier() const noexcept override {
         return transactionId_;
     }
 private:
@@ -198,21 +198,21 @@ private:
     static void RaiseExceptionIfReplyIsNotValid( Context const & Context,
                                                  TBytes const Buffer,
                                                  FunctionCode ExpectedFunctionCode );
-    static FunctionCode GetFunctionCode( TBytes const Buffer );
-    static ExceptionCode GetExceptCode( TBytes const Buffer );
-    static BMAPDataLengthType GetDataLength( TBytes const Buffer );
-    static BMAPTransactionIdType GetBMAPTransactionIdentifier( TBytes const Buffer );
-    static BMAPProtocolType GetBMAPProtocol( TBytes const Buffer );
-    static BMAPDataLengthType GetBMAPDataLength( TBytes const Buffer );
-    static BMAPUnitIdType GetBMAPUnitIdentifier( TBytes const Buffer );
-    static BMAPDataLengthType GetBMAPHeaderLength() { return 7; }
+    static FunctionCode GetFunctionCode( TBytes const Buffer ) noexcept;
+    static ExceptionCode GetExceptCode( TBytes const Buffer ) noexcept;
+    static BMAPDataLengthType GetDataLength( TBytes const Buffer ) noexcept;
+    static BMAPTransactionIdType GetBMAPTransactionIdentifier( TBytes const Buffer ) noexcept;
+    static BMAPProtocolType GetBMAPProtocol( TBytes const Buffer ) noexcept;
+    static BMAPDataLengthType GetBMAPDataLength( TBytes const Buffer ) noexcept;
+    static BMAPUnitIdType GetBMAPUnitIdentifier( TBytes const Buffer ) noexcept;
+    static BMAPDataLengthType GetBMAPHeaderLength() noexcept { return 7; }
     static int WriteBMAPHeader( TBytes & OutBuffer, int StartIdx,
                                 Context const & Context );
-    static int GetAddressPointCountPairLength() { return 4; }
+    static int GetAddressPointCountPairLength() noexcept { return 4; }
     static int WriteAddressPointCountPair( TBytes & OutBuffer, int StartIdx,
                                            RegAddrType StartAddr,
-                                           RegCountType PointCount );
-    static int WriteData( TBytes & OutBuffer, int StartIdx, RegAddrType Data );
+                                           RegCountType PointCount ) noexcept;
+    static int WriteData( TBytes & OutBuffer, int StartIdx, RegAddrType Data ) noexcept;
 
     static void CopyDataWord( Context const & Context, TBytes const Buffer,
                               int BufferOffset, uint16_t* Data );

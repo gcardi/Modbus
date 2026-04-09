@@ -35,8 +35,12 @@ UDPProtocolWinSock::UDPProtocolWinSock( String Host, uint16_t Port )
 
 UDPProtocolWinSock::~UDPProtocolWinSock()
 {
-    DoClose();
-    WSACleanup();
+    try {
+        DoClose();
+        WSACleanup();
+    }
+    catch ( ... ) {
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -52,7 +56,7 @@ void UDPProtocolWinSock::DoSetHost( String Val )
 }
 //---------------------------------------------------------------------------
 
-uint16_t UDPProtocolWinSock::DoGetPort() const
+uint16_t UDPProtocolWinSock::DoGetPort() const noexcept
 {
     return port_;
 }
@@ -113,7 +117,7 @@ void UDPProtocolWinSock::DoClose()
 }
 //---------------------------------------------------------------------------
 
-bool UDPProtocolWinSock::DoIsConnected() const
+bool UDPProtocolWinSock::DoIsConnected() const noexcept
 {
     return socket_ != INVALID_SOCKET;
 }
