@@ -9,7 +9,7 @@ This document provides technical guidance for the Modbus repository with emphasi
 - Library architecture and module responsibilities
 - Test suite structure
 - Build workflows for Embarcadero MSBuild and CMake + Ninja
-- Recent migration notes (_T to _D)
+- Recent migration notes (`_T` to `_D`)
 - Common troubleshooting steps
 
 ## 2. Repository Architecture
@@ -75,6 +75,7 @@ cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && ms
 ```
 
 Notes:
+
 - The rsvars.bat call is required so bcc64x, linker, and SDK paths are configured.
 - Without rsvars.bat, msbuild and toolchain discovery can fail.
 
@@ -94,56 +95,65 @@ cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && ct
 ```
 
 Implementation details in Test/CMakeLists.txt:
+
 - Uses bcc64x compiler
 - Forces include of Test/ModbusTestPCH2.h for VCL/TCHAR-related macro availability
 - Links required runtime/system libs and SysInit.o
 
-## 5. Macro Migration Notes (_T to _D)
+## 5. Macro Migration Notes (`_T` to `_D`)
 
-The codebase was migrated from _T(...) to _D(...).
+The codebase was migrated from `_T(...)` to `_D(...)`.
 
-### 5.1 Why _D
+### 5.1 Why `_D`
 
-- _D is provided by Embarcadero RTL in include/windows/rtl/sysmac.h (via System.hpp)
+- `_D` is provided by Embarcadero RTL in include/windows/rtl/sysmac.h (via System.hpp)
 - It maps string literals to the native Delphi character width
 
 ### 5.2 Important Constraint
 
-_D must wrap string literals, not macro identifiers.
+`_D` must wrap string literals, not macro identifiers.
 
 Correct examples:
-- _D("Modbus TCP")
-- String(DEFAULT_MODBUS_TCPIP_HOST)
+
+- `_D("Modbus TCP")`
+- `String(DEFAULT_MODBUS_TCPIP_HOST)`
 
 Incorrect example:
-- _D(DEFAULT_MODBUS_TCPIP_HOST)
+
+- `_D(DEFAULT_MODBUS_TCPIP_HOST)`
 
 ## 6. Known Pitfalls and Fixes
 
 ### 6.1 unit_test_main linker mismatch (Boost.Test)
 
 Symptom:
+
 - Undefined symbol for boost::unit_test::unit_test_main with incompatible callback signature
 
 Fix path used:
+
 - Align test runner startup pattern with current Boost.Test usage in source
 - Avoid mixed old/new init APIs
 
 ### 6.2 SysInit.o link error in CMake build
 
 Symptom:
+
 - Unable to link files from Delphi without SysInit.o
 
 Fix:
+
 - Explicitly link:
   - C:/Program Files (x86)/Embarcadero/Studio/37.0/lib/win64x/release/SysInit.o
 
 ### 6.3 Missing toolchain environment
 
 Symptom:
+
 - msbuild or bcc64x not recognized
 
 Fix:
+
 - Always run rsvars.bat in the same command session before building
 
 ## 7. Branching Workflow (Recommended)
@@ -172,5 +182,5 @@ git stash pop
 - Configure succeeds with rsvars + CMake + Ninja
 - Release build succeeds
 - CTest returns 100% pass
-- No _T(...) usages remain in source files
-- Default host constructor arguments use String(DEFAULT_MODBUS_TCPIP_HOST)
+- No `_T(...)` usages remain in source files
+- Default host constructor arguments use `String(DEFAULT_MODBUS_TCPIP_HOST)`
