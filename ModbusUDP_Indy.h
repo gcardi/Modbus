@@ -32,11 +32,19 @@ namespace Master {
 /**
  * @brief Embarcadero Indy TIdUDPClient-based UDP implementation of the Modbus master protocol.
  *
- * @details Uses a TIdUDPClient instance (managed via std::unique_ptr) for UDP datagram I/O.
- *  DoWrite() sends the MBAP request datagram and receives the server response into an internal
- *  buffer (recvBuffer_).  DoRead() then slices the requested bytes from that buffer.
- *  DoInputBufferClear() resets the buffer position so stale data is discarded before each
- *  new transaction.
+ * @details Concrete NVI implementation using TIdUDPClient (Embarcadero Indy) for UDP I/O.
+ *
+ *  **NVI Pattern:** Implements all protected Do…() virtual hooks defined in TCPIPProtocol
+ *  (DoOpen, DoClose, DoIsConnected, DoWrite, DoRead, DoGetHost, DoSetHost, DoGetPort, DoSetPort).
+ *  The public API methods are inherited non-virtually from Protocol.
+ *
+ *  Datagram Handling:
+ *  - DoWrite() sends the MBAP request datagram and receives the server response into an internal
+ *    buffer (recvBuffer_).
+ *  - DoRead() then slices the requested bytes from that buffer, allowing TCPIPProtocol's
+ *    multi-step read logic to work transparently with datagram sockets.
+ *  - DoInputBufferClear() resets the buffer position so stale data is discarded before each
+ *    new transaction.
  *
  *  @note Requires the Embarcadero Indy library (IndyCore, IndyProtocols, IndySystem).
  *        This transport is only available in C++Builder / RAD Studio environments.

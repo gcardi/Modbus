@@ -34,9 +34,16 @@ namespace Master {
 /**
  * @brief Embarcadero Indy TIdTCPClient-based TCP implementation of the Modbus master protocol.
  *
- * @details Uses a TIdTCPClient instance (managed via std::unique_ptr) for the TCP connection.
+ * @details Concrete NVI implementation using TIdTCPClient (Embarcadero Indy) for TCP I/O.
  *  Indy handles hostname resolution, connection management, and blocking I/O internally,
  *  making this implementation straightforward and VCL-friendly.
+ *
+ *  **NVI Pattern:** Implements all protected Do…() virtual hooks defined in TCPIPProtocol
+ *  (DoOpen, DoClose, DoIsConnected, DoWrite, DoRead, DoGetHost, DoSetHost, DoGetPort, DoSetPort).
+ *  The public API methods are inherited non-virtually from Protocol.
+ *
+ *  To use: instantiate TCPProtocolIndy, call Protocol::Open() (inherited), issue requests
+ *  via inherited methods (ReadHoldingRegisters, etc.), then call Protocol::Close() when done.
  *
  *  @note Requires the Embarcadero Indy library (IndyCore, IndyProtocols, IndySystem).
  *        This transport is only available in C++Builder / RAD Studio environments.

@@ -23,12 +23,18 @@ namespace Master {
 /**
  * @brief Marker base class for TCP-based Modbus master implementations.
  *
- * @details Inherits all MBAP framing logic from TCPIPProtocol.  Concrete TCP transport
- *  classes (TCPProtocolWinSock, TCPProtocolIndy) derive from TCPProtocol and implement
- *  the DoOpen()/DoClose()/DoWrite()/DoRead() methods using their respective I/O libraries.
+ * @brief Marker base class for TCP-based Modbus master implementations (NVI pattern).
  *
- *  Use this class as a base-class reference when you need to accept any TCP transport
- *  polymorphically without caring about the underlying socket library.
+ *  **Role in NVI Hierarchy:**
+ *  - Inherits all MBAP framing logic and virtual hooks from TCPIPProtocol.
+ *  - Concrete TCP transport classes (TCPProtocolWinSock, TCPProtocolIndy) derive from TCPProtocol
+ *    and implement the Do…() virtual methods using their respective I/O libraries (WinSock2 or Indy).
+ *  - Provides no additional virtual methods; all behavior is inherited from Protocol and TCPIPProtocol.
+ *
+ *  Use this class:
+ *  - As a base (polymorphic reference) when you need to accept any TCP transport without
+ *    knowing whether it's WinSock2 or Indy.
+ *  - As a template parameter in generic TCP-specific code.
  */
 class TCPProtocol : public TCPIPProtocol {
 public:

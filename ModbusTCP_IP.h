@@ -66,20 +66,29 @@ namespace Master {
 /**
  * @brief Abstract Modbus master protocol implementing MBAP framing over a byte-stream or datagram transport.
  *
- * @details TCPIPProtocol handles the complete MBAP (Modbus Application Protocol) layer:
- *  building request frames, sending them via DoWrite(), reading responses via DoRead(),
- *  and validating the MBAP header fields (transaction ID, protocol ID = 0, unit identifier)
- *  in each response.
+ * @details TCPIPProtocol is an abstract semi-concrete transport that handles the complete
+ *  MBAP (Modbus Application Protocol) layer following the NVI pattern. It:
+ *  - Builds Modbus request frames with proper MBAP headers.
+ *  - Delegates I/O to pure virtual DoWrite() and DoRead() hooks.
+ *  - Validates MBAP response headers (transaction ID, protocol ID = 0, unit identifier).
+ *  - Implements all Modbus function codes (FC03, FC04, FC06, FC16, FC22) inherited by TCP/UDP transports.
  *
- *  Concrete subclasses must implement:
- *  - DoGetHost() / DoSetHost()
- *  - DoGetPort() / DoSetPort()
- *  - DoOpen() / DoClose() / DoIsConnected()
- *  - DoWrite() — sends the entire request datagram or stream segment.
- *  - DoRead()  — reads exactly @p Length bytes from the response stream or datagram cache.
+ *  **NVI Architecture:**
+ *  - Concrete TCP/UDP subclasses (e.g., TCPProtocolIndy, UDPProtocolWinSock) override the
+ *    pure virtual Do…() hooks: DoOpen(), DoClose(), DoIsConnected(), DoWrite(), DoRead().
+ *  - Public methods (Open, Close, ReadHoldingRegisters, etc.) are inherited from Protocol
+ *    and are NOT overridden in subclasses—they remain non-virtual throughout the hiearchy.
+ *  - Subclasses must implement:
+ *    - DoGetHost() / DoSetHost()
+ *    - DoGetPort() / DoSetPort()
+ *    - DoOpen() / DoClose() / DoIsConnected()
+ *    - DoWrite() — sends the entire request datagram or stream segment.
+ *    - DoRead()  — reads exactly @p Length bytes from the response stream or datagram cache.
+ *    (other Do…() methods for FC03, FC04, etc. are defined in Protocol and inherited here).
  *
  *  All Modbus function codes supported by this library (FC03, FC04, FC06, FC16, FC22) are
- *  implemented here and are available to all TCP and UDP subclasses.
+ *  fully implemented in Protocol and inherited by TCPIPProtocol; concrete TCP/UDP subclasses
+ *  do not need to reimplement function code logic.
  */
 class TCPIPProtocol : public Protocol {
 public:

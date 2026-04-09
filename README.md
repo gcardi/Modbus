@@ -12,7 +12,9 @@ For a deeper project-oriented reference, see [Technical Documentation](TECHNICAL
 
 ## Architecture
 
-- `Modbus.h`: core types, exceptions, `Context` and `Master::Protocol` interface.
+ - `Modbus.h`: core types, exceptions, `Context` and abstract `Master::Protocol` interface.
+     - Implements the **Non-Virtual Interface (NVI)** pattern: all public methods are non-virtual
+         and forward to protected `Do…()` virtual hooks in subclasses.
 - `ModbusRTU.*`: implementation of Modbus RTU over serial (`CommPort` helper, CRC, frame format).
 - `ModbusTCP_IP.*`: shared Modbus TCP/MBAP framing and validation layer.
 - `ModbusTCP.*`, `ModbusUDP.*`: marker base classes for TCP and UDP transports.

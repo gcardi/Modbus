@@ -33,13 +33,18 @@ namespace Master {
 /**
  * @brief WinSock2 UDP implementation of the Modbus master protocol.
  *
- * @details Uses Windows WinSock2 UDP sockets for datagram-based Modbus communication.
- *  Unlike the TCP variant, no persistent connection is maintained; each write/read cycle
- *  consists of a single sendto() immediately followed by a recvfrom() on the same socket.
- *  The received datagram is cached internally; subsequent DoRead() calls slice bytes from
- *  this cache without issuing further recvfrom() calls.
+ * @details Concrete NVI implementation using Windows WinSock2 UDP sockets for datagram communication.
  *
- *  SO_RCVTIMEO is set to 2 seconds.  A timeout causes an EBaseException to be thrown.
+ *  **NVI Pattern:** Implements all protected Do…() virtual hooks defined in TCPIPProtocol
+ *  (DoOpen, DoClose, DoIsConnected, DoWrite, DoRead, DoGetHost, DoSetHost, DoGetPort, DoSetPort).
+ *  The public API methods are inherited non-virtually from Protocol.
+ *
+ *  Datagram Handling:
+ *  - Unlike the TCP variant, no persistent connection is maintained; each transaction consists
+ *    of a single sendto() immediately followed by recvfrom() on the same socket.
+ *  - The received datagram is cached internally; subsequent DoRead() calls slice bytes from
+ *    this cache without issuing further recvfrom() calls.
+ *  - SO_RCVTIMEO is set to 2 seconds; a timeout causes an EBaseException to be thrown.
  *
  *  @note This class is Windows-only and requires linking against ws2_32.lib.
  */

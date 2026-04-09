@@ -31,9 +31,14 @@ namespace Master {
 /**
  * @brief WinSock2 TCP implementation of the Modbus master protocol.
  *
- * @details Uses the Windows WinSock2 API to open a TCP connection to the Modbus server,
- *  send MBAP-framed requests, and receive responses.
+ * @details Concrete NVI implementation using Windows WinSock2 API for TCP I/O.
+ *  Opens a TCP connection to the Modbus server, sends MBAP-framed requests, and receives responses.
  *
+ *  **NVI Pattern:** Implements all protected Do…() virtual hooks defined in TCPIPProtocol
+ *  (DoOpen, DoClose, DoIsConnected, DoWrite, DoRead, DoGetHost, DoSetHost, DoGetPort, DoSetPort).
+ *  The public API methods are inherited non-virtually from Protocol.
+ *
+ *  Connection & Initialization:
  *  - WSAStartup is called in the constructor; WSACleanup in the destructor.
  *  - GetAddrInfoW() is used for name resolution (Unicode-safe).
  *  - connect() is performed in non-blocking mode with a 5-second timeout via select().

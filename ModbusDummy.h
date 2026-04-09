@@ -24,12 +24,22 @@ namespace Master {
 /**
  * @brief No-op Modbus master protocol stub for unit testing without hardware.
  *
- * @details Every Modbus request method is a safe no-op:
- *  - DoReadHoldingRegisters / DoReadInputRegisters: leave @p Data buffer unchanged.
- *  - DoPresetSingleRegister / DoPresetMultipleRegisters / DoMaskWrite4XRegister: discarded.
+ * @details Concrete NVI implementation that provides a safe no-op stub for unit testing.
+ *
+ *  **NVI Pattern:** Implements all protected Do…() virtual hooks defined in Protocol
+ *  (DoOpen, DoClose, DoIsConnected, DoReadHoldingRegisters, etc.).
+ *  The public API methods are inherited non-virtually from Protocol.
+ *
+ *  Behavior:
+ *  - All Modbus request methods are safe no-ops:
+ *    - DoReadHoldingRegisters / DoReadInputRegisters: leave @p Data buffer unchanged.
+ *    - DoPresetSingleRegister / DoPresetMultipleRegisters / DoMaskWrite4XRegister: discarded.
  *  - DoOpen() sets the internal connected flag to @c true.
  *  - DoClose() sets the internal connected flag to @c false.
  *  - DoIsConnected() returns the current flag state.
+ *
+ *  Use case: Exercise Modbus master business logic in unit tests without requiring
+ *  physical hardware, a live network, or a Modbus slave.
  *
  *  @note No exceptions are ever thrown by DummyProtocol.
  */

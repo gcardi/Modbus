@@ -70,9 +70,10 @@ namespace Master {
 /**
  * @brief Modbus RTU master protocol over a Win32 serial (COM) port.
  *
- * @details RTUProtocol frames Modbus requests using the RTU encoding:
+ * @details RTUProtocol is a concrete transport that frames Modbus requests using the RTU encoding:
  *  each PDU is preceded by the slave address byte and terminated with a two-byte CRC16
- *  (little-endian, using the standard Modbus CRC16 polynomial).
+ *  (little-endian, using the standard Modbus CRC16 polynomial).  It implements all the
+ *  virtual NVI hooks (DoOpen, DoClose, DoReadHoldingRegisters, etc.) defined in Protocol.
  *
  *  Features:
  *  - Configurable serial port (name, baud rate, parity, data bits, stop bits).
@@ -81,7 +82,10 @@ namespace Master {
  *  - Optional TFlowEvent callback to observe raw TX/RX frames for diagnostics.
  *  - CancelTXEcho, RetryCount, and TimeoutValue exposed as C++Builder __property members.
  *
- *  @note Open the port by calling Protocol::Open() before issuing any requests.
+ *  **Architecture:** Inherits from Protocol and implements all protected Do…() virtual methods
+ *  following the NVI pattern. Public methods are inherited from Protocol.
+ *
+ *  @note Open the port by calling Protocol::Open() before issuing any requests (inherited method).
  *        Close it with Protocol::Close() when done, or use a SessionManager guard.
  */
 class RTUProtocol : public Protocol {

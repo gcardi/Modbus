@@ -334,14 +334,26 @@ namespace Master {
 /**
  * @brief Abstract base class for all Modbus master transport implementations.
  *
- * @details Protocol defines the uniform Modbus master API.  Concrete subclasses supply
- *  the transport (TCP, UDP, RTU, or Dummy) by implementing the @c Do…() virtual methods.
+    * @details Protocol implements the **Non-Virtual Interface (NVI)** pattern to decouple the public
+    *  API from transport-specific implementations. Concrete subclasses supply the transport logic
+    *  (TCP, UDP, RTU, or Dummy) by implementing the @c Do…() virtual methods.
  *
- *  All public request methods (ReadHoldingRegisters, PresetMultipleRegisters, etc.) forward
- *  to their protected @c Do…() counterparts which must be overridden in subclasses.
+    *  **NVI Pattern Overview:**
+    *  - All public methods (Open, Close, ReadHoldingRegisters, PresetMultipleRegisters, etc.)
+    *    are concrete and non-virtual; they perform input validation and orchestration.
+    *  - Each public method forwards to a corresponding protected @c Do…() virtual method that
+    *    performs the actual transport-specific work (e.g., DoOpen(), DoReadHoldingRegisters()).
+    *  - Subclasses override only the @c Do…() virtual methods; they never override the public API.
+    *  - This ensures consistent contract enforcement and logging/validation across all transports.
  *
- *  @note Open() and Close() are idempotent: calling Open() when already connected, or
- *        Close() when already disconnected, is a safe no-op.
+    *  **Virtual Method Naming Convention:**
+    *  - Virtual hooks use the @c "Do" prefix: DoOpen, DoClose, DoReadHoldingRegisters, etc.
+    *  - These methods are declared in the protected section and marked @c virtual.
+    *  - Subclasses use @c override keyword when implementing these hooks.
+    *
+    *  **Idempotency:**
+    *  - Open() and Close() are idempotent: calling Open() when already connected, or
+    *    Close() when already disconnected, is a safe no-op.
  */
 class Protocol {
 public:
@@ -352,6 +364,10 @@ public:
      * @brief Opens the communication channel (e.g., connects TCP socket, opens COM port).
      * @details Idempotent — has no effect if the protocol is already connected.
      * @throws EBaseException on failure to establish the connection.
+        *
+        * @note This is a non-virtual public method implementing the NVI pattern. It calls
+        *  the protected virtual DoOpen() method, allowing subclasses to inject transport-specific
+        *  logic without overriding the public API.
      */
     void Open();
 
@@ -381,6 +397,8 @@ public:
      * @param[out] Data  Pointer to output buffer; must hold at least @p PointCount elements.
      * @throws EIllegalDataAddress if the address or count is out of range on the slave.
      * @throws EBaseException on communication error or timeout.
+        *
+        * @note Uses the NVI pattern: this public method delegates to DoReadHoldingRegisters().
      */
     void ReadHoldingRegisters( Context const & Context,
                                RegAddrType StartAddr, RegCountType PointCount,
@@ -471,9 +489,48 @@ public:
 protected:
     virtual String DoGetProtocolName() const = 0;
     virtual String DoGetProtocolParamsStr() const = 0;
+        /**
+         * @brief Pure virtual hook for opening the communication channel (NVI implementation hook).
+         *
+         * @details Subclasses override this to provide transport-specific open logic.
+         *  The public non-virtual Open() method calls this; subclasses must implement DoOpen(),
+         *  not override Open().  Only implement connection logic here; validation and retry logic
+         *  are handled by the public interface.
+         *
+         * @throws EBaseException on failure to open the channel.
+         */
     virtual void DoOpen() = 0;
+        /**
+         * @brief Pure virtual hook for closing the communication channel (NVI implementation hook).
+         *
+         * @details Subclasses override this to provide transport-specific close logic.
+         *  The public non-virtual Close() method calls this; subclasses must implement DoClose(),
+         *  not override Close().  This should cleanly release all transport resources.
+         */
     virtual void DoClose() = 0;
+        /**
+         * @brief Pure virtual hook for checking connection state (NVI implementation hook).
+         *
+         * @details Subclasses override this to return the transport-specific connection status.
+         *  The public non-virtual IsConnected() method calls this; subclasses must implement
+         *  DoIsConnected(), not override IsConnected().
+         *
+         * @return true if the channel is open/connected; false otherwise.
+         */
     virtual bool DoIsConnected() const = 0;
+    /**
+     * @brief Pure virtual hook for reading holding registers (FC03).
+     *
+     * @details This is the NVI pattern implementation hook. Subclasses override this method
+     *  to provide transport-specific logic for FC03 read operations.  The public API method
+     *  ReadHoldingRegisters() calls this; subclasses must not override ReadHoldingRegisters().
+     *
+     * Subclasses must implement this method to:
+     *  1. Construct a Modbus request PDU (function code 03, start address, point count).
+     *  2. Send it via the transport (TCP, UDP, RTU, or Dummy).
+     *  3. Receive and parse the response, validating CRC/MBAP headers.
+     *  4. Extract the register values and populate the Data buffer.
+     */
 
 //    DoReadInputStatus
     virtual void DoReadHoldingRegisters( Context const & Context,
