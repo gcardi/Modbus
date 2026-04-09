@@ -14,7 +14,7 @@ var searchData=
   ['readinputregisters_11',['ReadInputRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aac436153729a31f5d257c64cd8aa81ec',1,'Modbus::Master::Protocol::ReadInputRegisters()'],['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37ab2d9b8c0e78167bf03f4f192dbe86664',1,'Modbus::ReadInputRegisters']]],
   ['readinputstatus_12',['ReadInputStatus',['../class_modbus_1_1_master_1_1_protocol.html#ae0c666d885dd223c8c7b9871f5038321',1,'Modbus::Master::Protocol::ReadInputStatus()'],['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a07e50d7d18944f62a4527ea5b25a7127',1,'Modbus::ReadInputStatus']]],
   ['readstring_13',['ReadString',['../class_t_comm_port.html#ad03f24b708412feb4819df9c3d749865',1,'TCommPort']]],
-  ['readwrite4xregisters_14',['ReadWrite4XRegisters',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a7967db388bc257fb32db18dd23fbbd0a',1,'Modbus']]],
+  ['readwrite4xregisters_14',['ReadWrite4XRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aab4999d4645901fd2ddf386b0698372a',1,'Modbus::Master::Protocol::ReadWrite4XRegisters()'],['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a7967db388bc257fb32db18dd23fbbd0a',1,'Modbus::ReadWrite4XRegisters']]],
   ['regaddrtype_15',['RegAddrType',['../namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b',1,'Modbus']]],
   ['regcounttype_16',['RegCountType',['../namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be',1,'Modbus']]],
   ['regdatatype_17',['RegDataType',['../namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd',1,'Modbus']]],

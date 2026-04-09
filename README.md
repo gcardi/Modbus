@@ -41,16 +41,20 @@ Abstract base class exposing:
 - `GetProtocolName()` / `GetProtocolParamsStr()`
 - `ReadCoilStatus()`, `ReadInputStatus()`
 - `ReadHoldingRegisters()`, `ReadInputRegisters()`
+- `ForceSingleCoil()`, `ForceMultipleCoils()`
 - `PresetSingleRegister()`, `PresetMultipleRegisters()`, `MaskWrite4XRegister()`
+- `ReadWrite4XRegisters()`
 
 `SessionManager` RAII wrapper ensures connection lifecycle.
 
 ## Supported Modbus Function Codes
 
-- Read coil/input status
-- Read holding/input registers
-- Preset single/multiple registers
-- Mask write registers
+- FC01 Read Coil Status / FC02 Read Input Status
+- FC03 Read Holding Registers / FC04 Read Input Registers
+- FC05 Force Single Coil / FC15 Force Multiple Coils
+- FC06 Preset Single Register / FC16 Preset Multiple Registers
+- FC22 Mask Write 4X Register
+- FC23 Read/Write 4X Registers
 - Standard exceptions: IllegalFunction, IllegalDataAddress, IllegalDataValue, SlaveDeviceFailure, etc.
 
 ## Protocol Implementations

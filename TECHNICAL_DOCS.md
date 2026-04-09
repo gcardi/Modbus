@@ -49,7 +49,7 @@ This document provides technical guidance for the Modbus repository with emphasi
 
 - Test/ModbusTest.cpp
   - Main Boost.Test suite and embedded server integration tests
-  - Covers FC01/FC02/FC03/FC04/FC06/FC16/FC22
+  - Covers FC01/FC02/FC03/FC04/FC05/FC06/FC15/FC16/FC22/FC23
   - Includes endpoint coverage for TCP/IP, Dummy, and RTU
 
 ### 3.2 Legacy Project (RAD Studio)

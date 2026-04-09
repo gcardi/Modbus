@@ -173,7 +173,9 @@ protected:
                                        RegAddrType StartAddr,
                                        RegCountType PointCount,
                                        RegDataType* Data ) override;
-//    DoForceSingleCoil
+    virtual void DoForceSingleCoil( Context const & Context,
+                                    CoilAddrType Addr,
+                                    bool Value ) override;
     virtual void DoPresetSingleRegister( Context const & Context,
                                          RegAddrType Addr, RegDataType Data ) override;
 //    DoReadExceptionStatus
@@ -184,8 +186,10 @@ protected:
 //    DoFetchCommEventLog
 //    DoProgramController
 //    DoPollController
-//    DoForceMultipleCoils
-//    DoPresetMultipleRegisters
+    virtual void DoForceMultipleCoils( Context const & Context,
+                                       CoilAddrType StartAddr,
+                                       CoilCountType PointCount,
+                                       const CoilDataType* Data ) override;
     void DoPresetMultipleRegisters( Context const & Context,
                                     RegAddrType StartAddr,
                                     RegCountType PointCount,
@@ -196,12 +200,17 @@ protected:
 //    DoResetCommLink
 //    DoReadGeneralReference
 //    DoWriteGeneralReference
-//    DoMaskWrite4XRegister
     virtual void DoMaskWrite4XRegister( Context const & Context,
                                         RegAddrType Addr,
                                         RegDataType AndMask,
                                         RegDataType OrMask ) override;
-//    DoReadWrite4XRegisters
+    virtual void DoReadWrite4XRegisters( Context const & Context,
+                                         RegAddrType ReadStartAddr,
+                                         RegCountType ReadPointCount,
+                                         RegDataType* ReadData,
+                                         RegAddrType WriteStartAddr,
+                                         RegCountType WritePointCount,
+                                         const RegDataType* WriteData ) override;
 //    DoReadFIFOQueue
 private:
 

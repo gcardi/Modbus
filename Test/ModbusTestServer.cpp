@@ -134,6 +134,62 @@ static std::vector<uint8_t> handleFC04(const uint8_t* d, int len)
     return pdu;
 }
 
+// FC01: Read Coil Status
+static std::vector<uint8_t> handleFC01(const uint8_t* d, int len)
+{
+    if (len < 4) return errorPdu(0x01, 0x03);
+    uint16_t addr  = get16(d);
+    uint16_t count = get16(d + 2);
+    if (count == 0 || count > 2000)      return errorPdu(0x01, 0x03);
+    if (addr + count > REG_COUNT)        return errorPdu(0x01, 0x02);
+
+    const uint8_t byteCount = static_cast<uint8_t>((count + 7) / 8);
+    std::vector<uint8_t> pdu { 0x01, byteCount };
+    pdu.resize(static_cast<size_t>(2 + byteCount), 0);
+
+    for (uint16_t i = 0; i < count; ++i) {
+        // coil pattern: coilRegs[i] = i & 1
+        if (static_cast<uint16_t>(addr + i) & 1) {
+            pdu[2 + i / 8] |= static_cast<uint8_t>(1u << (i % 8));
+        }
+    }
+    return pdu;
+}
+
+// FC02: Read Input Status
+static std::vector<uint8_t> handleFC02(const uint8_t* d, int len)
+{
+    if (len < 4) return errorPdu(0x02, 0x03);
+    uint16_t addr  = get16(d);
+    uint16_t count = get16(d + 2);
+    if (count == 0 || count > 2000)      return errorPdu(0x02, 0x03);
+    if (addr + count > REG_COUNT)        return errorPdu(0x02, 0x02);
+
+    const uint8_t byteCount = static_cast<uint8_t>((count + 7) / 8);
+    std::vector<uint8_t> pdu { 0x02, byteCount };
+    pdu.resize(static_cast<size_t>(2 + byteCount), 0);
+
+    for (uint16_t i = 0; i < count; ++i) {
+        if (((addr + i) % 3) == 0) {
+            pdu[2 + i / 8] |= static_cast<uint8_t>(1u << (i % 8));
+        }
+    }
+    return pdu;
+}
+
+// FC05: Force Single Coil — echoes the request on success
+static std::vector<uint8_t> handleFC05(const uint8_t* d, int len)
+{
+    if (len < 4) return errorPdu(0x05, 0x03);
+    uint16_t addr  = get16(d);
+    uint16_t value = get16(d + 2);
+    if (value != 0xFF00 && value != 0x0000) return errorPdu(0x05, 0x03);
+    if (addr >= REG_COUNT) return errorPdu(0x05, 0x02);
+
+    holdingRegs[addr] = (value == 0xFF00) ? 1 : 0; // store coil state in holdingRegs for simplicity
+    return { 0x05, d[0], d[1], d[2], d[3] };
+}
+
 // FC06: Preset Single Register — echoes the request on success
 static std::vector<uint8_t> handleFC06(const uint8_t* d, int len)
 {
@@ -166,6 +222,25 @@ static std::vector<uint8_t> handleFC16(const uint8_t* d, int len)
     return { 0x10, d[0], d[1], d[2], d[3] };
 }
 
+// FC15 (0x0F): Force Multiple Coils
+static std::vector<uint8_t> handleFC15(const uint8_t* d, int len)
+{
+    if (len < 5)                         return errorPdu(0x0F, 0x03);
+    uint16_t addr  = get16(d);
+    uint16_t count = get16(d + 2);
+    uint8_t  bytes = d[4];
+    if (count == 0 || count > 1968)      return errorPdu(0x0F, 0x03);
+    if (bytes != (count + 7) / 8)        return errorPdu(0x0F, 0x03);
+    if (len < 5 + bytes)                 return errorPdu(0x0F, 0x03);
+    if (addr + count > REG_COUNT)        return errorPdu(0x0F, 0x02);
+
+    // Store coil values in holdingRegs for simplicity
+    for (uint16_t i = 0; i < count; ++i)
+        holdingRegs[addr + i] = (d[5 + i / 8] >> (i % 8)) & 1;
+
+    return { 0x0F, d[0], d[1], d[2], d[3] };
+}
+
 // FC22 (0x16): Mask Write 4X Register
 // Result = (Current AND AndMask) OR (OrMask AND NOT AndMask)
 // Request data: Addr(2) + AndMask(2) + OrMask(2)
@@ -182,6 +257,35 @@ static std::vector<uint8_t> handleFC22(const uint8_t* d, int len)
         (holdingRegs[addr] & andMask) | (orMask & ~andMask));
 
     return { 0x16, d[0], d[1], d[2], d[3], d[4], d[5] };
+}
+
+// FC23 (0x17): Read/Write Multiple Registers
+// Write is performed before read (per Modbus spec).
+static std::vector<uint8_t> handleFC23(const uint8_t* d, int len)
+{
+    if (len < 9) return errorPdu(0x17, 0x03);
+    uint16_t rAddr  = get16(d);
+    uint16_t rCount = get16(d + 2);
+    uint16_t wAddr  = get16(d + 4);
+    uint16_t wCount = get16(d + 6);
+    uint8_t  wBytes = d[8];
+    if (rCount == 0 || rCount > 125)     return errorPdu(0x17, 0x03);
+    if (wCount == 0 || wCount > 121)     return errorPdu(0x17, 0x03);
+    if (wBytes != wCount * 2)            return errorPdu(0x17, 0x03);
+    if (len < 9 + wBytes)               return errorPdu(0x17, 0x03);
+    if (rAddr + rCount > REG_COUNT)      return errorPdu(0x17, 0x02);
+    if (wAddr + wCount > REG_COUNT)      return errorPdu(0x17, 0x02);
+
+    for (int i = 0; i < wCount; ++i)
+        holdingRegs[wAddr + i] = get16(d + 9 + i * 2);
+
+    std::vector<uint8_t> pdu { 0x17, static_cast<uint8_t>(rCount * 2) };
+    for (int i = 0; i < rCount; ++i) {
+        uint16_t v = holdingRegs[rAddr + i];
+        pdu.push_back(static_cast<uint8_t>(v >> 8));
+        pdu.push_back(static_cast<uint8_t>(v & 0xFF));
+    }
+    return pdu;
 }
 
 //---------------------------------------------------------------------------
@@ -209,11 +313,16 @@ static bool handleRequest(SOCKET s)
 
     std::vector<uint8_t> responsePdu;
     switch (fc) {
+        case 0x01: responsePdu = handleFC01(data, dataLen); break;
+        case 0x02: responsePdu = handleFC02(data, dataLen); break;
         case 0x03: responsePdu = handleFC03(data, dataLen); break;
         case 0x04: responsePdu = handleFC04(data, dataLen); break;
+        case 0x05: responsePdu = handleFC05(data, dataLen); break;
         case 0x06: responsePdu = handleFC06(data, dataLen); break;
+        case 0x0F: responsePdu = handleFC15(data, dataLen); break;
         case 0x10: responsePdu = handleFC16(data, dataLen); break;
         case 0x16: responsePdu = handleFC22(data, dataLen); break;
+        case 0x17: responsePdu = handleFC23(data, dataLen); break;
         default:
             responsePdu = errorPdu(fc, 0x01); // Illegal function
             break;

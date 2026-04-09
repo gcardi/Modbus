@@ -183,6 +183,17 @@ static std::vector<uint8_t> handleFC04( const uint8_t* d, int len )
     return pdu;
 }
 
+static std::vector<uint8_t> handleFC05( const uint8_t* d, int len )
+{
+    if ( len < 4 ) return errorPdu( 0x05, 0x03 );
+    uint16_t addr  = get16( d );
+    uint16_t value = get16( d + 2 );
+    if ( value != 0xFF00 && value != 0x0000 ) return errorPdu( 0x05, 0x03 );
+    if ( addr >= REG_COUNT ) return errorPdu( 0x05, 0x02 );
+    coilRegs[addr] = ( value == 0xFF00 ) ? 1 : 0;
+    return { 0x05, d[0], d[1], d[2], d[3] };
+}
+
 static std::vector<uint8_t> handleFC06( const uint8_t* d, int len )
 {
     if ( len < 4 ) return errorPdu( 0x06, 0x03 );
@@ -190,6 +201,23 @@ static std::vector<uint8_t> handleFC06( const uint8_t* d, int len )
     if ( addr >= REG_COUNT ) return errorPdu( 0x06, 0x02 );
     holdingRegs[addr] = value;
     return { 0x06, d[0], d[1], d[2], d[3] };
+}
+
+static std::vector<uint8_t> handleFC15( const uint8_t* d, int len )
+{
+    if ( len < 5 ) return errorPdu( 0x0F, 0x03 );
+    uint16_t addr  = get16( d );
+    uint16_t count = get16( d + 2 );
+    uint8_t  bytes = d[4];
+    if ( count == 0 || count > 1968 )       return errorPdu( 0x0F, 0x03 );
+    if ( bytes != ( count + 7 ) / 8 )       return errorPdu( 0x0F, 0x03 );
+    if ( len < 5 + bytes )                  return errorPdu( 0x0F, 0x03 );
+    if ( addr + count > REG_COUNT )         return errorPdu( 0x0F, 0x02 );
+    for ( uint16_t i = 0; i < count; ++i ) {
+        coilRegs[addr + i] =
+            ( d[5 + i / 8] >> ( i % 8 ) ) & 1;
+    }
+    return { 0x0F, d[0], d[1], d[2], d[3] };
 }
 
 static std::vector<uint8_t> handleFC16( const uint8_t* d, int len )
@@ -216,6 +244,35 @@ static std::vector<uint8_t> handleFC22( const uint8_t* d, int len )
     return { 0x16, d[0], d[1], d[2], d[3], d[4], d[5] };
 }
 
+static std::vector<uint8_t> handleFC23( const uint8_t* d, int len )
+{
+    // ReadAddr(2) + ReadCount(2) + WriteAddr(2) + WriteCount(2) + WriteByteCnt(1) + WriteData
+    if ( len < 9 ) return errorPdu( 0x17, 0x03 );
+    uint16_t rAddr  = get16( d );
+    uint16_t rCount = get16( d + 2 );
+    uint16_t wAddr  = get16( d + 4 );
+    uint16_t wCount = get16( d + 6 );
+    uint8_t  wBytes = d[8];
+    if ( rCount == 0 || rCount > 125 )       return errorPdu( 0x17, 0x03 );
+    if ( wCount == 0 || wCount > 121 )       return errorPdu( 0x17, 0x03 );
+    if ( wBytes != wCount * 2 )              return errorPdu( 0x17, 0x03 );
+    if ( len < 9 + wBytes )                  return errorPdu( 0x17, 0x03 );
+    if ( rAddr + rCount > REG_COUNT )        return errorPdu( 0x17, 0x02 );
+    if ( wAddr + wCount > REG_COUNT )        return errorPdu( 0x17, 0x02 );
+
+    // Write first (per Modbus spec, write is performed before read)
+    for ( int i = 0; i < wCount; ++i )
+        holdingRegs[wAddr + i] = get16( d + 9 + i * 2 );
+
+    // Then read
+    std::vector<uint8_t> pdu { 0x17, static_cast<uint8_t>( rCount * 2 ) };
+    for ( int i = 0; i < rCount; ++i ) {
+        uint16_t v = holdingRegs[rAddr + i];
+        pdu.push_back( v >> 8 ); pdu.push_back( v & 0xFF );
+    }
+    return pdu;
+}
+
 static bool handleRequest( SOCKET s )
 {
     uint8_t header[6];
@@ -237,9 +294,12 @@ static bool handleRequest( SOCKET s )
         case 0x02: pdu = handleFC02( data, dataLen ); break;
         case 0x03: pdu = handleFC03( data, dataLen ); break;
         case 0x04: pdu = handleFC04( data, dataLen ); break;
+        case 0x05: pdu = handleFC05( data, dataLen ); break;
         case 0x06: pdu = handleFC06( data, dataLen ); break;
+        case 0x0F: pdu = handleFC15( data, dataLen ); break;
         case 0x10: pdu = handleFC16( data, dataLen ); break;
         case 0x16: pdu = handleFC22( data, dataLen ); break;
+        case 0x17: pdu = handleFC23( data, dataLen ); break;
         default:   pdu = errorPdu( fc, 0x01 );        break;
     }
 
@@ -598,6 +658,153 @@ BOOST_FIXTURE_TEST_SUITE( FC22_MaskWrite4XRegister, ProtoFixture )
         proto_.PresetSingleRegister( ctx(), 80, 0xFFFF );
         proto_.MaskWrite4XRegister ( ctx(), 80, 0x0000, 0x1234 );
         BOOST_TEST( readH( proto_, 80 ) == 0x1234u );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC05_ForceSingleCoil, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( ForceOnAndReadBack )
+    {
+        // coilRegs[0] starts as 0 (even index)
+        proto_.ForceSingleCoil( ctx(), 0, true );
+        BOOST_TEST( readC( proto_, 0 ) == 1u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ForceOffAndReadBack )
+    {
+        // coilRegs[1] starts as 1 (odd index)
+        proto_.ForceSingleCoil( ctx(), 1, false );
+        BOOST_TEST( readC( proto_, 1 ) == 0u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ToggleCoil )
+    {
+        proto_.ForceSingleCoil( ctx(), 10, true );
+        BOOST_TEST( readC( proto_, 10 ) == 1u );
+        proto_.ForceSingleCoil( ctx(), 10, false );
+        BOOST_TEST( readC( proto_, 10 ) == 0u );
+    }
+
+    BOOST_AUTO_TEST_CASE( OutOfRangeThrows )
+    {
+        BOOST_CHECK_THROW(
+            proto_.ForceSingleCoil( ctx(), 256, true ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC15_ForceMultipleCoils, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( ForceBlockAndReadBack )
+    {
+        // Force coils 0..7 to all ON (0xFF)
+        CoilDataType data[1] = { 0xFF };
+        proto_.ForceMultipleCoils( ctx(), 0, 8, data );
+        CoilDataType readBuf[1] = { 0 };
+        proto_.ReadCoilStatus( ctx(), 0, 8, readBuf );
+        BOOST_TEST( readBuf[0] == 0xFFu );
+    }
+
+    BOOST_AUTO_TEST_CASE( ForcePatternAndReadBack )
+    {
+        // Force coils 16..31 to alternating pattern 0xA5, 0x5A
+        CoilDataType data[2] = { 0xA5, 0x5A };
+        proto_.ForceMultipleCoils( ctx(), 16, 16, data );
+        CoilDataType readBuf[2] = { 0, 0 };
+        proto_.ReadCoilStatus( ctx(), 16, 16, readBuf );
+        BOOST_TEST( readBuf[0] == 0xA5u );
+        BOOST_TEST( readBuf[1] == 0x5Au );
+    }
+
+    BOOST_AUTO_TEST_CASE( ForceAllOff )
+    {
+        CoilDataType data[1] = { 0x00 };
+        proto_.ForceMultipleCoils( ctx(), 0, 8, data );
+        CoilDataType readBuf[1] = { 0xFF };
+        proto_.ReadCoilStatus( ctx(), 0, 8, readBuf );
+        BOOST_TEST( readBuf[0] == 0x00u );
+    }
+
+    BOOST_AUTO_TEST_CASE( OutOfRangeThrows )
+    {
+        CoilDataType data[1] = { 0xFF };
+        BOOST_CHECK_THROW(
+            proto_.ForceMultipleCoils( ctx(), 255, 2, data ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC23_ReadWrite4XRegisters, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( WriteAndReadSameRegion )
+    {
+        // Write 0xAAAA to addr 100, then read it back atomically
+        RegDataType writeVals[] = { 0xAAAA };
+        RegDataType readVal = 0;
+        proto_.ReadWrite4XRegisters( ctx(),
+            100, 1, &readVal,    // read addr 100
+            100, 1, writeVals ); // write addr 100
+        // Write happens first, so read should see the written value
+        BOOST_TEST( readVal == 0xAAAAu );
+    }
+
+    BOOST_AUTO_TEST_CASE( WriteThenReadDifferentRegions )
+    {
+        RegDataType writeVals[] = { 0x1111, 0x2222 };
+        RegDataType readVals[3] = { 0, 0, 0 };
+        proto_.ReadWrite4XRegisters( ctx(),
+            0, 3, readVals,          // read holding regs 0..2
+            50, 2, writeVals );      // write to 50..51
+        // Regs 0..2 were not modified, should still be 0,1,2
+        BOOST_TEST( readVals[0] == 0u );
+        BOOST_TEST( readVals[1] == 1u );
+        BOOST_TEST( readVals[2] == 2u );
+        // Verify write took effect
+        BOOST_TEST( readH( proto_, 50 ) == 0x1111u );
+        BOOST_TEST( readH( proto_, 51 ) == 0x2222u );
+    }
+
+    BOOST_AUTO_TEST_CASE( WriteBeforeReadSemantics )
+    {
+        // Write 0xBEEF to addr 200, then read addr 200 in same call
+        // Per spec, write is performed before read
+        RegDataType writeVals[] = { 0xBEEF };
+        RegDataType readVal = 0;
+        proto_.ReadWrite4XRegisters( ctx(),
+            200, 1, &readVal,
+            200, 1, writeVals );
+        BOOST_TEST( readVal == 0xBEEFu );
+    }
+
+    BOOST_AUTO_TEST_CASE( OutOfRangeReadThrows )
+    {
+        RegDataType writeVals[] = { 0x0001 };
+        RegDataType readVals[2] = { 0, 0 };
+        BOOST_CHECK_THROW(
+            proto_.ReadWrite4XRegisters( ctx(),
+                255, 2, readVals,
+                0, 1, writeVals ),
+            EBaseException );
+    }
+
+    BOOST_AUTO_TEST_CASE( OutOfRangeWriteThrows )
+    {
+        RegDataType writeVals[] = { 0x0001, 0x0002 };
+        RegDataType readVal = 0;
+        BOOST_CHECK_THROW(
+            proto_.ReadWrite4XRegisters( ctx(),
+                0, 1, &readVal,
+                255, 2, writeVals ),
+            EBaseException );
     }
 
 BOOST_AUTO_TEST_SUITE_END()

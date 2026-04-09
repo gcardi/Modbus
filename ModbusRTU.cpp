@@ -364,6 +364,43 @@ void RTUProtocol::DoReadInputRegisters( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoForceSingleCoil
+void RTUProtocol::DoForceSingleCoil( Context const & Context,
+                                     CoilAddrType Addr, bool Value )
+{
+    FrameCont TxFrame;
+    const FrameCont::size_type ExpectedRxFramelength( 8 );
+    FrameCont RxFrame;
+
+    RxFrame.reserve( ExpectedRxFramelength );
+    TxFrame.reserve( 8 );
+
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<RegDataType>( FunctionCode::ForceSingleCoil );
+    TxFrameBkInsIt = Write( TxFrameBkInsIt, Addr );
+    TxFrameBkInsIt = Write( TxFrameBkInsIt, static_cast<uint16_t>( Value ? 0xFF00 : 0x0000 ) );
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    SendAndReceiveFrames(
+        Context, TxFrame, back_inserter( RxFrame ),
+        ExpectedRxFramelength, retryCount_
+    );
+
+    RegAddrType ReadAddr;
+    FrameCont::const_iterator RxInIt = Read( RxFrame.begin(), ReadAddr );
+    if ( ReadAddr != Addr ) {
+        throw EContextException( Context, _D( "Address mismatch" ) );
+    }
+
+    uint16_t ReadValue;
+    RxInIt = Read( RxInIt, ReadValue );
+    uint16_t const ExpectedValue = Value ? 0xFF00 : 0x0000;
+    if ( ReadValue != ExpectedValue ) {
+        throw EContextException( Context, _D( "Data mismatch" ) );
+    }
+}
 //---------------------------------------------------------------------------
 
 void RTUProtocol::DoPresetSingleRegister( Context const & Context,
@@ -439,7 +476,57 @@ void RTUProtocol::DoPresetSingleRegister( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoForceMultipleCoils
+void RTUProtocol::DoForceMultipleCoils( Context const & Context,
+                                        CoilAddrType StartAddr,
+                                        CoilCountType PointCount,
+                                        const CoilDataType* Data )
+{
+    if ( PointCount == 0 || PointCount > 1968 ) {
+        throw EContextException(
+            Context, _D( "Too many points have been requested" )
+        );
+    }
 
+    const uint8_t ByteCount = static_cast<uint8_t>( ( PointCount + 7 ) / 8 );
+
+    FrameCont TxFrame;
+    const FrameCont::size_type ExpectedRxFramelength( 8 );
+    FrameCont RxFrame;
+
+    RxFrame.reserve( ExpectedRxFramelength );
+    TxFrame.reserve( 8 + ByteCount );
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<RegDataType>( FunctionCode::ForceMultipleCoils );
+    TxFrameBkInsIt =
+        WriteAddressPointCountPair( TxFrameBkInsIt, StartAddr, PointCount );
+    TxFrameBkInsIt =
+        Write( TxFrameBkInsIt, ByteCount );
+
+    for ( uint8_t Idx = 0; Idx < ByteCount; ++Idx ) {
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, Data[Idx] );
+    }
+
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    SendAndReceiveFrames(
+        Context, TxFrame, back_inserter( RxFrame ),
+        ExpectedRxFramelength, retryCount_
+    );
+
+    RegAddrType ReadStartAddr;
+    FrameCont::const_iterator RxInIt = Read( RxFrame.begin(), ReadStartAddr );
+    if ( ReadStartAddr != StartAddr ) {
+        throw EContextException( Context, _D( "Start address mismatch" ) );
+    }
+
+    CoilCountType ReadPointCount;
+    RxInIt = Read( RxInIt, ReadPointCount );
+    if ( ReadPointCount != PointCount ) {
+        throw EContextException( Context, _D( "Point count mismatch" ) );
+    }
+}
 //---------------------------------------------------------------------------
 
 void RTUProtocol::DoPresetMultipleRegisters( Context const & Context,
@@ -567,6 +654,59 @@ void RTUProtocol::DoMaskWrite4XRegister( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoReadWrite4XRegisters
+void RTUProtocol::DoReadWrite4XRegisters( Context const & Context,
+                                          RegAddrType ReadStartAddr,
+                                          RegCountType ReadPointCount,
+                                          RegDataType* ReadData,
+                                          RegAddrType WriteStartAddr,
+                                          RegCountType WritePointCount,
+                                          const RegDataType* WriteData )
+{
+    const size_t WriteByteCount = WritePointCount * sizeof( RegDataType );
+
+    FrameCont TxFrame;
+    // Response: SlaveAddr(1) + FC(1) + ByteCount(1) + ReadData(ReadPointCount*2) + CRC(2)
+    FrameCont::size_type const ExpectedRxFramelength( ReadPointCount * 2 + 5 );
+    FrameCont RxFrame;
+
+    RxFrame.reserve( ExpectedRxFramelength );
+    TxFrame.reserve( 13 + WriteByteCount );
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<RegDataType>( FunctionCode::ReadWrite4XRegisters );
+    TxFrameBkInsIt =
+        WriteAddressPointCountPair( TxFrameBkInsIt, ReadStartAddr, ReadPointCount );
+    TxFrameBkInsIt =
+        WriteAddressPointCountPair( TxFrameBkInsIt, WriteStartAddr, WritePointCount );
+    TxFrameBkInsIt =
+        Write( TxFrameBkInsIt, static_cast<uint8_t>( WriteByteCount ) );
+
+    for ( RegCountType Idx = 0; Idx < WritePointCount; ++Idx ) {
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, WriteData[Idx] );
+    }
+
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    SendAndReceiveFrames(
+        Context, TxFrame, back_inserter( RxFrame ),
+        ExpectedRxFramelength, retryCount_
+    );
+
+    FrameCont::const_iterator RxInIt = RxFrame.begin();
+
+    const FrameCont::size_type RxByteCount =
+        static_cast<FrameCont::size_type>( *RxInIt++ );
+
+    if ( RxByteCount != ReadPointCount * 2 ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
+
+    RegCountType Remaining = ReadPointCount;
+    while ( Remaining-- ) {
+        RxInIt = Read( RxInIt, *ReadData++ );
+    }
+}
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoReadFIFOQueue

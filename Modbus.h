@@ -339,7 +339,10 @@ namespace Master {
     *  (TCP, UDP, RTU, or Dummy) by implementing the @c Do…() virtual methods.
  *
     *  **NVI Pattern Overview:**
-    *  - All public methods (Open, Close, ReadHoldingRegisters, PresetMultipleRegisters, etc.)
+    *  - All public methods (Open, Close, ReadCoilStatus, ReadInputStatus,
+    *    ReadHoldingRegisters, ReadInputRegisters, ForceSingleCoil,
+    *    PresetSingleRegister, ForceMultipleCoils, PresetMultipleRegisters,
+    *    MaskWrite4XRegister, ReadWrite4XRegisters, etc.)
     *    are concrete and non-virtual; they perform input validation and orchestration.
     *  - Each public method forwards to a corresponding protected @c Do…() virtual method that
     *    performs the actual transport-specific work (e.g., DoOpen(), DoReadHoldingRegisters()).
@@ -462,7 +465,20 @@ public:
         DoReadInputRegisters( Context, StartAddr, PointCount, Data );
     }
 
-//    ForceSingleCoil
+    /**
+     * @brief Forces a single coil to ON or OFF (FC05).
+     * @param Context Transaction context (slave address, transaction ID).
+     * @param Addr    Zero-based coil address.
+     * @param Value   @c true to force ON (0xFF00), @c false to force OFF (0x0000).
+     * @throws EIllegalDataAddress if the address is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void ForceSingleCoil( Context const & Context,
+                          CoilAddrType Addr, bool Value )
+    {
+        DoForceSingleCoil( Context, Addr, Value );
+    }
+
     /**
      * @brief Writes a single holding register (FC06).
      * @param Context Transaction context (slave address, transaction ID).
@@ -484,7 +500,23 @@ public:
 //    FetchCommEventLog
 //    ProgramController
 //    PollController
-//    ForceMultipleCoils
+
+    /**
+     * @brief Forces multiple consecutive coils (FC15).
+     * @param Context    Transaction context (slave address, transaction ID).
+     * @param StartAddr  Zero-based start coil address.
+     * @param PointCount Number of coils to force (max 1968 by Modbus spec).
+     * @param Data       Pointer to packed coil bytes; bit 0 of @c Data[0] maps to @p StartAddr.
+     *                   Required size is @c (PointCount + 7) / 8 bytes.
+     * @throws EIllegalDataAddress if the address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void ForceMultipleCoils( Context const & Context,
+                             CoilAddrType StartAddr, CoilCountType PointCount,
+                             const CoilDataType* Data )
+    {
+        DoForceMultipleCoils( Context, StartAddr, PointCount, Data );
+    }
 
     /**
      * @brief Writes multiple consecutive holding registers (FC16).
@@ -523,7 +555,30 @@ public:
     {
         DoMaskWrite4XRegister( Context, Addr, AndMask, OrMask );
     }
-//    ReadWrite4XRegisters
+
+    /**
+     * @brief Atomically reads and writes multiple holding registers (FC23).
+     * @param Context         Transaction context (slave address, transaction ID).
+     * @param ReadStartAddr   Zero-based start address for reading.
+     * @param ReadPointCount  Number of registers to read (max 125).
+     * @param[out] ReadData   Pointer to output buffer; must hold at least @p ReadPointCount elements.
+     * @param WriteStartAddr  Zero-based start address for writing.
+     * @param WritePointCount Number of registers to write (max 121).
+     * @param WriteData       Pointer to source buffer holding at least @p WritePointCount elements.
+     * @throws EIllegalDataAddress if any address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void ReadWrite4XRegisters( Context const & Context,
+                               RegAddrType ReadStartAddr,
+                               RegCountType ReadPointCount,
+                               RegDataType* ReadData,
+                               RegAddrType WriteStartAddr,
+                               RegCountType WritePointCount,
+                               const RegDataType* WriteData )
+    {
+        DoReadWrite4XRegisters( Context, ReadStartAddr, ReadPointCount, ReadData,
+                                WriteStartAddr, WritePointCount, WriteData );
+    }
 //    ReadFIFOQueue
 protected:
     virtual String DoGetProtocolName() const = 0;
@@ -589,7 +644,9 @@ protected:
                                        RegCountType PointCount,
                                        RegDataType* Data ) = 0;
 
-//    DoForceSingleCoil
+    virtual void DoForceSingleCoil( Context const & Context,
+                                    CoilAddrType Addr,
+                                    bool Value ) = 0;
     virtual void DoPresetSingleRegister( Context const & Context,
                                          RegAddrType Addr,
                                          RegDataType Data ) = 0;
@@ -601,7 +658,10 @@ protected:
 //    DoFetchCommEventLog
 //    DoProgramController
 //    DoPollController
-//    DoForceMultipleCoils
+    virtual void DoForceMultipleCoils( Context const & Context,
+                                       CoilAddrType StartAddr,
+                                       CoilCountType PointCount,
+                                       const CoilDataType* Data ) = 0;
       virtual void DoPresetMultipleRegisters( Context const & Context,
                                               RegAddrType StartAddr,
                                               RegCountType PointCount,
@@ -615,7 +675,13 @@ protected:
                                         RegAddrType Addr,
                                         RegDataType AndMask,
                                         RegDataType OrMask ) = 0;
-//    DoReadWrite4XRegisters
+    virtual void DoReadWrite4XRegisters( Context const & Context,
+                                         RegAddrType ReadStartAddr,
+                                         RegCountType ReadPointCount,
+                                         RegDataType* ReadData,
+                                         RegAddrType WriteStartAddr,
+                                         RegCountType WritePointCount,
+                                         const RegDataType* WriteData ) = 0;
 //    DoReadFIFOQueue
 
     void RaiseExceptionIfIsConnected( String SubMsg ) const;

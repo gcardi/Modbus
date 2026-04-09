@@ -388,6 +388,38 @@ void TCPIPProtocol::DoReadInputRegisters( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoForceSingleCoil
+void TCPIPProtocol::DoForceSingleCoil( Context const & Context,
+                                       CoilAddrType Addr, bool Value )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ForceSingleCoil failed" ) );
+
+    // Send
+    TBytes OutBuffer;
+
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 + 2 );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<RegDataType>( FunctionCode::ForceSingleCoil );
+    Idx = WriteData( OutBuffer, Idx, Addr );
+    Idx = WriteData( OutBuffer, Idx, static_cast<RegDataType>( Value ? 0xFF00 : 0x0000 ) );
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    // Verifica BMAP di risposta
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    // Verifica parametri di risposta
+    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ForceSingleCoil );
+}
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoPresetSingleRegister
@@ -459,7 +491,53 @@ void TCPIPProtocol::DoPresetSingleRegister( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoForceMultipleCoils
+void TCPIPProtocol::DoForceMultipleCoils( Context const & Context,
+                                          CoilAddrType StartAddr,
+                                          CoilCountType PointCount,
+                                          const CoilDataType* Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ForceMultipleCoils failed" ) );
 
+    if ( PointCount == 0 || PointCount > 1968 ) {
+        throw EContextException( Context, _D( "Invalid point count" ) );
+    }
+
+    const uint8_t ByteCount = static_cast<uint8_t>( ( PointCount + 7 ) / 8 );
+
+    // Send
+    TBytes OutBuffer;
+
+    SetLength(
+        OutBuffer,
+        GetBMAPHeaderLength() + 1 + GetAddressPointCountPairLength() + 1 + ByteCount
+    );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<RegDataType>( FunctionCode::ForceMultipleCoils );
+    Idx = WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
+    OutBuffer[Idx++] = ByteCount;
+
+    for ( uint8_t I = 0; I < ByteCount; ++I ) {
+        OutBuffer[Idx++] = Data[I];
+    }
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    // Verifica BMAP di risposta
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    // Verifica parametri di risposta
+    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ForceMultipleCoils );
+}
 //---------------------------------------------------------------------------
 
 void TCPIPProtocol::DoPresetMultipleRegisters( Context const & Context,
@@ -568,6 +646,59 @@ void TCPIPProtocol::DoMaskWrite4XRegister( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadWrite4XRegisters
+void TCPIPProtocol::DoReadWrite4XRegisters( Context const & Context,
+                                            RegAddrType ReadStartAddr,
+                                            RegCountType ReadPointCount,
+                                            RegDataType* ReadData,
+                                            RegAddrType WriteStartAddr,
+                                            RegCountType WritePointCount,
+                                            const RegDataType* WriteData )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ReadWrite4XRegisters failed" ) );
+
+    // Send
+    // PDU: FC(1) + ReadAddr(2) + ReadCount(2) + WriteAddr(2) + WriteCount(2)
+    //      + WriteByteCount(1) + WriteValues(WritePointCount * 2)
+    TBytes OutBuffer;
+
+    SetLength(
+        OutBuffer,
+        GetBMAPHeaderLength() + 1 + 2 + 2 + 2 + 2 + 1 +
+        WritePointCount * sizeof( RegDataType )
+    );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<RegDataType>( FunctionCode::ReadWrite4XRegisters );
+    Idx = WriteAddressPointCountPair( OutBuffer, Idx, ReadStartAddr, ReadPointCount );
+    Idx = WriteAddressPointCountPair( OutBuffer, Idx, WriteStartAddr, WritePointCount );
+    OutBuffer[Idx++] =
+        static_cast<uint8_t>( WritePointCount * sizeof( RegDataType ) );
+
+    for ( RegCountType DataIdx = 0; DataIdx < WritePointCount; ++DataIdx ) {
+        const RegDataType Reg = WriteData[DataIdx];
+        OutBuffer[Idx++] = ( Reg >> 8 ) & 0xFF;   // Data Hi
+        OutBuffer[Idx++] = Reg & 0xFF;            // Data Lo
+    }
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    // Verifica BMAP di risposta
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    // Verifica parametri di risposta
+    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ReadWrite4XRegisters );
+
+    CopyDataWord( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, ReadData );
+}
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadFIFOQueue
