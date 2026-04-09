@@ -195,9 +195,13 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a3c02ab12c5272956423c5b861e53254a" id="r_a3c02ab12c5272956423c5b861e53254a"><td class="memItemLeft">virtual String&#160;</td><td class="memItemRight"><a class="el" href="#a3c02ab12c5272956423c5b861e53254a">DoGetProtocolName</a> () const override</td></tr>
 <tr class="memitem:a98803029dd089b04dbf0679f98b00510" id="r_a98803029dd089b04dbf0679f98b00510"><td class="memItemLeft">virtual String&#160;</td><td class="memItemRight"><a class="el" href="#a98803029dd089b04dbf0679f98b00510">DoGetProtocolParamsStr</a> () const override</td></tr>
 <tr class="memitem:aa18582b43c176864ce62d090853d4774" id="r_aa18582b43c176864ce62d090853d4774"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa18582b43c176864ce62d090853d4774">DoOpen</a> () override</td></tr>
+<tr class="memdesc:aa18582b43c176864ce62d090853d4774"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for opening the communication channel (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:ae865258269ea0e45d7fda6beff2f7863" id="r_ae865258269ea0e45d7fda6beff2f7863"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ae865258269ea0e45d7fda6beff2f7863">DoClose</a> () override</td></tr>
+<tr class="memdesc:ae865258269ea0e45d7fda6beff2f7863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for closing the communication channel (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:ad89da45979c553cff2c39b6f2a0a8f24" id="r_ad89da45979c553cff2c39b6f2a0a8f24"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ad89da45979c553cff2c39b6f2a0a8f24">DoIsConnected</a> () const override</td></tr>
+<tr class="memdesc:ad89da45979c553cff2c39b6f2a0a8f24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:a2d3d41657e027d5e60901b260417cac8" id="r_a2d3d41657e027d5e60901b260417cac8"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a2d3d41657e027d5e60901b260417cac8">DoReadHoldingRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
+<tr class="memdesc:a2d3d41657e027d5e60901b260417cac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for reading holding registers (FC03).  <br /></td></tr>
 <tr class="memitem:a0a36fc6f8f2fd06ff23a6baa28eb170c" id="r_a0a36fc6f8f2fd06ff23a6baa28eb170c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a0a36fc6f8f2fd06ff23a6baa28eb170c">DoReadInputRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
 <tr class="memitem:a5f7332d554d60676c8b9b3a9472a5fb3" id="r_a5f7332d554d60676c8b9b3a9472a5fb3"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a5f7332d554d60676c8b9b3a9472a5fb3">DoPresetSingleRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> Data) override</td></tr>
 <tr class="memitem:ac285f7c1572760c04900e069190c8b22" id="r_ac285f7c1572760c04900e069190c8b22"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac285f7c1572760c04900e069190c8b22">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
@@ -208,7 +212,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="namespace_modbus.html">Modbus</a> RTU master protocol over a Win32 serial (COM) port. </p>
-<p><a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html" title="Modbus RTU master protocol over a Win32 serial (COM) port.">RTUProtocol</a> frames <a class="el" href="namespace_modbus.html">Modbus</a> requests using the RTU encoding: each PDU is preceded by the slave address byte and terminated with a two-byte CRC16 (little-endian, using the standard <a class="el" href="namespace_modbus.html">Modbus</a> CRC16 polynomial).</p>
+<p><a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html" title="Modbus RTU master protocol over a Win32 serial (COM) port.">RTUProtocol</a> is a concrete transport that frames <a class="el" href="namespace_modbus.html">Modbus</a> requests using the RTU encoding: each PDU is preceded by the slave address byte and terminated with a two-byte CRC16 (little-endian, using the standard <a class="el" href="namespace_modbus.html">Modbus</a> CRC16 polynomial). It implements all the virtual NVI hooks (DoOpen, DoClose, DoReadHoldingRegisters, etc.) defined in <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a>.</p>
 <p>Features:</p><ul>
 <li>Configurable serial port (name, baud rate, parity, data bits, stop bits).</li>
 <li>Automatic retry on timeout or CRC error; retry count defaults to MODBUS_RTU_DEFAULT_RETRY_COUNT.</li>
@@ -216,7 +220,8 @@ Protected Member Functions</h2></td></tr>
 <li>Optional <a class="el" href="#aaabaa575d0dd35754847946c1896af1c" title="Signature of the optional frame-flow diagnostic callback.">TFlowEvent</a> callback to observe raw TX/RX frames for diagnostics.</li>
 <li>CancelTXEcho, RetryCount, and TimeoutValue exposed as C++Builder __property members.</li>
 </ul>
-<dl class="section note"><dt>Note</dt><dd>Open the port by calling <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Protocol::Open()</a> before issuing any requests. Close it with <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Protocol::Close()</a> when done, or use a <a class="el" href="class_modbus_1_1_master_1_1_session_manager.html" title="RAII session guard for a Modbus::Master::Protocol.">SessionManager</a> guard. </dd></dl>
+<p><b>Architecture:</b> Inherits from <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a> and implements all protected Do…() virtual methods following the NVI pattern. Public methods are inherited from <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Open the port by calling <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Protocol::Open()</a> before issuing any requests (inherited method). Close it with <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Protocol::Close()</a> when done, or use a <a class="el" href="class_modbus_1_1_master_1_1_session_manager.html" title="RAII session guard for a Modbus::Master::Protocol.">SessionManager</a> guard. </dd></dl>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
 <a id="a4a7b54eb315124279145ec78f61f37e8" name="a4a7b54eb315124279145ec78f61f37e8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4a7b54eb315124279145ec78f61f37e8">&#9670;&#160;</a></span>FrameCont</h2>
@@ -250,8 +255,8 @@ Protected Member Functions</h2></td></tr>
 <div class="line">    <a class="code hl_function" href="#a1abfdde97342ff6c6db64917384f1f9f">RTUProtocol</a>&amp; Sender, <a class="code hl_enumeration" href="#ae1642a01da039d116dae63ef5031a7c1">FlowDirection</a> Dir, <span class="keyword">const</span> <a class="code hl_typedef" href="#a4a7b54eb315124279145ec78f61f37e8">FrameCont</a>&amp; Frame</div>
 <div class="line">)</div>
 <div class="ttc" id="aclass_modbus_1_1_master_1_1_r_t_u_protocol_html_a1abfdde97342ff6c6db64917384f1f9f"><div class="ttname"><a href="#a1abfdde97342ff6c6db64917384f1f9f">Modbus::Master::RTUProtocol::RTUProtocol</a></div><div class="ttdeci">RTUProtocol(int RetryCount=MODBUS_RTU_DEFAULT_RETRY_COUNT)</div><div class="ttdoc">Constructs the RTU protocol object.</div><div class="ttdef"><b>Definition</b> ModbusRTU.cpp:30</div></div>
-<div class="ttc" id="aclass_modbus_1_1_master_1_1_r_t_u_protocol_html_a4a7b54eb315124279145ec78f61f37e8"><div class="ttname"><a href="#a4a7b54eb315124279145ec78f61f37e8">Modbus::Master::RTUProtocol::FrameCont</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; FrameCont</div><div class="ttdoc">Container type for raw RTU frame bytes.</div><div class="ttdef"><b>Definition</b> ModbusRTU.h:90</div></div>
-<div class="ttc" id="aclass_modbus_1_1_master_1_1_r_t_u_protocol_html_ae1642a01da039d116dae63ef5031a7c1"><div class="ttname"><a href="#ae1642a01da039d116dae63ef5031a7c1">Modbus::Master::RTUProtocol::FlowDirection</a></div><div class="ttdeci">FlowDirection</div><div class="ttdoc">Indicates whether a flow event relates to a transmitted or received frame.</div><div class="ttdef"><b>Definition</b> ModbusRTU.h:93</div></div>
+<div class="ttc" id="aclass_modbus_1_1_master_1_1_r_t_u_protocol_html_a4a7b54eb315124279145ec78f61f37e8"><div class="ttname"><a href="#a4a7b54eb315124279145ec78f61f37e8">Modbus::Master::RTUProtocol::FrameCont</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; FrameCont</div><div class="ttdoc">Container type for raw RTU frame bytes.</div><div class="ttdef"><b>Definition</b> ModbusRTU.h:94</div></div>
+<div class="ttc" id="aclass_modbus_1_1_master_1_1_r_t_u_protocol_html_ae1642a01da039d116dae63ef5031a7c1"><div class="ttname"><a href="#ae1642a01da039d116dae63ef5031a7c1">Modbus::Master::RTUProtocol::FlowDirection</a></div><div class="ttdeci">FlowDirection</div><div class="ttdoc">Indicates whether a flow event relates to a transmitted or received frame.</div><div class="ttdef"><b>Definition</b> ModbusRTU.h:97</div></div>
 </div><!-- fragment -->
 <p>Signature of the optional frame-flow diagnostic callback. </p>
 <p>Called once for each transmitted frame (<a class="el" href="#ae1642a01da039d116dae63ef5031a7c1a869036c9d97cf6593c6f1c2ccfd99a49">FlowDirection::TX</a>) immediately before it is written to the COM port, and once for each received frame (<a class="el" href="#ae1642a01da039d116dae63ef5031a7c1af9c24782c24c237d16e79f18e2fa9046">FlowDirection::RX</a>) immediately after it passes CRC validation. </p>
@@ -364,6 +369,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Pure virtual hook for closing the communication channel (NVI implementation hook). </p>
+<p>Subclasses override this to provide transport-specific close logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a> method calls this; subclasses must implement <a class="el" href="#ae865258269ea0e45d7fda6beff2f7863" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a>. This should cleanly release all transport resources. </p>
+
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a71857c504ce9a0b3c81168ed248a0210">Modbus::Master::Protocol</a>.</p>
 
 </div>
@@ -445,6 +453,10 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Pure virtual hook for checking connection state (NVI implementation hook). </p>
+<p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#ad89da45979c553cff2c39b6f2a0a8f24" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>true if the channel is open/connected; false otherwise. </dd></dl>
+
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aec70ce324d4e598f40eaf573bcab43ea">Modbus::Master::Protocol</a>.</p>
 
 </div>
@@ -512,6 +524,15 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Pure virtual hook for opening the communication channel (NVI implementation hook). </p>
+<p>Subclasses override this to provide transport-specific open logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a> method calls this; subclasses must implement <a class="el" href="#aa18582b43c176864ce62d090853d4774" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a>. Only implement connection logic here; validation and retry logic are handled by the public interface.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on failure to open the channel. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aff9894dee8743fcff7fb77607490179c">Modbus::Master::Protocol</a>.</p>
 
@@ -630,6 +651,15 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Pure virtual hook for reading holding registers (FC03). </p>
+<p>This is the NVI pattern implementation hook. Subclasses override this method to provide transport-specific logic for FC03 read operations. The public API method <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a> calls this; subclasses must not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a>.</p>
+<p>Subclasses must implement this method to:</p><ol type="1">
+<li>Construct a <a class="el" href="namespace_modbus.html">Modbus</a> request PDU (function code 03, start address, point count).</li>
+<li>Send it via the transport (TCP, UDP, RTU, or Dummy).</li>
+<li>Receive and parse the response, validating CRC/MBAP headers.</li>
+<li>Extract the register values and populate the Data buffer. </li>
+</ol>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a1226c715888339d3539b76df4cd6c940">Modbus::Master::Protocol</a>.</p>
 

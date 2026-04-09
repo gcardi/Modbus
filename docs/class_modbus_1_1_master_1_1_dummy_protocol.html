@@ -142,9 +142,13 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a7f0c37b2ce7643ddf75f0ef0e93b5a8a" id="r_a7f0c37b2ce7643ddf75f0ef0e93b5a8a"><td class="memItemLeft">virtual String&#160;</td><td class="memItemRight"><a class="el" href="#a7f0c37b2ce7643ddf75f0ef0e93b5a8a">DoGetProtocolName</a> () const override</td></tr>
 <tr class="memitem:a7c7abc6a2d6e163abf43cbcc87946163" id="r_a7c7abc6a2d6e163abf43cbcc87946163"><td class="memItemLeft">virtual String&#160;</td><td class="memItemRight"><a class="el" href="#a7c7abc6a2d6e163abf43cbcc87946163">DoGetProtocolParamsStr</a> () const override</td></tr>
 <tr class="memitem:aa0c194b306a74d296312198820fc5110" id="r_aa0c194b306a74d296312198820fc5110"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa0c194b306a74d296312198820fc5110">DoOpen</a> () override</td></tr>
+<tr class="memdesc:aa0c194b306a74d296312198820fc5110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for opening the communication channel (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:a188a0ea3a512d932d0f2fa0f9b794780" id="r_a188a0ea3a512d932d0f2fa0f9b794780"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780">DoClose</a> () override</td></tr>
+<tr class="memdesc:a188a0ea3a512d932d0f2fa0f9b794780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for closing the communication channel (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:ab965543615bc70413c83736bd0a149eb" id="r_ab965543615bc70413c83736bd0a149eb"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ab965543615bc70413c83736bd0a149eb">DoIsConnected</a> () const override</td></tr>
+<tr class="memdesc:ab965543615bc70413c83736bd0a149eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:a04bfd932d119919a0d904f2ab4942ff2" id="r_a04bfd932d119919a0d904f2ab4942ff2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a04bfd932d119919a0d904f2ab4942ff2">DoReadHoldingRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
+<tr class="memdesc:a04bfd932d119919a0d904f2ab4942ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for reading holding registers (FC03).  <br /></td></tr>
 <tr class="memitem:a79ed2ac0006d4816bd60e25722f25cc9" id="r_a79ed2ac0006d4816bd60e25722f25cc9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a79ed2ac0006d4816bd60e25722f25cc9">DoReadInputRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
 <tr class="memitem:afac53c5c0846487ac53451d63388695d" id="r_afac53c5c0846487ac53451d63388695d"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#afac53c5c0846487ac53451d63388695d">DoPresetSingleRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> Data) override</td></tr>
 <tr class="memitem:acb053d205a1f50aa2639916e3702569c" id="r_acb053d205a1f50aa2639916e3702569c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#acb053d205a1f50aa2639916e3702569c">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
@@ -155,13 +159,19 @@ Protected Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>No-op <a class="el" href="namespace_modbus.html">Modbus</a> master protocol stub for unit testing without hardware. </p>
-<p>Every <a class="el" href="namespace_modbus.html">Modbus</a> request method is a safe no-op:</p><ul>
+<p>Concrete NVI implementation that provides a safe no-op stub for unit testing.</p>
+<p><b>NVI Pattern:</b> Implements all protected Do…() virtual hooks defined in <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a> (DoOpen, DoClose, DoIsConnected, DoReadHoldingRegisters, etc.). The public API methods are inherited non-virtually from <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a>.</p>
+<p>Behavior:</p><ul>
+<li>All <a class="el" href="namespace_modbus.html">Modbus</a> request methods are safe no-ops:<ul>
 <li>DoReadHoldingRegisters / DoReadInputRegisters: leave <code class="param">Data</code> buffer unchanged.</li>
 <li>DoPresetSingleRegister / DoPresetMultipleRegisters / DoMaskWrite4XRegister: discarded.</li>
-<li><a class="el" href="#aa0c194b306a74d296312198820fc5110">DoOpen()</a> sets the internal connected flag to <code>true</code>.</li>
-<li><a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780">DoClose()</a> sets the internal connected flag to <code>false</code>.</li>
-<li><a class="el" href="#ab965543615bc70413c83736bd0a149eb">DoIsConnected()</a> returns the current flag state.</li>
 </ul>
+</li>
+<li><a class="el" href="#aa0c194b306a74d296312198820fc5110" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a> sets the internal connected flag to <code>true</code>.</li>
+<li><a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a> sets the internal connected flag to <code>false</code>.</li>
+<li><a class="el" href="#ab965543615bc70413c83736bd0a149eb" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a> returns the current flag state.</li>
+</ul>
+<p>Use case: Exercise <a class="el" href="namespace_modbus.html">Modbus</a> master business logic in unit tests without requiring physical hardware, a live network, or a <a class="el" href="namespace_modbus.html">Modbus</a> slave.</p>
 <dl class="section note"><dt>Note</dt><dd>No exceptions are ever thrown by <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html" title="No-op Modbus master protocol stub for unit testing without hardware.">DummyProtocol</a>. </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="add17bf3df4afa53b6d3e1543c2c61bf9" name="add17bf3df4afa53b6d3e1543c2c61bf9"></a>
@@ -214,6 +224,9 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Pure virtual hook for closing the communication channel (NVI implementation hook). </p>
+<p>Subclasses override this to provide transport-specific close logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a> method calls this; subclasses must implement <a class="el" href="#a188a0ea3a512d932d0f2fa0f9b794780" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a70cd57f19df6b0f707691399c7f81472" title="Closes the communication channel.">Close()</a>. This should cleanly release all transport resources. </p>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a71857c504ce9a0b3c81168ed248a0210">Modbus::Master::Protocol</a>.</p>
 
@@ -296,6 +309,10 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Pure virtual hook for checking connection state (NVI implementation hook). </p>
+<p>Subclasses override this to return the transport-specific connection status. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a> method calls this; subclasses must implement <a class="el" href="#ab965543615bc70413c83736bd0a149eb" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a8b2ab30b1768455a6fdaf7cb29e80b6b" title="Returns true if the communication channel is currently open/connected.">IsConnected()</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>true if the channel is open/connected; false otherwise. </dd></dl>
+
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aec70ce324d4e598f40eaf573bcab43ea">Modbus::Master::Protocol</a>.</p>
 
 </div>
@@ -363,6 +380,15 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Pure virtual hook for opening the communication channel (NVI implementation hook). </p>
+<p>Subclasses override this to provide transport-specific open logic. The public non-virtual <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a> method calls this; subclasses must implement <a class="el" href="#aa0c194b306a74d296312198820fc5110" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21" title="Opens the communication channel (e.g., connects TCP socket, opens COM port).">Open()</a>. Only implement connection logic here; validation and retry logic are handled by the public interface.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on failure to open the channel. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aff9894dee8743fcff7fb77607490179c">Modbus::Master::Protocol</a>.</p>
 
@@ -481,6 +507,15 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Pure virtual hook for reading holding registers (FC03). </p>
+<p>This is the NVI pattern implementation hook. Subclasses override this method to provide transport-specific logic for FC03 read operations. The public API method <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a> calls this; subclasses must not override <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a>.</p>
+<p>Subclasses must implement this method to:</p><ol type="1">
+<li>Construct a <a class="el" href="namespace_modbus.html">Modbus</a> request PDU (function code 03, start address, point count).</li>
+<li>Send it via the transport (TCP, UDP, RTU, or Dummy).</li>
+<li>Receive and parse the response, validating CRC/MBAP headers.</li>
+<li>Extract the register values and populate the Data buffer. </li>
+</ol>
 
 <p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a1226c715888339d3539b76df4cd6c940">Modbus::Master::Protocol</a>.</p>
 
