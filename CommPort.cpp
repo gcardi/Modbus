@@ -565,7 +565,7 @@ void TCommPort::DiscardBytes(unsigned int MaxBytes)
         return;
 
     BYTE *dummy= new BYTE[MaxBytes];
-    ReadBytes(dummy, MaxBytes);
+    static_cast<void>( ReadBytes( dummy, MaxBytes ) );
     delete []dummy;
 }
 

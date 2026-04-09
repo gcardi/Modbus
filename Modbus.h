@@ -146,10 +146,10 @@ public:
     virtual ~Context() = default;
 
     /** @brief Returns the slave (unit) address. */
-    SlaveAddrType GetSlaveAddr() const noexcept { return DoGetSlaveAddr(); }
+    [[ nodiscard ]] SlaveAddrType GetSlaveAddr() const noexcept { return DoGetSlaveAddr(); }
 
     /** @brief Returns the transaction identifier (0 for RTU; meaningful for TCP/UDP). */
-    TransactionIdType GetTransactionIdentifier() const noexcept {
+    [[ nodiscard ]] TransactionIdType GetTransactionIdentifier() const noexcept {
         return DoGetTransactionIdentifier();
     }
 protected:
@@ -202,7 +202,7 @@ public:
                        int Args_High )
        : EBaseException( Msg, Args, Args_High )
        , context_( Context ) {}
-    Context const & GetContext() const noexcept { return context_; }
+    [[ nodiscard ]] Context const & GetContext() const noexcept { return context_; }
 public:
     Context context_;
 };
@@ -225,14 +225,14 @@ public:
                         TVarRec *Args, int Args_High )
        : EContextException( Context, Msg, Args, Args_High )
        , code_( Code ) {}
-    ExceptionCode GetCode() const noexcept { return code_; }
+    [[ nodiscard ]] ExceptionCode GetCode() const noexcept { return code_; }
 private:
     ExceptionCode code_;
 };
 //---------------------------------------------------------------------------
 
-extern String GetExceptionCodeText( ExceptionCode Code );
-extern String GetExceptionCodeDescription( ExceptionCode Code );
+[[ nodiscard ]] extern String GetExceptionCodeText( ExceptionCode Code );
+[[ nodiscard ]] extern String GetExceptionCodeDescription( ExceptionCode Code );
 
 #if !defined(__BORLANDC__) || defined(__clang__) // BCC32C, BCC64
 [[ noreturn ]] extern void RaiseFunctionCodeNotImplementedException( FunctionCode Code );
@@ -378,13 +378,13 @@ public:
     void Close();
 
     /** @brief Returns @c true if the communication channel is currently open/connected. */
-    bool IsConnected() const { return DoIsConnected(); }
+    [[ nodiscard ]] bool IsConnected() const { return DoIsConnected(); }
 
     /** @brief Returns a human-readable protocol name (e.g., "Modbus TCP (WinSock)"). */
-    String GetProtocolName() const { return DoGetProtocolName(); }
+    [[ nodiscard ]] String GetProtocolName() const { return DoGetProtocolName(); }
 
     /** @brief Returns a human-readable string describing the protocol parameters (host:port, COM port settings, etc.). */
-    String GetProtocolParamsStr() const { return DoGetProtocolParamsStr(); }
+    [[ nodiscard ]] String GetProtocolParamsStr() const { return DoGetProtocolParamsStr(); }
 
     /**
      * @brief Reads one or more coil statuses (FC01).

@@ -126,27 +126,27 @@ class TCommPort
     /** @brief Sets the COM port device name (e.g., L"COM3" or L"\\\\.\\COM10"). */
     void SetCommPort(const std::wstring & port);
     /** @brief Returns the currently configured COM port device name. */
-    std::wstring GetCommPort();
+    [[ nodiscard ]] std::wstring GetCommPort();
 
     /** @brief Sets the baud rate (e.g., 9600, 19200, 115200). */
     void SetBaudRate(unsigned int newBaud);
     /** @brief Returns the configured baud rate. */
-    unsigned int GetBaudRate() const noexcept;
+    [[ nodiscard ]] unsigned int GetBaudRate() const noexcept;
 
     /** @brief Sets the parity (NOPARITY, ODDPARITY, EVENPARITY, MARKPARITY, SPACEPARITY). */
     void SetParity(BYTE newParity);
     /** @brief Returns the configured parity. */
-    BYTE GetParity() const noexcept;
+    [[ nodiscard ]] BYTE GetParity() const noexcept;
 
     /** @brief Sets the data bits (5–8; typically 8 for Modbus RTU). */
     void SetByteSize(BYTE newByteSize);
     /** @brief Returns the configured data bits. */
-    BYTE GetByteSize() const noexcept;
+    [[ nodiscard ]] BYTE GetByteSize() const noexcept;
 
     /** @brief Sets the stop bits (ONESTOPBIT, ONE5STOPBITS, TWOSTOPBITS). */
     void SetStopBits(BYTE newStopBits);
     /** @brief Returns the configured stop bits. */
-    BYTE GetStopBits() const noexcept;
+    [[ nodiscard ]] BYTE GetStopBits() const noexcept;
 
     /** @brief Applies a raw DCB structure (prefer the Set* methods instead). */
     void SetCommDCBProperties(DCB &properties);
@@ -169,14 +169,14 @@ class TCommPort
     void WriteBufferSlowly(BYTE *buffer, unsigned int ByteCount);
 
     /** @brief Reads up to @p MaxBytes bytes into @p string. @return Actual bytes read. */
-    unsigned int ReadString(char *string, unsigned int MaxBytes);
+    [[ nodiscard ]] unsigned int ReadString(char *string, unsigned int MaxBytes);
 
     /**
      * @brief Reads exactly @p byteCount bytes into @p bytes.
      * @return Number of bytes actually read (0 on timeout).
      * @throws ECommError on I/O error (non-timeout).
      */
-    unsigned int ReadBytes(BYTE *bytes, unsigned int byteCount);
+    [[ nodiscard ]] unsigned int ReadBytes(BYTE *bytes, unsigned int byteCount);
 
     /** @brief Discards up to @p MaxBytes bytes from the receive buffer. */
     void DiscardBytes(unsigned int MaxBytes);
@@ -191,13 +191,13 @@ class TCommPort
     void  PutByte(BYTE value);
 
     /** @brief Reads and returns a single byte. @throws ECommError on timeout or error. */
-    BYTE  GetByte();
+    [[ nodiscard ]] BYTE  GetByte();
 
     /** @brief Returns the number of bytes currently waiting in the receive buffer. */
-    unsigned int BytesAvailable();
+    [[ nodiscard ]] unsigned int BytesAvailable();
 
     /** @brief Returns @c true if the port is currently open. */
-    bool GetConnected() const noexcept
+    [[ nodiscard ]] bool GetConnected() const noexcept
     {
         return m_CommOpen;
     }
@@ -206,7 +206,7 @@ class TCommPort
      * @brief Returns the raw Win32 HANDLE to the COM port.
      * @details Use only when lower-level access is required; prefer the class methods.
      */
-    HANDLE GetHandle() const noexcept
+    [[ nodiscard ]] HANDLE GetHandle() const noexcept
     {
         return m_hCom;
     }

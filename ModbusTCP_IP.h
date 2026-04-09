@@ -95,13 +95,13 @@ namespace Master {
 class TCPIPProtocol : public Protocol {
 public:
     /** @brief Returns the hostname or IP address of the Modbus server. */
-    String GetHost() const;
+    [[ nodiscard ]] String GetHost() const;
 
     /** @brief Sets the hostname or IP address of the Modbus server. */
     void SetHost( String Val );
 
     /** @brief Returns the TCP/UDP port number (default 502). */
-    uint16_t GetPort() const;
+    [[ nodiscard ]] uint16_t GetPort() const;
 
     /** @brief Sets the TCP/UDP port number. */
     void SetPort( uint16_t Val );

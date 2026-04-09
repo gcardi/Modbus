@@ -118,27 +118,27 @@ public:
     ~RTUProtocol();
 
     /** @brief Returns the COM port name (e.g., L"COM1"). */
-    String GetCommPort() const;
+    [[ nodiscard ]] String GetCommPort() const;
     /** @brief Sets the COM port name (e.g., L"COM3"). Must be called before Open(). */
     void SetCommPort( String Val );
 
     /** @brief Returns the configured baud rate (e.g., 9600, 19200). */
-    int GetCommSpeed() const noexcept;
+    [[ nodiscard ]] int GetCommSpeed() const noexcept;
     /** @brief Sets the baud rate. Must be called before Open(). */
     void SetCommSpeed( int Val );
 
     /** @brief Returns the configured parity (NOPARITY, ODDPARITY, EVENPARITY, etc.). */
-    int GetCommParity() const noexcept;
+    [[ nodiscard ]] int GetCommParity() const noexcept;
     /** @brief Sets the parity. Must be called before Open(). */
     void SetCommParity( int Val );
 
     /** @brief Returns the configured data bits (typically 8). */
-    int GetCommBits() const noexcept;
+    [[ nodiscard ]] int GetCommBits() const noexcept;
     /** @brief Sets the data bits. Must be called before Open(). */
     void SetCommBits( int Val );
 
     /** @brief Returns the configured stop bits (ONESTOPBIT, TWOSTOPBITS, etc.). */
-    int GetCommStopBits() const noexcept;
+    [[ nodiscard ]] int GetCommStopBits() const noexcept;
     /** @brief Sets the stop bits. Must be called before Open(). */
     void SetCommStopBits( int Val );
 
