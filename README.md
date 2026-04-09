@@ -108,7 +108,7 @@ int main() {
 For a server-demo, run an emulator or physical slave, then connect from the client.
 
 - Use Modbus slave tools like `modbuspoll`, `mbslave`, `CAS Modbus Scanner`.
-- For RTU, use virtual COM ports or actual serial.<br>
+- For RTU, use virtual COM ports or actual serial.
 - Emulate holding registers and validate client reads/writes.
 
 ### 3) Integration Test Flow
@@ -140,5 +140,3 @@ For a server-demo, run an emulator or physical slave, then connect from the clie
 ## License
 
 MIT (see `LICENSE`).
-
-
