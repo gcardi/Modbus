@@ -156,8 +156,14 @@ protected:
     virtual void DoClose() override;
     virtual bool DoIsConnected() const override;
 
-//    DoReadCoilStatus
-//    DoReadInputStatus
+    virtual void DoReadCoilStatus( Context const & Context,
+                                   CoilAddrType StartAddr,
+                                   CoilCountType PointCount,
+                                   CoilDataType* Data ) override;
+    virtual void DoReadInputStatus( Context const & Context,
+                                    CoilAddrType StartAddr,
+                                    CoilCountType PointCount,
+                                    CoilDataType* Data ) override;
 
     virtual void DoReadHoldingRegisters( Context const & Context,
                                          RegAddrType StartAddr,
@@ -257,6 +263,10 @@ private:
     void ReadRegisters( FunctionCode FnCode, Context const & Context,
                         RegAddrType StartAddr, RegCountType PointCount,
                         RegDataType* Data );
+
+    void ReadBits( FunctionCode FnCode, Context const & Context,
+                   CoilAddrType StartAddr, CoilCountType PointCount,
+                   CoilDataType* Data );
 
 public:
     /**

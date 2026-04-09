@@ -386,8 +386,47 @@ public:
     /** @brief Returns a human-readable string describing the protocol parameters (host:port, COM port settings, etc.). */
     String GetProtocolParamsStr() const { return DoGetProtocolParamsStr(); }
 
-//    ReadCoilStatus
-//    ReadInputStatus
+    /**
+     * @brief Reads one or more coil statuses (FC01).
+     * @param Context    Transaction context (slave address, transaction ID).
+     * @param StartAddr  Zero-based start coil address.
+     * @param PointCount Number of coils to read (max 2000 by Modbus spec).
+     * @param[out] Data  Pointer to packed coil bytes; required size is
+     *                   @c (PointCount + 7) / 8 bytes.
+     *
+     * @details Coil values are bit-packed in LSB-first order per Modbus spec.
+     *  Bit 0 of @c Data[0] corresponds to @p StartAddr.
+     *
+     * @throws EIllegalDataAddress if the address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void ReadCoilStatus( Context const & Context,
+                         CoilAddrType StartAddr, CoilCountType PointCount,
+                         CoilDataType* Data )
+    {
+        DoReadCoilStatus( Context, StartAddr, PointCount, Data );
+    }
+
+    /**
+     * @brief Reads one or more discrete input statuses (FC02).
+     * @param Context    Transaction context (slave address, transaction ID).
+     * @param StartAddr  Zero-based start input address.
+     * @param PointCount Number of discrete inputs to read (max 2000 by Modbus spec).
+     * @param[out] Data  Pointer to packed input bytes; required size is
+     *                   @c (PointCount + 7) / 8 bytes.
+     *
+     * @details Input values are bit-packed in LSB-first order per Modbus spec.
+     *  Bit 0 of @c Data[0] corresponds to @p StartAddr.
+     *
+     * @throws EIllegalDataAddress if the address or count is out of range on the slave.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void ReadInputStatus( Context const & Context,
+                          CoilAddrType StartAddr, CoilCountType PointCount,
+                          CoilDataType* Data )
+    {
+        DoReadInputStatus( Context, StartAddr, PointCount, Data );
+    }
 
     /**
      * @brief Reads one or more holding registers (FC03).
@@ -532,7 +571,15 @@ protected:
      *  4. Extract the register values and populate the Data buffer.
      */
 
-//    DoReadInputStatus
+    virtual void DoReadCoilStatus( Context const & Context,
+                                   CoilAddrType StartAddr,
+                                   CoilCountType PointCount,
+                                   CoilDataType* Data ) = 0;
+    virtual void DoReadInputStatus( Context const & Context,
+                                    CoilAddrType StartAddr,
+                                    CoilCountType PointCount,
+                                    CoilDataType* Data ) = 0;
+
     virtual void DoReadHoldingRegisters( Context const & Context,
                                          RegAddrType StartAddr,
                                          RegCountType PointCount,

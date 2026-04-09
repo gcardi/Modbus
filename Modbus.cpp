@@ -163,6 +163,24 @@ void Protocol::Close()
 //    DoReadCoilStatus
 //    DoReadInputStatus
 
+void Protocol::DoReadCoilStatus( Context const & /* Context */,
+                                 CoilAddrType /*StartAddr*/,
+                                 CoilCountType /*PointCount*/,
+                                 CoilDataType* /*Data*/ )
+{
+    RaiseFunctionCodeNotImplementedException( FunctionCode::ReadCoilStatus );
+}
+//---------------------------------------------------------------------------
+
+void Protocol::DoReadInputStatus( Context const & /* Context */,
+                                  CoilAddrType /*StartAddr*/,
+                                  CoilCountType /*PointCount*/,
+                                  CoilDataType* /*Data*/ )
+{
+    RaiseFunctionCodeNotImplementedException( FunctionCode::ReadInputStatus );
+}
+//---------------------------------------------------------------------------
+
 void Protocol::DoReadHoldingRegisters( Context const & /* Context */,
                                        RegAddrType /*StartAddr*/,
                                        RegCountType /*PointCount*/,

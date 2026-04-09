@@ -54,8 +54,14 @@ protected:
     virtual void DoClose() override { active_ = false; }
     virtual bool DoIsConnected() const override { return active_; }
 
-//    DoReadCoilStatus
-//    DoReadInputStatus
+    virtual void DoReadCoilStatus( Context const & Context,
+                                   CoilAddrType StartAddr,
+                                   CoilCountType PointCount,
+                                   CoilDataType* Data ) override {}
+    virtual void DoReadInputStatus( Context const & Context,
+                                    CoilAddrType StartAddr,
+                                    CoilCountType PointCount,
+                                    CoilDataType* Data ) override {}
 
     virtual void DoReadHoldingRegisters( Context const & Context,
                                          RegAddrType StartAddr,

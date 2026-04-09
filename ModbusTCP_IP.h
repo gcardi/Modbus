@@ -71,7 +71,8 @@ namespace Master {
  *  - Builds Modbus request frames with proper MBAP headers.
  *  - Delegates I/O to pure virtual DoWrite() and DoRead() hooks.
  *  - Validates MBAP response headers (transaction ID, protocol ID = 0, unit identifier).
- *  - Implements all Modbus function codes (FC03, FC04, FC06, FC16, FC22) inherited by TCP/UDP transports.
+ *  - Implements all Modbus function codes (FC01, FC02, FC03, FC04, FC06, FC16, FC22)
+ *    inherited by TCP/UDP transports.
  *
  *  **NVI Architecture:**
  *  - Concrete TCP/UDP subclasses (e.g., TCPProtocolIndy, UDPProtocolWinSock) override the
@@ -86,7 +87,8 @@ namespace Master {
  *    - DoRead()  — reads exactly @p Length bytes from the response stream or datagram cache.
  *    (other Do…() methods for FC03, FC04, etc. are defined in Protocol and inherited here).
  *
- *  All Modbus function codes supported by this library (FC03, FC04, FC06, FC16, FC22) are
+ *  All Modbus function codes supported by this library
+ *  (FC01, FC02, FC03, FC04, FC06, FC16, FC22) are
  *  fully implemented in Protocol and inherited by TCPIPProtocol; concrete TCP/UDP subclasses
  *  do not need to reimplement function code logic.
  */
@@ -142,8 +144,14 @@ protected:
      */
     virtual void DoRead( TBytes& InBuffer, size_t Length ) = 0;
 
-//    DoReadCoilStatus
-//    DoReadInputStatus
+    virtual void DoReadCoilStatus( Context const & Context,
+                                   CoilAddrType StartAddr,
+                                   CoilCountType PointCount,
+                                   CoilDataType* Data ) override;
+    virtual void DoReadInputStatus( Context const & Context,
+                                    CoilAddrType StartAddr,
+                                    CoilCountType PointCount,
+                                    CoilDataType* Data ) override;
     virtual void DoReadHoldingRegisters( Context const & Context,
                                          RegAddrType StartAddr,
                                          RegCountType PointCount,
@@ -216,6 +224,10 @@ private:
     void ReadRegisters( FunctionCode FnCode, Context const & Context,
                         RegAddrType StartAddr, RegCountType PointCount,
                         RegDataType* Data );
+
+    void ReadBits( FunctionCode FnCode, Context const & Context,
+                   CoilAddrType StartAddr, CoilCountType PointCount,
+                   CoilDataType* Data );
 
 protected:
     template<typename T>

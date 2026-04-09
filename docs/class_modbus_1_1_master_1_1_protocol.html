@@ -129,6 +129,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a919bdefec79a0a0cb3f8baf4162c1db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human-readable protocol name (e.g., "Modbus TCP (WinSock)").  <br /></td></tr>
 <tr class="memitem:a881bb620f3282f7536f998a5c7440df9" id="r_a881bb620f3282f7536f998a5c7440df9"><td class="memItemLeft">String&#160;</td><td class="memItemRight"><a class="el" href="#a881bb620f3282f7536f998a5c7440df9">GetProtocolParamsStr</a> () const</td></tr>
 <tr class="memdesc:a881bb620f3282f7536f998a5c7440df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human-readable string describing the protocol parameters (host:port, COM port settings, etc.).  <br /></td></tr>
+<tr class="memitem:ae7b00a743b3d2bffa397240127555390" id="r_ae7b00a743b3d2bffa397240127555390"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae7b00a743b3d2bffa397240127555390">ReadCoilStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data)</td></tr>
+<tr class="memdesc:ae7b00a743b3d2bffa397240127555390"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads one or more coil statuses (FC01).  <br /></td></tr>
+<tr class="memitem:ae0c666d885dd223c8c7b9871f5038321" id="r_ae0c666d885dd223c8c7b9871f5038321"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae0c666d885dd223c8c7b9871f5038321">ReadInputStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data)</td></tr>
+<tr class="memdesc:ae0c666d885dd223c8c7b9871f5038321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads one or more discrete input statuses (FC02).  <br /></td></tr>
 <tr class="memitem:a74263e84d1a042ecc6b6d4207a95ca2a" id="r_a74263e84d1a042ecc6b6d4207a95ca2a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a74263e84d1a042ecc6b6d4207a95ca2a">ReadHoldingRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
 <tr class="memdesc:a74263e84d1a042ecc6b6d4207a95ca2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads one or more holding registers (FC03).  <br /></td></tr>
 <tr class="memitem:aac436153729a31f5d257c64cd8aa81ec" id="r_aac436153729a31f5d257c64cd8aa81ec"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aac436153729a31f5d257c64cd8aa81ec">ReadInputRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
@@ -150,8 +154,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a71857c504ce9a0b3c81168ed248a0210"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for closing the communication channel (NVI implementation hook).  <br /></td></tr>
 <tr class="memitem:aec70ce324d4e598f40eaf573bcab43ea" id="r_aec70ce324d4e598f40eaf573bcab43ea"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#aec70ce324d4e598f40eaf573bcab43ea">DoIsConnected</a> () const =0</td></tr>
 <tr class="memdesc:aec70ce324d4e598f40eaf573bcab43ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for checking connection state (NVI implementation hook).  <br /></td></tr>
+<tr class="memitem:abafdb1c3f154c33eb9660b59ef306c16" id="r_abafdb1c3f154c33eb9660b59ef306c16"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#abafdb1c3f154c33eb9660b59ef306c16">DoReadCoilStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data)=0</td></tr>
+<tr class="memdesc:abafdb1c3f154c33eb9660b59ef306c16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for reading holding registers (FC03).  <br /></td></tr>
+<tr class="memitem:a98c4182508faba00dea2fb1ba55efad2" id="r_a98c4182508faba00dea2fb1ba55efad2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a98c4182508faba00dea2fb1ba55efad2">DoReadInputStatus</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *Data)=0</td></tr>
 <tr class="memitem:a1226c715888339d3539b76df4cd6c940" id="r_a1226c715888339d3539b76df4cd6c940"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a1226c715888339d3539b76df4cd6c940">DoReadHoldingRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)=0</td></tr>
-<tr class="memdesc:a1226c715888339d3539b76df4cd6c940"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure virtual hook for reading holding registers (FC03).  <br /></td></tr>
 <tr class="memitem:a7528bb34d590680e863977c811688a29" id="r_a7528bb34d590680e863977c811688a29"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a7528bb34d590680e863977c811688a29">DoReadInputRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)=0</td></tr>
 <tr class="memitem:aa36552dbc90a6d1231bfce6970d35a03" id="r_aa36552dbc90a6d1231bfce6970d35a03"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa36552dbc90a6d1231bfce6970d35a03">DoPresetSingleRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> Data)=0</td></tr>
 <tr class="memitem:ae0889c155d26e4a262e2e31fb5c1a5a9" id="r_ae0889c155d26e4a262e2e31fb5c1a5a9"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ae0889c155d26e4a262e2e31fb5c1a5a9">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)=0</td></tr>
@@ -164,7 +170,7 @@ Protected Member Functions</h2></td></tr>
 <p><a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a> implements the <b>Non-Virtual Interface (NVI)</b> pattern to decouple the public API from transport-specific implementations. Concrete subclasses supply the transport logic (TCP, UDP, RTU, or Dummy) by implementing the <code>Do…()</code> virtual methods.</p>
 <p><b>NVI Pattern Overview:</b></p><ul>
 <li>All public methods (Open, Close, ReadHoldingRegisters, PresetMultipleRegisters, etc.) are concrete and non-virtual; they perform input validation and orchestration.</li>
-<li>Each public method forwards to a corresponding protected <code>Do…()</code> virtual method that performs the actual transport-specific work (e.g., <a class="el" href="#aff9894dee8743fcff7fb77607490179c" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, <a class="el" href="#a1226c715888339d3539b76df4cd6c940" title="Pure virtual hook for reading holding registers (FC03).">DoReadHoldingRegisters()</a>).</li>
+<li>Each public method forwards to a corresponding protected <code>Do…()</code> virtual method that performs the actual transport-specific work (e.g., <a class="el" href="#aff9894dee8743fcff7fb77607490179c" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, <a class="el" href="#a1226c715888339d3539b76df4cd6c940">DoReadHoldingRegisters()</a>).</li>
 <li>Subclasses override only the <code>Do…()</code> virtual methods; they never override the public API.</li>
 <li>This ensures consistent contract enforcement and logging/validation across all transports.</li>
 </ul>
@@ -509,6 +515,56 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="abafdb1c3f154c33eb9660b59ef306c16" name="abafdb1c3f154c33eb9660b59ef306c16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abafdb1c3f154c33eb9660b59ef306c16">&#9670;&#160;</a></span>DoReadCoilStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::DoReadCoilStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a></td>          <td class="paramname"><span class="paramname"><em>StartAddr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a></td>          <td class="paramname"><span class="paramname"><em>PointCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pure virtual hook for reading holding registers (FC03). </p>
+<p>This is the NVI pattern implementation hook. Subclasses override this method to provide transport-specific logic for FC03 read operations. The public API method <a class="el" href="#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a> calls this; subclasses must not override <a class="el" href="#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a>.</p>
+<p>Subclasses must implement this method to:</p><ol type="1">
+<li>Construct a <a class="el" href="namespace_modbus.html">Modbus</a> request PDU (function code 03, start address, point count).</li>
+<li>Send it via the transport (TCP, UDP, RTU, or Dummy).</li>
+<li>Receive and parse the response, validating CRC/MBAP headers.</li>
+<li>Extract the register values and populate the Data buffer. </li>
+</ol>
+
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a1d67652fc8cb1f2cb4e6575e858da586">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a442d2c132d30be73f2ce4e0c4b5babfc">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#aa468fe59bb50034ce7f8afc1ed972be9">Modbus::Master::TCPIPProtocol</a>.</p>
+
+</div>
+</div>
 <a id="a1226c715888339d3539b76df4cd6c940" name="a1226c715888339d3539b76df4cd6c940"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1226c715888339d3539b76df4cd6c940">&#9670;&#160;</a></span>DoReadHoldingRegisters()</h2>
 
@@ -545,15 +601,6 @@ Protected Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Pure virtual hook for reading holding registers (FC03). </p>
-<p>This is the NVI pattern implementation hook. Subclasses override this method to provide transport-specific logic for FC03 read operations. The public API method <a class="el" href="#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a> calls this; subclasses must not override <a class="el" href="#a74263e84d1a042ecc6b6d4207a95ca2a" title="Reads one or more holding registers (FC03).">ReadHoldingRegisters()</a>.</p>
-<p>Subclasses must implement this method to:</p><ol type="1">
-<li>Construct a <a class="el" href="namespace_modbus.html">Modbus</a> request PDU (function code 03, start address, point count).</li>
-<li>Send it via the transport (TCP, UDP, RTU, or Dummy).</li>
-<li>Receive and parse the response, validating CRC/MBAP headers.</li>
-<li>Extract the register values and populate the Data buffer. </li>
-</ol>
 
 <p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a04bfd932d119919a0d904f2ab4942ff2">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a2d3d41657e027d5e60901b260417cac8">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a5739096364adebf7cb99c40682549222">Modbus::Master::TCPIPProtocol</a>.</p>
 
@@ -597,6 +644,47 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a79ed2ac0006d4816bd60e25722f25cc9">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a0a36fc6f8f2fd06ff23a6baa28eb170c">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a8a69a4b8b64d44faf6c6efcee751cd7f">Modbus::Master::TCPIPProtocol</a>.</p>
+
+</div>
+</div>
+<a id="a98c4182508faba00dea2fb1ba55efad2" name="a98c4182508faba00dea2fb1ba55efad2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c4182508faba00dea2fb1ba55efad2">&#9670;&#160;</a></span>DoReadInputStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::DoReadInputStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a></td>          <td class="paramname"><span class="paramname"><em>StartAddr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a></td>          <td class="paramname"><span class="paramname"><em>PointCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a828284a17f417193023c5fef0f0671bc">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae24fa32f2844b84a506f68a65374165d">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a69cc9da467509a2d1225eb0ad7a27de6">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -922,6 +1010,64 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae7b00a743b3d2bffa397240127555390" name="ae7b00a743b3d2bffa397240127555390"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7b00a743b3d2bffa397240127555390">&#9670;&#160;</a></span>ReadCoilStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::ReadCoilStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a></td>          <td class="paramname"><span class="paramname"><em>StartAddr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a></td>          <td class="paramname"><span class="paramname"><em>PointCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads one or more coil statuses (FC01). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname"><a class="el" href="class_modbus_1_1_context.html" title="Identifies the target of a Modbus transaction.">Context</a></td><td>Transaction context (slave address, transaction ID). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">StartAddr</td><td>Zero-based start coil address. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">PointCount</td><td>Number of coils to read (max 2000 by <a class="el" href="namespace_modbus.html">Modbus</a> spec). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">Data</td><td>Pointer to packed coil bytes; required size is <code></code>(PointCount + 7) / 8 bytes.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Coil values are bit-packed in LSB-first order per <a class="el" href="namespace_modbus.html">Modbus</a> spec. Bit 0 of <code>Data</code>[0] corresponds to <code class="param">StartAddr</code>.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#a1b16ae5f156133ff41bc700e53a1ad84" title="Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range).">EIllegalDataAddress</a></td><td>if the address or count is out of range on the slave. </td></tr>
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on communication error or timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a74263e84d1a042ecc6b6d4207a95ca2a" name="a74263e84d1a042ecc6b6d4207a95ca2a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a74263e84d1a042ecc6b6d4207a95ca2a">&#9670;&#160;</a></span>ReadHoldingRegisters()</h2>
 
@@ -976,7 +1122,7 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Uses the NVI pattern: this public method delegates to <a class="el" href="#a1226c715888339d3539b76df4cd6c940" title="Pure virtual hook for reading holding registers (FC03).">DoReadHoldingRegisters()</a>. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Uses the NVI pattern: this public method delegates to <a class="el" href="#a1226c715888339d3539b76df4cd6c940">DoReadHoldingRegisters()</a>. </dd></dl>
 
 </div>
 </div>
@@ -1027,6 +1173,64 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#a1b16ae5f156133ff41bc700e53a1ad84" title="Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range).">EIllegalDataAddress</a></td><td>if the address or count is out of range on the slave. </td></tr>
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on communication error or timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae0c666d885dd223c8c7b9871f5038321" name="ae0c666d885dd223c8c7b9871f5038321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c666d885dd223c8c7b9871f5038321">&#9670;&#160;</a></span>ReadInputStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::ReadInputStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aa0e98d4d80ce3b9f7d55ed31cbd4cd98">CoilAddrType</a></td>          <td class="paramname"><span class="paramname"><em>StartAddr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#aaf50a0ae97332033648bc8973cfdb06e">CoilCountType</a></td>          <td class="paramname"><span class="paramname"><em>PointCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5b099ee731f08e50a1e56b6ac88152fd">CoilDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads one or more discrete input statuses (FC02). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname"><a class="el" href="class_modbus_1_1_context.html" title="Identifies the target of a Modbus transaction.">Context</a></td><td>Transaction context (slave address, transaction ID). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">StartAddr</td><td>Zero-based start input address. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">PointCount</td><td>Number of discrete inputs to read (max 2000 by <a class="el" href="namespace_modbus.html">Modbus</a> spec). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">Data</td><td>Pointer to packed input bytes; required size is <code></code>(PointCount + 7) / 8 bytes.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Input values are bit-packed in LSB-first order per <a class="el" href="namespace_modbus.html">Modbus</a> spec. Bit 0 of <code>Data</code>[0] corresponds to <code class="param">StartAddr</code>.</p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="namespace_modbus.html#a1b16ae5f156133ff41bc700e53a1ad84" title="Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range).">EIllegalDataAddress</a></td><td>if the address or count is out of range on the slave. </td></tr>

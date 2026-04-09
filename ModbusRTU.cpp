@@ -201,6 +201,70 @@ bool RTUProtocol::DoIsConnected() const
 //    RTUProtocol::DoReadCoilStatus
 //    RTUProtocol::DoReadInputStatus
 
+void RTUProtocol::ReadBits( FunctionCode FnCode, Context const & Context,
+                            CoilAddrType StartAddr, CoilCountType PointCount,
+                            CoilDataType* Data )
+{
+    if ( PointCount == 0 || PointCount > 2000 ) {
+        throw EContextException(
+            Context, _D( "Too many points have been requested" )
+        );
+    }
+
+    FrameCont TxFrame;
+    const FrameCont::size_type ExpectedByteCount( ( PointCount + 7 ) / 8 );
+    const FrameCont::size_type ExpectedRxFramelength( ExpectedByteCount + 5 );
+    FrameCont RxFrame;
+
+    RxFrame.reserve( ExpectedRxFramelength );
+    TxFrame.reserve( 8 );
+
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ = static_cast<RegDataType>( FnCode );
+    TxFrameBkInsIt =
+        WriteAddressPointCountPair( TxFrameBkInsIt, StartAddr, PointCount );
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    SendAndReceiveFrames(
+        Context, TxFrame, back_inserter( RxFrame ),
+        ExpectedRxFramelength, retryCount_
+    );
+
+    FrameCont::const_iterator RxInIt = RxFrame.begin();
+
+    const FrameCont::size_type RxByteCount =
+        static_cast<FrameCont::size_type>( *RxInIt++ );
+
+    if ( RxByteCount != ExpectedByteCount ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
+
+    for ( FrameCont::size_type Idx = 0; Idx < RxByteCount; ++Idx ) {
+        *Data++ = *RxInIt++;
+    }
+}
+//---------------------------------------------------------------------------
+
+void RTUProtocol::DoReadCoilStatus( Context const & Context,
+                                    CoilAddrType StartAddr,
+                                    CoilCountType PointCount,
+                                    CoilDataType* Data )
+{
+    ReadBits( FunctionCode::ReadCoilStatus, Context, StartAddr,
+              PointCount, Data );
+}
+//---------------------------------------------------------------------------
+
+void RTUProtocol::DoReadInputStatus( Context const & Context,
+                                     CoilAddrType StartAddr,
+                                     CoilCountType PointCount,
+                                     CoilDataType* Data )
+{
+    ReadBits( FunctionCode::ReadInputStatus, Context, StartAddr,
+              PointCount, Data );
+}
+
 //---------------------------------------------------------------------------
 
 void RTUProtocol::ReadRegisters( FunctionCode FnCode, Context const & Context,

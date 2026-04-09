@@ -260,9 +260,76 @@ String TCPIPProtocol::DoGetProtocolParamsStr() const
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadCoilStatus
+void TCPIPProtocol::ReadBits( FunctionCode FnCode, Context const & Context,
+                              CoilAddrType StartAddr, CoilCountType PointCount,
+                              CoilDataType* Data )
+{
+    if ( PointCount == 0 || PointCount > 2000 ) {
+        throw EContextException( Context, _D( "Invalid point count" ) );
+    }
+
+    const uint8_t ExpectedByteCount =
+        static_cast<uint8_t>( ( PointCount + 7 ) / 8 );
+
+    // Send
+    TBytes OutBuffer;
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + GetAddressPointCountPairLength() );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] = static_cast<RegDataType>( FnCode );
+    Idx = WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    // Validate BMAP and payload function code
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FnCode );
+
+    if ( GetLength( ReplyBuffer ) < 2 ) {
+        throw EContextException( Context, _D( "Invalid reply length" ) );
+    }
+
+    const uint8_t ByteCount = ReplyBuffer[1];
+    if ( ByteCount != ExpectedByteCount || GetLength( ReplyBuffer ) != ByteCount + 2 ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
+
+    for ( uint8_t I = 0; I < ByteCount; ++I ) {
+        Data[I] = ReplyBuffer[2 + I];
+    }
+}
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadInputStatus
+void TCPIPProtocol::DoReadCoilStatus( Context const & Context,
+                                      CoilAddrType StartAddr,
+                                      CoilCountType PointCount,
+                                      CoilDataType* Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ReadCoilStatus failed" ) );
+
+    ReadBits( FunctionCode::ReadCoilStatus, Context, StartAddr,
+              PointCount, Data );
+}
+//---------------------------------------------------------------------------
+
+void TCPIPProtocol::DoReadInputStatus( Context const & Context,
+                                       CoilAddrType StartAddr,
+                                       CoilCountType PointCount,
+                                       CoilDataType* Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ReadInputStatus failed" ) );
+
+    ReadBits( FunctionCode::ReadInputStatus, Context, StartAddr,
+              PointCount, Data );
+}
 //---------------------------------------------------------------------------
 
 void TCPIPProtocol::ReadRegisters( FunctionCode FnCode, Context const & Context,

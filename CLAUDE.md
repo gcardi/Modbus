@@ -73,7 +73,7 @@ Protocol (abstract base, Modbus.h)
     └── DummyProtocol     — No-op stub for tests (ModbusDummy.h)
 ```
 
-**`Modbus::Master::Protocol`** is the abstract base. Subclasses implement protected `Do*()` virtual hooks for transport I/O and connection management. Public methods (FC03, FC04, FC06, FC16, FC22) are implemented in the base class on top of those hooks.
+**`Modbus::Master::Protocol`** is the abstract base. Subclasses implement protected `Do*()` virtual hooks for transport I/O and connection management. Public methods (FC01, FC02, FC03, FC04, FC06, FC16, FC22) are implemented in the base class on top of those hooks.
 
 **`Modbus::Master::SessionManager`** is an RAII guard: calls `Open()` on construction, `Close()` on destruction.
 
@@ -89,7 +89,7 @@ Protocol (abstract base, Modbus.h)
 
 ## Test Suite
 
-`Test/ModbusTest.cpp` uses **Boost.Test 1.89** (`boost/test/included/unit_test.hpp`). A `ServerFixture` global fixture starts an embedded Modbus slave on `127.0.0.1:5020` in a `std::thread` before tests run and stops it after. Tests cover FC03, FC04, FC06, FC16, FC22, and exception handling.
+`Test/ModbusTest.cpp` uses **Boost.Test 1.89** (`boost/test/included/unit_test.hpp`). A `ServerFixture` global fixture starts an embedded Modbus slave on `127.0.0.1:5020` in a `std::thread` before tests run and stops it after. Tests cover FC01, FC02, FC03, FC04, FC06, FC16, FC22, and exception handling across TCP/IP, Dummy, and RTU endpoints.
 
 CMake test build details and known pitfalls (SysInit.o linking, PCH2 force-include) are documented in [Test/README-cmake.md](Test/README-cmake.md) and [TECHNICAL_DOCS.md](TECHNICAL_DOCS.md).
 
@@ -100,23 +100,23 @@ CMake test build details and known pitfalls (SysInit.o linking, PCH2 force-inclu
 - Correct: `_D("Modbus TCP")`, `String(DEFAULT_MODBUS_TCPIP_HOST)`
 - Incorrect: `_D(DEFAULT_MODBUS_TCPIP_HOST)`
 
- **Non-Virtual Interface (NVI) Pattern:**
- 
- This project implements the NVI pattern throughout the protocol hierarchy to enforce consistent API contracts across all transports:
- 
- - **Public methods** (Open, Close, ReadHoldingRegisters, PresetMultipleRegisters, etc.) are non-virtual concrete functions in the base class.
- - **Virtual hooks** follow the "`Do`" prefix naming convention: DoOpen, DoClose, DoReadHoldingRegisters, DoPresetMultipleRegisters, etc.
- - **Hook placement:** Virtual hooks are declared in the `protected` section of abstract base classes.
- - **Subclass responsibility:** Concrete transport subclasses (RTUProtocol, TCPProtocolIndy, TCPProtocolWinSock, etc.) implement ONLY the Do…() virtual hooks; they do NOT override public methods.
- - **Benefit:** This enforces contract validation, logging, and error handling at the base class level, ensuring consistency across RTU, TCP, UDP, and Dummy transports.
- 
- Example: To add a new transport (e.g., SerialProtocolCustom extending RTUProtocol), override only the Do…() methods—never override the public API.
- 
- **Namespaces:**
- 
- - `Modbus::` — types, exceptions, `Context`
- - `Modbus::Master::` — `Protocol`, `SessionManager`, all transport classes
- - `Modbus::Utils::` — serial enumeration (`SerEnum.h`)
+**Non-Virtual Interface (NVI) Pattern:**
+
+This project implements the NVI pattern throughout the protocol hierarchy to enforce consistent API contracts across all transports:
+
+- **Public methods** (Open, Close, ReadHoldingRegisters, PresetMultipleRegisters, etc.) are non-virtual concrete functions in the base class.
+- **Virtual hooks** follow the "`Do`" prefix naming convention: DoOpen, DoClose, DoReadHoldingRegisters, DoPresetMultipleRegisters, etc.
+- **Hook placement:** Virtual hooks are declared in the `protected` section of abstract base classes.
+- **Subclass responsibility:** Concrete transport subclasses (RTUProtocol, TCPProtocolIndy, TCPProtocolWinSock, etc.) implement ONLY the Do…() virtual hooks; they do NOT override public methods.
+- **Benefit:** This enforces contract validation, logging, and error handling at the base class level, ensuring consistency across RTU, TCP, UDP, and Dummy transports.
+
+Example: To add a new transport (e.g., SerialProtocolCustom extending RTUProtocol), override only the Do…() methods—never override the public API.
+
+**Namespaces:**
+
+- `Modbus::` — types, exceptions, `Context`
+- `Modbus::Master::` — `Protocol`, `SessionManager`, all transport classes
+- `Modbus::Utils::` — serial enumeration (`SerEnum.h`)
 
 **Compiler compatibility:** `[[noreturn]]` attribute placement differs between BCC32 and BCC32C/BCC64 — see existing exception class declarations for the guarded pattern.
 

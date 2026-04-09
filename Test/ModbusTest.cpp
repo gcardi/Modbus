@@ -6,6 +6,8 @@
 // it cleanly after the last test completes.
 //
 // Server initial register state:
+//   coilRegs[i]   = (i & 1)        (FC01)
+//   inputBits[i]  = ((i % 3) == 0) (FC02)
 //   holdingRegs[i] = i          (FC03 / FC06 / FC16 / FC22)
 //   inputRegs[i]   = 0x1000 + i (FC04, read-only)
 //---------------------------------------------------------------------------
@@ -27,6 +29,8 @@
 
 #include "ModbusTCP_IP.h"
 #include "ModbusTCP_WinSock.h"
+#include "ModbusDummy.h"
+#include "ModbusRTU.h"
 
 // --- Boost.Test static-link -----------------------------------------------
 // Keep Boost-provided main() and use a Unicode _tmain wrapper at the end
@@ -47,12 +51,16 @@ static const uint16_t SERVER_PORT = 5020;
 static const int      REG_COUNT   = 256;
 
 static std::atomic<bool> gServerStop { false };
+static uint8_t           coilRegs[REG_COUNT];
+static uint8_t           inputBits[REG_COUNT];
 static uint16_t          holdingRegs[REG_COUNT];
 static uint16_t          inputRegs[REG_COUNT];
 
 static void initRegisters()
 {
     for ( int i = 0; i < REG_COUNT; ++i ) {
+        coilRegs[i]    = static_cast<uint8_t>( i & 1 );          // 0,1,0,1,...
+        inputBits[i]   = static_cast<uint8_t>( ( i % 3 ) == 0 ); // 1,0,0,1,0,0,...
         holdingRegs[i] = static_cast<uint16_t>( i );
         inputRegs[i]   = static_cast<uint16_t>( 0x1000 + i );
     }
@@ -123,6 +131,44 @@ static std::vector<uint8_t> handleFC03( const uint8_t* d, int len )
     return pdu;
 }
 
+static std::vector<uint8_t> handleFC01( const uint8_t* d, int len )
+{
+    if ( len < 4 ) return errorPdu( 0x01, 0x03 );
+    uint16_t addr = get16( d ), count = get16( d + 2 );
+    if ( count == 0 || count > 2000 ) return errorPdu( 0x01, 0x03 );
+    if ( addr + count > REG_COUNT )   return errorPdu( 0x01, 0x02 );
+
+    const uint8_t byteCount = static_cast<uint8_t>( ( count + 7 ) / 8 );
+    std::vector<uint8_t> pdu { 0x01, byteCount };
+    pdu.resize( static_cast<size_t>( 2 + byteCount ), 0 );
+
+    for ( uint16_t i = 0; i < count; ++i ) {
+        if ( coilRegs[addr + i] ) {
+            pdu[2 + i / 8] |= static_cast<uint8_t>( 1u << ( i % 8 ) );
+        }
+    }
+    return pdu;
+}
+
+static std::vector<uint8_t> handleFC02( const uint8_t* d, int len )
+{
+    if ( len < 4 ) return errorPdu( 0x02, 0x03 );
+    uint16_t addr = get16( d ), count = get16( d + 2 );
+    if ( count == 0 || count > 2000 ) return errorPdu( 0x02, 0x03 );
+    if ( addr + count > REG_COUNT )   return errorPdu( 0x02, 0x02 );
+
+    const uint8_t byteCount = static_cast<uint8_t>( ( count + 7 ) / 8 );
+    std::vector<uint8_t> pdu { 0x02, byteCount };
+    pdu.resize( static_cast<size_t>( 2 + byteCount ), 0 );
+
+    for ( uint16_t i = 0; i < count; ++i ) {
+        if ( inputBits[addr + i] ) {
+            pdu[2 + i / 8] |= static_cast<uint8_t>( 1u << ( i % 8 ) );
+        }
+    }
+    return pdu;
+}
+
 static std::vector<uint8_t> handleFC04( const uint8_t* d, int len )
 {
     if ( len < 4 ) return errorPdu( 0x04, 0x03 );
@@ -187,6 +233,8 @@ static bool handleRequest( SOCKET s )
 
     std::vector<uint8_t> pdu;
     switch ( fc ) {
+        case 0x01: pdu = handleFC01( data, dataLen ); break;
+        case 0x02: pdu = handleFC02( data, dataLen ); break;
         case 0x03: pdu = handleFC03( data, dataLen ); break;
         case 0x04: pdu = handleFC04( data, dataLen ); break;
         case 0x06: pdu = handleFC06( data, dataLen ); break;
@@ -309,8 +357,82 @@ static uint16_t readI( TCPIPProtocol& p, uint16_t addr, uint8_t slave = 1 )
     return val;
 }
 
+static uint8_t readC( TCPIPProtocol& p, uint16_t addr, uint8_t slave = 1 )
+{
+    CoilDataType packed = 0;
+    p.ReadCoilStatus( ctx( slave ), addr, 1, &packed );
+    return static_cast<uint8_t>( packed & 0x01u );
+}
+
+static uint8_t readD( TCPIPProtocol& p, uint16_t addr, uint8_t slave = 1 )
+{
+    CoilDataType packed = 0;
+    p.ReadInputStatus( ctx( slave ), addr, 1, &packed );
+    return static_cast<uint8_t>( packed & 0x01u );
+}
+
 //---------------------------------------------------------------------------
 // Test suites
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC01_ReadCoilStatus, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( SingleCoilAlternatingPattern )
+    {
+        BOOST_TEST( readC( proto_, 0 ) == 0u );
+        BOOST_TEST( readC( proto_, 1 ) == 1u );
+        BOOST_TEST( readC( proto_, 2 ) == 0u );
+        BOOST_TEST( readC( proto_, 3 ) == 1u );
+    }
+
+    BOOST_AUTO_TEST_CASE( PackedBitOrderLSBFirst )
+    {
+        CoilDataType buf[2] = { 0, 0 };
+        proto_.ReadCoilStatus( ctx(), 0, 16, buf );
+        BOOST_TEST( buf[0] == 0xAAu );
+        BOOST_TEST( buf[1] == 0xAAu );
+    }
+
+    BOOST_AUTO_TEST_CASE( OutOfRangeThrows )
+    {
+        CoilDataType v[1] = { 0 };
+        BOOST_CHECK_THROW(
+            proto_.ReadCoilStatus( ctx(), 255, 2, v ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC02_ReadInputStatus, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( SingleInputModuloPattern )
+    {
+        BOOST_TEST( readD( proto_, 0 ) == 1u );
+        BOOST_TEST( readD( proto_, 1 ) == 0u );
+        BOOST_TEST( readD( proto_, 2 ) == 0u );
+        BOOST_TEST( readD( proto_, 3 ) == 1u );
+    }
+
+    BOOST_AUTO_TEST_CASE( PackedBitOrderLSBFirst )
+    {
+        CoilDataType buf[2] = { 0, 0 };
+        proto_.ReadInputStatus( ctx(), 0, 16, buf );
+        BOOST_TEST( buf[0] == 0x49u );
+        BOOST_TEST( buf[1] == 0x92u );
+    }
+
+    BOOST_AUTO_TEST_CASE( OutOfRangeThrows )
+    {
+        CoilDataType v[1] = { 0 };
+        BOOST_CHECK_THROW(
+            proto_.ReadInputStatus( ctx(), 255, 2, v ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
 //---------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_SUITE( FC03_ReadHoldingRegisters, ProtoFixture )
@@ -472,6 +594,58 @@ BOOST_FIXTURE_TEST_SUITE( FC22_MaskWrite4XRegister, ProtoFixture )
         proto_.PresetSingleRegister( ctx(), 80, 0xFFFF );
         proto_.MaskWrite4XRegister ( ctx(), 80, 0x0000, 0x1234 );
         BOOST_TEST( readH( proto_, 80 ) == 0x1234u );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( FC01_FC02_DummyEndpoint )
+
+    BOOST_AUTO_TEST_CASE( DummyReadCoilsLeavesBufferUnchanged )
+    {
+        DummyProtocol proto;
+        SessionManager session( proto );
+
+        CoilDataType v[2] = { 0x5Au, 0xA5u };
+        proto.ReadCoilStatus( Context( 1 ), 0, 16, v );
+        BOOST_TEST( v[0] == 0x5Au );
+        BOOST_TEST( v[1] == 0xA5u );
+    }
+
+    BOOST_AUTO_TEST_CASE( DummyReadInputsLeavesBufferUnchanged )
+    {
+        DummyProtocol proto;
+        SessionManager session( proto );
+
+        CoilDataType v[2] = { 0x33u, 0xCCu };
+        proto.ReadInputStatus( Context( 1 ), 0, 16, v );
+        BOOST_TEST( v[0] == 0x33u );
+        BOOST_TEST( v[1] == 0xCCu );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE( FC01_FC02_RTUEndpoint )
+
+    BOOST_AUTO_TEST_CASE( ReadCoilsWithoutOpenPortThrows )
+    {
+        RTUProtocol proto;
+        CoilDataType v[1] = { 0 };
+        BOOST_CHECK_THROW(
+            proto.ReadCoilStatus( Context( 1 ), 0, 1, v ),
+            Exception );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadInputsWithoutOpenPortThrows )
+    {
+        RTUProtocol proto;
+        CoilDataType v[1] = { 0 };
+        BOOST_CHECK_THROW(
+            proto.ReadInputStatus( Context( 1 ), 0, 1, v ),
+            Exception );
     }
 
 BOOST_AUTO_TEST_SUITE_END()

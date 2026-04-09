@@ -23,7 +23,10 @@ endif()
 set(BOOST_INCLUDE_DIR "${BDS_ROOT}/include/boost_1_89")
 
 set(MODBUS_TEST_SOURCES
+  ../CommPort.cpp
   ../Modbus.cpp
+  ../ModbusDummy.cpp
+  ../ModbusRTU.cpp
   ../ModbusTCP_IP.cpp
   ../ModbusTCP_WinSock.cpp
   ModbusTest.cpp
