@@ -50,11 +50,16 @@ using namespace Modbus::Master;
 static const uint16_t SERVER_PORT = 5020;
 static const int      REG_COUNT   = 256;
 
+static const int      FIFO_MAX    = 31;
+
 static std::atomic<bool> gServerStop { false };
 static uint8_t           coilRegs[REG_COUNT];
 static uint8_t           inputBits[REG_COUNT];
 static uint16_t          holdingRegs[REG_COUNT];
 static uint16_t          inputRegs[REG_COUNT];
+static uint8_t           exceptionStatus;          // FC07
+static uint16_t          fifoQueue[FIFO_MAX];      // FC24
+static uint16_t          fifoCount;
 
 static void initRegisters()
 {
@@ -64,6 +69,10 @@ static void initRegisters()
         holdingRegs[i] = static_cast<uint16_t>( i );
         inputRegs[i]   = static_cast<uint16_t>( 0x1000 + i );
     }
+    exceptionStatus = 0x6D;  // FC07: arbitrary known pattern
+    fifoCount = 5;           // FC24: 5 values in the FIFO
+    for ( int i = 0; i < FIFO_MAX; ++i )
+        fifoQueue[i] = static_cast<uint16_t>( 0x100 + i );
 }
 
 static bool srvRecvAll( SOCKET s, uint8_t* buf, int len )
@@ -273,6 +282,46 @@ static std::vector<uint8_t> handleFC23( const uint8_t* d, int len )
     return pdu;
 }
 
+static std::vector<uint8_t> handleFC07( const uint8_t* /*d*/, int /*len*/ )
+{
+    // FC07: no request data; response is FC(1) + ExceptionStatus(1)
+    return { 0x07, exceptionStatus };
+}
+
+static std::vector<uint8_t> handleFC08( const uint8_t* d, int len )
+{
+    // FC08 Diagnostics: SubFunction(2) + Data(2)
+    if ( len < 4 ) return errorPdu( 0x08, 0x03 );
+    uint16_t subFn = get16( d );
+    // For sub-function 0x0000 (Return Query Data), echo the data back.
+    // For all other implemented sub-functions, also echo (simplified server).
+    return { 0x08, d[0], d[1], d[2], d[3] };
+    (void)subFn;
+}
+
+static std::vector<uint8_t> handleFC24( const uint8_t* d, int len )
+{
+    // FC24 Read FIFO Queue: FIFOPointerAddr(2)
+    if ( len < 2 ) return errorPdu( 0x18, 0x03 );
+    uint16_t addr = get16( d );
+    if ( addr >= REG_COUNT ) return errorPdu( 0x18, 0x02 );
+
+    // Response: FC(1) + ByteCount(2) + FIFOCount(2) + FIFOValues(fifoCount*2)
+    uint16_t byteCount = static_cast<uint16_t>( 2 + fifoCount * 2 );
+    std::vector<uint8_t> pdu;
+    pdu.reserve( 5 + fifoCount * 2 );
+    pdu.push_back( 0x18 );
+    pdu.push_back( static_cast<uint8_t>( byteCount >> 8 ) );
+    pdu.push_back( static_cast<uint8_t>( byteCount & 0xFF ) );
+    pdu.push_back( static_cast<uint8_t>( fifoCount >> 8 ) );
+    pdu.push_back( static_cast<uint8_t>( fifoCount & 0xFF ) );
+    for ( uint16_t i = 0; i < fifoCount; ++i ) {
+        pdu.push_back( static_cast<uint8_t>( fifoQueue[i] >> 8 ) );
+        pdu.push_back( static_cast<uint8_t>( fifoQueue[i] & 0xFF ) );
+    }
+    return pdu;
+}
+
 static bool handleRequest( SOCKET s )
 {
     uint8_t header[6];
@@ -296,10 +345,13 @@ static bool handleRequest( SOCKET s )
         case 0x04: pdu = handleFC04( data, dataLen ); break;
         case 0x05: pdu = handleFC05( data, dataLen ); break;
         case 0x06: pdu = handleFC06( data, dataLen ); break;
+        case 0x07: pdu = handleFC07( data, dataLen ); break;
+        case 0x08: pdu = handleFC08( data, dataLen ); break;
         case 0x0F: pdu = handleFC15( data, dataLen ); break;
         case 0x10: pdu = handleFC16( data, dataLen ); break;
         case 0x16: pdu = handleFC22( data, dataLen ); break;
         case 0x17: pdu = handleFC23( data, dataLen ); break;
+        case 0x18: pdu = handleFC24( data, dataLen ); break;
         default:   pdu = errorPdu( fc, 0x01 );        break;
     }
 
@@ -804,6 +856,113 @@ BOOST_FIXTURE_TEST_SUITE( FC23_ReadWrite4XRegisters, ProtoFixture )
             proto_.ReadWrite4XRegisters( ctx(),
                 0, 1, &readVal,
                 255, 2, writeVals ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC07_ReadExceptionStatus, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( ReturnsKnownPattern )
+    {
+        auto status = proto_.ReadExceptionStatus( ctx() );
+        BOOST_TEST( status == 0x6Du );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReturnTypeIsUint8 )
+    {
+        ExceptionStatusDataType status = proto_.ReadExceptionStatus( ctx() );
+        BOOST_TEST( sizeof( status ) == 1u );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC08_Diagnostics, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( EchoTestReturnsData )
+    {
+        auto result = proto_.Diagnostics(
+            ctx(),
+            static_cast<DiagSubFnType>( DiagnosticsSubFunction::ReturnQueryData ),
+            0xABCD
+        );
+        BOOST_TEST( result == 0xABCDu );
+    }
+
+    BOOST_AUTO_TEST_CASE( EchoTestZero )
+    {
+        auto result = proto_.Diagnostics(
+            ctx(),
+            static_cast<DiagSubFnType>( DiagnosticsSubFunction::ReturnQueryData ),
+            0x0000
+        );
+        BOOST_TEST( result == 0x0000u );
+    }
+
+    BOOST_AUTO_TEST_CASE( EchoTestMaxValue )
+    {
+        auto result = proto_.Diagnostics(
+            ctx(),
+            static_cast<DiagSubFnType>( DiagnosticsSubFunction::ReturnQueryData ),
+            0xFFFF
+        );
+        BOOST_TEST( result == 0xFFFFu );
+    }
+
+    BOOST_AUTO_TEST_CASE( SubFunctionEchoed )
+    {
+        // Our test server echoes all sub-functions; just verify no exception
+        BOOST_CHECK_NO_THROW(
+            proto_.Diagnostics(
+                ctx(),
+                static_cast<DiagSubFnType>( DiagnosticsSubFunction::ReturnBusMessageCount ),
+                0x0000
+            )
+        );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC24_ReadFIFOQueue, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( ReadsExpectedCount )
+    {
+        RegDataType buf[FIFO_MAX] = {};
+        FIFOCountType count = proto_.ReadFIFOQueue( ctx(), 0, buf );
+        BOOST_TEST( count == 5u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadsExpectedValues )
+    {
+        RegDataType buf[FIFO_MAX] = {};
+        FIFOCountType count = proto_.ReadFIFOQueue( ctx(), 0, buf );
+        BOOST_TEST( count == 5u );
+        for ( int i = 0; i < count; ++i ) {
+            BOOST_TEST( buf[i] == static_cast<uint16_t>( 0x100 + i ) );
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE( EmptyFIFO )
+    {
+        fifoCount = 0;  // empty the FIFO for this test
+        RegDataType buf[FIFO_MAX] = {};
+        buf[0] = 0xDEAD;  // sentinel
+        FIFOCountType count = proto_.ReadFIFOQueue( ctx(), 0, buf );
+        BOOST_TEST( count == 0u );
+        BOOST_TEST( buf[0] == 0xDEADu );  // buffer untouched
+    }
+
+    BOOST_AUTO_TEST_CASE( InvalidAddressThrows )
+    {
+        RegDataType buf[FIFO_MAX] = {};
+        BOOST_CHECK_THROW(
+            proto_.ReadFIFOQueue( ctx(), 256, buf ),
             EBaseException );
     }
 

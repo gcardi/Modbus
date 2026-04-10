@@ -327,6 +327,35 @@ using RegAddrType  = uint16_t;   ///< Type for a holding/input register address.
 using RegCountType = uint16_t;   ///< Type for the number of registers in a request.
 using RegDataType  = uint16_t;   ///< Type for a single register value (16-bit word).
 
+using ExceptionStatusDataType = uint8_t;  ///< Type for the FC07 exception status byte (8 coil values).
+using DiagSubFnType = uint16_t;           ///< Type for a Diagnostics (FC08) sub-function code.
+using FIFOAddrType  = uint16_t;           ///< Type for the FIFO pointer register address (FC24).
+using FIFOCountType = uint16_t;           ///< Type for the number of FIFO register values (FC24).
+
+/**
+ * @brief Standard Diagnostics sub-function codes for FC08.
+ *
+ * @details Only a subset of commonly used sub-functions is listed here.
+ *  The full list is defined in the Modbus specification.
+ */
+enum class DiagnosticsSubFunction : DiagSubFnType {
+    ReturnQueryData            = 0x0000,  ///< Echo test — slave echoes request data.
+    RestartCommunicationsOption = 0x0001, ///< Restart communications, optionally clear log.
+    ReturnDiagnosticRegister   = 0x0002,  ///< Return the slave's 16-bit diagnostic register.
+    ChangeAsciiInputDelimiter  = 0x0003,  ///< Change the ASCII mode input delimiter.
+    ForceListenOnlyMode        = 0x0004,  ///< Force the slave into listen-only mode.
+    ClearCountersAndDiagnosticRegister = 0x000A, ///< Clear all counters and the diagnostic register.
+    ReturnBusMessageCount      = 0x000B,  ///< Return total bus message count.
+    ReturnBusCommunicationErrorCount = 0x000C, ///< Return CRC error count.
+    ReturnBusExceptionErrorCount = 0x000D, ///< Return slave exception response count.
+    ReturnSlaveMessageCount    = 0x000E,  ///< Return messages addressed to this slave.
+    ReturnSlaveNoResponseCount = 0x000F,  ///< Return no-response count for this slave.
+    ReturnSlaveNAKCount        = 0x0010,  ///< Return NAK exception count.
+    ReturnSlaveBusyCount       = 0x0011,  ///< Return slave busy exception count.
+    ReturnBusCharacterOverrunCount = 0x0012, ///< Return character overrun count.
+    ClearOverrunCounterAndFlag = 0x0014,  ///< Clear the overrun counter and error flag.
+};
+
 //---------------------------------------------------------------------------
 namespace Master {
 //---------------------------------------------------------------------------
@@ -492,8 +521,45 @@ public:
     {
         DoPresetSingleRegister( Context, Addr, Data );
     }
-//    ReadExceptionStatus
-//    Diagnostics
+    /**
+     * @brief Reads the eight exception status coils from the slave (FC07).
+     * @param Context Transaction context (slave address, transaction ID).
+     * @return A single byte whose bits represent the eight exception status outputs.
+     *
+     * @details This is a simple, fast diagnostic read.  The meaning of each bit
+     *  is device-specific.
+     *
+     * @throws EIllegalFunction if the slave does not support FC07.
+     * @throws EBaseException on communication error or timeout.
+     */
+    [[ nodiscard ]]
+    ExceptionStatusDataType ReadExceptionStatus( Context const & Context )
+    {
+        return DoReadExceptionStatus( Context );
+    }
+
+    /**
+     * @brief Sends a Diagnostics request to the slave (FC08).
+     * @param Context     Transaction context (slave address, transaction ID).
+     * @param SubFunction Diagnostics sub-function code (see DiagnosticsSubFunction enum).
+     * @param Data        16-bit data field sent with the request.
+     * @return The 16-bit data field returned by the slave.
+     *
+     * @details For sub-function 0x0000 (Return Query Data / echo test), the slave
+     *  echoes back the same data value.  Other sub-functions may return counters,
+     *  status, or zero depending on the sub-function semantics.
+     *
+     * @throws EIllegalFunction if the slave does not support FC08 or the sub-function.
+     * @throws EIllegalDataValue if the data value is not accepted by the sub-function.
+     * @throws EBaseException on communication error or timeout.
+     */
+    [[ nodiscard ]]
+    RegDataType Diagnostics( Context const & Context,
+                             DiagSubFnType SubFunction, RegDataType Data )
+    {
+        return DoDiagnostics( Context, SubFunction, Data );
+    }
+
 //    Program484
 //    Poll484
 //    FetchCommEventCtr
@@ -579,7 +645,30 @@ public:
         DoReadWrite4XRegisters( Context, ReadStartAddr, ReadPointCount, ReadData,
                                 WriteStartAddr, WritePointCount, WriteData );
     }
-//    ReadFIFOQueue
+    /**
+     * @brief Reads the contents of a FIFO queue of registers from the slave (FC24).
+     * @param Context       Transaction context (slave address, transaction ID).
+     * @param FIFOAddr      Address of the FIFO pointer register on the slave.
+     * @param[out] Data     Pointer to output buffer; must hold at least 31 elements
+     *                      (the Modbus-defined maximum FIFO depth).
+     * @return The number of register values actually read (0–31).
+     *
+     * @details The slave returns the current FIFO count followed by that many 16-bit
+     *  register values.  If the FIFO is empty the return value is 0 and Data is untouched.
+     *
+     * @throws EIllegalDataAddress if the FIFO pointer address is invalid on the slave.
+     * @throws EIllegalDataValue if the FIFO contains more than 31 values.
+     * @throws EIllegalFunction if the slave does not support FC24.
+     * @throws EBaseException on communication error or timeout.
+     */
+    [[ nodiscard ]]
+    FIFOCountType ReadFIFOQueue( Context const & Context,
+                                 FIFOAddrType FIFOAddr,
+                                 RegDataType* Data )
+    {
+        return DoReadFIFOQueue( Context, FIFOAddr, Data );
+    }
+
 protected:
     virtual String DoGetProtocolName() const = 0;
     virtual String DoGetProtocolParamsStr() const = 0;
@@ -650,8 +739,11 @@ protected:
     virtual void DoPresetSingleRegister( Context const & Context,
                                          RegAddrType Addr,
                                          RegDataType Data ) = 0;
-//    DoReadExceptionStatus
-//    DoDiagnostics
+    virtual ExceptionStatusDataType DoReadExceptionStatus(
+                                        Context const & Context ) = 0;
+    virtual RegDataType DoDiagnostics( Context const & Context,
+                                       DiagSubFnType SubFunction,
+                                       RegDataType Data ) = 0;
 //    DoProgram484
 //    DoPoll484
 //    DoFetchCommEventCtr
@@ -682,7 +774,9 @@ protected:
                                          RegAddrType WriteStartAddr,
                                          RegCountType WritePointCount,
                                          const RegDataType* WriteData ) = 0;
-//    DoReadFIFOQueue
+    virtual FIFOCountType DoReadFIFOQueue( Context const & Context,
+                                          FIFOAddrType FIFOAddr,
+                                          RegDataType* Data ) = 0;
 
     void RaiseExceptionIfIsConnected( String SubMsg ) const;
     void RaiseExceptionIfIsNotConnected( String SubMsg ) const;

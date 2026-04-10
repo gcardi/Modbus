@@ -444,10 +444,75 @@ void RTUProtocol::DoPresetSingleRegister( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoReadExceptionStatus
+ExceptionStatusDataType RTUProtocol::DoReadExceptionStatus(
+                                         Context const & Context )
+{
+    FrameCont TxFrame;
+    // Response: SlaveAddr(1) + FC(1) + ExceptionStatus(1) + CRC(2) = 5
+    const FrameCont::size_type ExpectedRxFramelength( 5 );
+    FrameCont RxFrame;
 
+    RxFrame.reserve( ExpectedRxFramelength );
+    TxFrame.reserve( 4 );
+
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<RegDataType>( FunctionCode::ReadExceptionStatus );
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    SendAndReceiveFrames(
+        Context, TxFrame, back_inserter( RxFrame ),
+        ExpectedRxFramelength, retryCount_
+    );
+
+    // RxFrame payload (after SendAndReceiveFrames strips SlaveAddr+FC+CRC):
+    // ExceptionStatus(1)
+    return static_cast<ExceptionStatusDataType>( RxFrame[0] );
+}
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoDiagnostics
+RegDataType RTUProtocol::DoDiagnostics( Context const & Context,
+                                        DiagSubFnType SubFunction,
+                                        RegDataType Data )
+{
+    FrameCont TxFrame;
+    // Response: SlaveAddr(1) + FC(1) + SubFunction(2) + Data(2) + CRC(2) = 8
+    const FrameCont::size_type ExpectedRxFramelength( 8 );
+    FrameCont RxFrame;
+
+    RxFrame.reserve( ExpectedRxFramelength );
+    TxFrame.reserve( 8 );
+
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<RegDataType>( FunctionCode::Diagnostics );
+    TxFrameBkInsIt = Write( TxFrameBkInsIt, SubFunction );
+    TxFrameBkInsIt = Write( TxFrameBkInsIt, Data );
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    SendAndReceiveFrames(
+        Context, TxFrame, back_inserter( RxFrame ),
+        ExpectedRxFramelength, retryCount_
+    );
+
+    // RxFrame payload: SubFunction(2) + Data(2)
+    FrameCont::const_iterator RxInIt = RxFrame.begin();
+
+    uint16_t ReadSubFn;
+    RxInIt = Read( RxInIt, ReadSubFn );
+    if ( ReadSubFn != SubFunction ) {
+        throw EContextException( Context, _D( "Sub-function mismatch" ) );
+    }
+
+    RegDataType ReadData;
+    RxInIt = Read( RxInIt, ReadData );
+    return ReadData;
+}
 
 //---------------------------------------------------------------------------
 
@@ -710,6 +775,161 @@ void RTUProtocol::DoReadWrite4XRegisters( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoReadFIFOQueue
+FIFOCountType RTUProtocol::DoReadFIFOQueue( Context const & Context,
+                                            FIFOAddrType FIFOAddr,
+                                            RegDataType* Data )
+{
+    FrameCont TxFrame;
+    // We don't know the FIFO count yet, so first try with max response size:
+    // SlaveAddr(1) + FC(1) + ByteCount(2) + FIFOCount(2) + MaxValues(31*2) + CRC(2) = 70
+    // But SendAndReceiveFrames expects the exact length.
+    // We'll send the request and read a minimal response first to get the count.
+    // Actually, the RTU framing reads byte-by-byte, so we need a two-phase approach:
+    //
+    // Phase 1: Send request, read header to determine FIFO count.
+    // For RTU, SendAndReceiveFrames reads exactly ExpectedRxFramelength bytes.
+    // We must first read the minimum response (no FIFO values) to learn the count,
+    // then read the remaining values. However, the existing RTU framework reads
+    // the full frame in one call.
+    //
+    // Since the RTU protocol reads byte-by-byte with CRC validation, we can use
+    // a max-size approach: request the maximum possible frame length (70 bytes)
+    // but the actual slave response will be shorter. The timeout on missing bytes
+    // triggers a retry, which won't work for variable-length responses.
+    //
+    // Instead, we do manual I/O similar to SendAndReceiveFramesInt but handle
+    // the variable-length response ourselves.
+
+    TxFrame.reserve( 6 );
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<RegDataType>( FunctionCode::ReadFIFOQueue );
+    TxFrameBkInsIt = Write( TxFrameBkInsIt, FIFOAddr );
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    // Read the fixed header portion first:
+    // SlaveAddr(1) + FC(1) + ByteCount(2) + FIFOCount(2) + CRC(2) = 8
+    // Then we know how many more bytes to expect.
+    // However, we need to handle this in a single read because CRC covers everything.
+    //
+    // Alternative: read the fixed header (6 bytes: SlaveAddr+FC+ByteCount+FIFOCount),
+    // compute remaining bytes from FIFOCount, read the rest, then validate CRC.
+    //
+    // For simplicity and consistency with the existing pattern, we use a reasonable
+    // upper bound. The Modbus spec limits FIFO to 31 values, so max frame = 70 bytes.
+    // We'll read exactly 8 bytes first (minimum valid response), extract FIFOCount,
+    // then compute the full expected length and re-read if needed.
+    //
+    // Actually, the cleanest approach that fits the existing architecture:
+    // Just use SendAndReceiveFrames with the minimum header length (8 = empty FIFO),
+    // but that won't work if FIFOCount > 0.
+    //
+    // Let's do a direct serial I/O approach:
+
+    if ( onFlowEvent_ )
+        onFlowEvent_( *this, FlowDirection::TX, TxFrame );
+
+    commPort_.PurgeCommPort();
+    commPort_.WriteBuffer(
+        const_cast<FrameCont::value_type*>( &TxFrame[0] ), TxFrame.size()
+    );
+
+    if ( CancelTXEcho ) {
+        for ( FrameCont::size_type Cnt = TxFrame.size() ; Cnt ; --Cnt ) {
+            uint8_t Char;
+            if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+                throw EContextException( Context, _D( "TX echo timeout" ) );
+            }
+        }
+    }
+
+    // Read fixed header: SlaveAddr(1) + FC(1) + ByteCount(2) + FIFOCount(2) = 6
+    FrameCont RxFrame;
+    RxFrame.reserve( 70 );
+
+    for ( int I = 0; I < 6; ++I ) {
+        uint8_t Char;
+        if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+            throw EContextException( Context, _D( "Timeout error" ) );
+        }
+        RxFrame.push_back( Char );
+
+        // Check for exception response at byte index 1
+        if ( I == 1 && ( Char & 0x80 ) ) {
+            // Exception response: read one more byte (exception code) + CRC(2)
+            for ( int J = 0; J < 3; ++J ) {
+                if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+                    throw EContextException( Context, _D( "Timeout error" ) );
+                }
+                RxFrame.push_back( Char );
+            }
+            // Validate CRC
+            if ( ComputeCRC( RxFrame.begin(), RxFrame.end() ) ) {
+                throw EContextException( Context, _D( "Bad CRC (RX)" ) );
+            }
+            if ( RxFrame[0] != Context.GetSlaveAddr() ) {
+                throw EContextException( Context, _D( "Slave address mismatch" ) );
+            }
+            RaiseStandardException( Context, ExceptionCode( RxFrame[2] ) );
+        }
+    }
+
+    // Validate slave address and function code
+    if ( RxFrame[0] != Context.GetSlaveAddr() ) {
+        throw EContextException( Context, _D( "Slave address mismatch" ) );
+    }
+    if ( RxFrame[1] != static_cast<uint8_t>( FunctionCode::ReadFIFOQueue ) ) {
+        throw EContextException( Context, _D( "Function code mismatch" ) );
+    }
+
+    uint16_t const ByteCount =
+        ( static_cast<uint16_t>( RxFrame[2] ) << 8 ) |
+        ( static_cast<uint16_t>( RxFrame[3] ) & 0xFF );
+
+    uint16_t const FIFOCount =
+        ( static_cast<uint16_t>( RxFrame[4] ) << 8 ) |
+        ( static_cast<uint16_t>( RxFrame[5] ) & 0xFF );
+
+    if ( FIFOCount > 31 ) {
+        throw EContextException( Context, _D( "FIFO count exceeds maximum (31)" ) );
+    }
+
+    if ( ByteCount != 2 + FIFOCount * 2 ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
+
+    // Read remaining bytes: FIFOValues(FIFOCount * 2) + CRC(2)
+    const int Remaining = FIFOCount * 2 + 2;
+    for ( int I = 0; I < Remaining; ++I ) {
+        uint8_t Char;
+        if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+            throw EContextException( Context, _D( "Timeout error" ) );
+        }
+        RxFrame.push_back( Char );
+    }
+
+    if ( onFlowEvent_ ) {
+        onFlowEvent_( *this, FlowDirection::RX, RxFrame );
+    }
+
+    // Validate CRC over entire frame
+    if ( ComputeCRC( RxFrame.begin(), RxFrame.end() ) ) {
+        throw EContextException( Context, _D( "Bad CRC (RX)" ) );
+    }
+
+    // Extract FIFO register values (starting at byte offset 6)
+    for ( FIFOCountType I = 0; I < FIFOCount; ++I ) {
+        int const Off = 6 + I * 2;
+        Data[I] = static_cast<RegDataType>(
+            ( static_cast<uint16_t>( RxFrame[Off] ) << 8 ) |
+            ( static_cast<uint16_t>( RxFrame[Off + 1] ) & 0xFF )
+        );
+    }
+
+    return static_cast<FIFOCountType>( FIFOCount );
+}
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------

@@ -459,10 +459,98 @@ void TCPIPProtocol::DoPresetSingleRegister( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadExceptionStatus
+ExceptionStatusDataType TCPIPProtocol::DoReadExceptionStatus(
+                                           Context const & Context )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ReadExceptionStatus failed" ) );
 
+    // Send: BMAP(7) + FC(1) — no additional payload
+    TBytes OutBuffer;
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<RegDataType>( FunctionCode::ReadExceptionStatus );
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive BMAP header
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+
+    // Receive payload: FC(1) + ExceptionStatus(1)
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    RaiseExceptionIfReplyIsNotValid(
+        Context, ReplyBuffer, FunctionCode::ReadExceptionStatus
+    );
+
+    if ( GetLength( ReplyBuffer ) < 2 ) {
+        throw EContextException( Context, _D( "Invalid reply length" ) );
+    }
+
+    return static_cast<ExceptionStatusDataType>( ReplyBuffer[1] );
+}
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoDiagnostics
+RegDataType TCPIPProtocol::DoDiagnostics( Context const & Context,
+                                          DiagSubFnType SubFunction,
+                                          RegDataType Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "Diagnostics failed" ) );
+
+    // Send: BMAP(7) + FC(1) + SubFunction(2) + Data(2)
+    TBytes OutBuffer;
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 + 2 );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<RegDataType>( FunctionCode::Diagnostics );
+    Idx = WriteData( OutBuffer, Idx, SubFunction );
+    Idx = WriteData( OutBuffer, Idx, Data );
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive BMAP header
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+
+    // Receive payload: FC(1) + SubFunction(2) + Data(2)
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    RaiseExceptionIfReplyIsNotValid(
+        Context, ReplyBuffer, FunctionCode::Diagnostics
+    );
+
+    if ( GetLength( ReplyBuffer ) < 5 ) {
+        throw EContextException( Context, _D( "Invalid reply length" ) );
+    }
+
+    // Validate sub-function echo
+    uint16_t const ReplySF =
+        ( static_cast<uint16_t>( ReplyBuffer[1] ) << 8 ) |
+        ( static_cast<uint16_t>( ReplyBuffer[2] ) & 0xFF );
+    if ( ReplySF != SubFunction ) {
+        throw EContextException( Context, _D( "Sub-function mismatch" ) );
+    }
+
+    // Extract returned data word
+    return static_cast<RegDataType>(
+        ( static_cast<uint16_t>( ReplyBuffer[3] ) << 8 ) |
+        ( static_cast<uint16_t>( ReplyBuffer[4] ) & 0xFF )
+    );
+}
 
 //---------------------------------------------------------------------------
 
@@ -702,6 +790,76 @@ void TCPIPProtocol::DoReadWrite4XRegisters( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadFIFOQueue
+FIFOCountType TCPIPProtocol::DoReadFIFOQueue( Context const & Context,
+                                              FIFOAddrType FIFOAddr,
+                                              RegDataType* Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ReadFIFOQueue failed" ) );
+
+    // Send: BMAP(7) + FC(1) + FIFOPointerAddr(2)
+    TBytes OutBuffer;
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<RegDataType>( FunctionCode::ReadFIFOQueue );
+    Idx = WriteData( OutBuffer, Idx, FIFOAddr );
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive BMAP header
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+
+    // Receive payload
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    RaiseExceptionIfReplyIsNotValid(
+        Context, ReplyBuffer, FunctionCode::ReadFIFOQueue
+    );
+
+    // Response: FC(1) + ByteCount(2) + FIFOCount(2) + FIFOValues(FIFOCount*2)
+    if ( GetLength( ReplyBuffer ) < 5 ) {
+        throw EContextException( Context, _D( "Invalid reply length" ) );
+    }
+
+    uint16_t const ByteCount =
+        ( static_cast<uint16_t>( ReplyBuffer[1] ) << 8 ) |
+        ( static_cast<uint16_t>( ReplyBuffer[2] ) & 0xFF );
+
+    uint16_t const FIFOCount =
+        ( static_cast<uint16_t>( ReplyBuffer[3] ) << 8 ) |
+        ( static_cast<uint16_t>( ReplyBuffer[4] ) & 0xFF );
+
+    if ( FIFOCount > 31 ) {
+        throw EContextException( Context, _D( "FIFO count exceeds maximum (31)" ) );
+    }
+
+    if ( ByteCount != 2 + FIFOCount * 2 ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
+
+    if ( GetLength( ReplyBuffer ) != 5 + FIFOCount * 2 ) {
+        throw EContextException( Context, _D( "Invalid reply length" ) );
+    }
+
+    // Extract FIFO register values
+    for ( FIFOCountType I = 0; I < FIFOCount; ++I ) {
+        int const Off = 5 + I * 2;
+        Data[I] = static_cast<RegDataType>(
+            ( static_cast<uint16_t>( ReplyBuffer[Off] ) << 8 ) |
+            ( static_cast<uint16_t>( ReplyBuffer[Off + 1] ) & 0xFF )
+        );
+    }
+
+    return static_cast<FIFOCountType>( FIFOCount );
+}
+//---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 }; // End of namespace Master

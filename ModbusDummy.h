@@ -78,8 +78,13 @@ protected:
                                     bool Value ) noexcept override {}
     virtual void DoPresetSingleRegister( Context const & Context,
                                          RegAddrType Addr, RegDataType Data ) noexcept override {}
-//    DoReadExceptionStatus
-//    DoDiagnostics
+    virtual ExceptionStatusDataType DoReadExceptionStatus(
+                                        Context const & Context ) noexcept override
+    { return 0; }
+    virtual RegDataType DoDiagnostics( Context const & Context,
+                                       DiagSubFnType SubFunction,
+                                       RegDataType Data ) noexcept override
+    { return Data; }
 //    DoProgram484
 //    DoPoll484
 //    DoFetchCommEventCtr
@@ -111,7 +116,10 @@ protected:
                                          RegAddrType WriteStartAddr,
                                          RegCountType WritePointCount,
                                          const RegDataType* WriteData ) noexcept override {}
-//    DoReadFIFOQueue
+    virtual FIFOCountType DoReadFIFOQueue( Context const & Context,
+                                          FIFOAddrType FIFOAddr,
+                                          RegDataType* Data ) noexcept override
+    { return 0; }
 private:
     bool active_ { false };
 };

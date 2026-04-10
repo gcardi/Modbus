@@ -178,8 +178,11 @@ protected:
                                     bool Value ) override;
     virtual void DoPresetSingleRegister( Context const & Context,
                                          RegAddrType Addr, RegDataType Data ) override;
-//    DoReadExceptionStatus
-//    DoDiagnostics
+    virtual ExceptionStatusDataType DoReadExceptionStatus(
+                                        Context const & Context ) override;
+    virtual RegDataType DoDiagnostics( Context const & Context,
+                                       DiagSubFnType SubFunction,
+                                       RegDataType Data ) override;
 //    DoProgram484
 //    DoPoll484
 //    DoFetchCommEventCtr
@@ -211,7 +214,9 @@ protected:
                                          RegAddrType WriteStartAddr,
                                          RegCountType WritePointCount,
                                          const RegDataType* WriteData ) override;
-//    DoReadFIFOQueue
+    virtual FIFOCountType DoReadFIFOQueue( Context const & Context,
+                                          FIFOAddrType FIFOAddr,
+                                          RegDataType* Data ) override;
 private:
 
     static Context const DefaultRTUContext;
