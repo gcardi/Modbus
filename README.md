@@ -44,6 +44,7 @@ Abstract base class exposing:
 - `ForceSingleCoil()`, `ForceMultipleCoils()`
 - `PresetSingleRegister()`, `PresetMultipleRegisters()`, `MaskWrite4XRegister()`
 - `ReadWrite4XRegisters()`
+- `ReadExceptionStatus()`, `Diagnostics()`, `ReadFIFOQueue()`
 
 `SessionManager` RAII wrapper ensures connection lifecycle.
 
@@ -53,8 +54,11 @@ Abstract base class exposing:
 - FC03 Read Holding Registers / FC04 Read Input Registers
 - FC05 Force Single Coil / FC15 Force Multiple Coils
 - FC06 Preset Single Register / FC16 Preset Multiple Registers
+- FC07 Read Exception Status
+- FC08 Diagnostics (Return Query Data and other sub-functions)
 - FC22 Mask Write 4X Register
 - FC23 Read/Write 4X Registers
+- FC24 Read FIFO Queue
 - Standard exceptions: IllegalFunction, IllegalDataAddress, IllegalDataValue, SlaveDeviceFailure, etc.
 
 ## Protocol Implementations

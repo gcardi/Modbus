@@ -73,7 +73,7 @@ Protocol (abstract base, Modbus.h)
     └── DummyProtocol     — No-op stub for tests (ModbusDummy.h)
 ```
 
-**`Modbus::Master::Protocol`** is the abstract base. Subclasses implement protected `Do*()` virtual hooks for transport I/O and connection management. Public methods (FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23) are implemented in the base class on top of those hooks.
+**`Modbus::Master::Protocol`** is the abstract base. Subclasses implement protected `Do*()` virtual hooks for transport I/O and connection management. Public methods (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC22, FC23, FC24) are implemented in the base class on top of those hooks.
 
 **`Modbus::Master::SessionManager`** is an RAII guard: calls `Open()` on construction, `Close()` on destruction.
 
@@ -89,7 +89,7 @@ Protocol (abstract base, Modbus.h)
 
 ## Test Suite
 
-`Test/ModbusTest.cpp` uses **Boost.Test 1.89** (`boost/test/included/unit_test.hpp`). A `ServerFixture` global fixture starts an embedded Modbus slave on `127.0.0.1:5020` in a `std::thread` before tests run and stops it after. Tests cover FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23, and exception handling across TCP/IP, Dummy, and RTU endpoints.
+`Test/ModbusTest.cpp` uses **Boost.Test 1.89** (`boost/test/included/unit_test.hpp`). A `ServerFixture` global fixture starts an embedded Modbus slave on `127.0.0.1:5020` in a `std::thread` before tests run and stops it after. Tests cover FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC22, FC23, FC24, and exception handling across TCP/IP, Dummy, and RTU endpoints.
 
 CMake test build details and known pitfalls (SysInit.o linking, PCH2 force-include) are documented in [Test/README-cmake.md](Test/README-cmake.md) and [TECHNICAL_DOCS.md](TECHNICAL_DOCS.md).
 
