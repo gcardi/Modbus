@@ -6,8 +6,8 @@ var indexSectionsWithContent =
   3: "cms",
   4: "bcdefgimoprstuw~",
   5: "cert",
-  6: "bcefrst",
-  7: "ef",
+  6: "bcdefrst",
+  7: "def",
   8: "abcdfgimnoprstw",
   9: "dfm"
 };

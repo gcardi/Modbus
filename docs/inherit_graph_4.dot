@@ -1,0 +1,9 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node0 [id="Node000000",label="Modbus::Master::SessionManager",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_modbus_1_1_master_1_1_session_manager.html",tooltip="RAII session guard for a Modbus::Master::Protocol."];
+}

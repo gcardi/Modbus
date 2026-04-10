@@ -6,11 +6,13 @@ var searchData=
   ['raisestandardexception_3',['RaiseStandardException',['../namespace_modbus.html#ad4c00a354897dac2ad5c40591e7fd2bf',1,'Modbus']]],
   ['readbytes_4',['ReadBytes',['../class_t_comm_port.html#af2af4066e5c0085d71b0c2b7f1c483d3',1,'TCommPort']]],
   ['readcoilstatus_5',['ReadCoilStatus',['../class_modbus_1_1_master_1_1_protocol.html#ae7b00a743b3d2bffa397240127555390',1,'Modbus::Master::Protocol']]],
-  ['readholdingregisters_6',['ReadHoldingRegisters',['../class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a',1,'Modbus::Master::Protocol']]],
-  ['readinputregisters_7',['ReadInputRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aac436153729a31f5d257c64cd8aa81ec',1,'Modbus::Master::Protocol']]],
-  ['readinputstatus_8',['ReadInputStatus',['../class_modbus_1_1_master_1_1_protocol.html#ae0c666d885dd223c8c7b9871f5038321',1,'Modbus::Master::Protocol']]],
-  ['readstring_9',['ReadString',['../class_t_comm_port.html#ad03f24b708412feb4819df9c3d749865',1,'TCommPort']]],
-  ['readwrite4xregisters_10',['ReadWrite4XRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aab4999d4645901fd2ddf386b0698372a',1,'Modbus::Master::Protocol']]],
-  ['regqueryvaluestring_11',['RegQueryValueString',['../namespace_modbus_1_1_utils.html#a3117824aae5906b757a495a271c8af11',1,'Modbus::Utils']]],
-  ['rtuprotocol_12',['RTUProtocol',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#a1abfdde97342ff6c6db64917384f1f9f',1,'Modbus::Master::RTUProtocol']]]
+  ['readexceptionstatus_6',['ReadExceptionStatus',['../class_modbus_1_1_master_1_1_protocol.html#aaab9a5a2f2ed861025b965fd6423c3fa',1,'Modbus::Master::Protocol']]],
+  ['readfifoqueue_7',['ReadFIFOQueue',['../class_modbus_1_1_master_1_1_protocol.html#a2ff3d38b0f882990c0ac4f8b75f5fc4d',1,'Modbus::Master::Protocol']]],
+  ['readholdingregisters_8',['ReadHoldingRegisters',['../class_modbus_1_1_master_1_1_protocol.html#a74263e84d1a042ecc6b6d4207a95ca2a',1,'Modbus::Master::Protocol']]],
+  ['readinputregisters_9',['ReadInputRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aac436153729a31f5d257c64cd8aa81ec',1,'Modbus::Master::Protocol']]],
+  ['readinputstatus_10',['ReadInputStatus',['../class_modbus_1_1_master_1_1_protocol.html#ae0c666d885dd223c8c7b9871f5038321',1,'Modbus::Master::Protocol']]],
+  ['readstring_11',['ReadString',['../class_t_comm_port.html#ad03f24b708412feb4819df9c3d749865',1,'TCommPort']]],
+  ['readwrite4xregisters_12',['ReadWrite4XRegisters',['../class_modbus_1_1_master_1_1_protocol.html#aab4999d4645901fd2ddf386b0698372a',1,'Modbus::Master::Protocol']]],
+  ['regqueryvaluestring_13',['RegQueryValueString',['../namespace_modbus_1_1_utils.html#a3117824aae5906b757a495a271c8af11',1,'Modbus::Utils']]],
+  ['rtuprotocol_14',['RTUProtocol',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#a1abfdde97342ff6c6db64917384f1f9f',1,'Modbus::Master::RTUProtocol']]]
 ];

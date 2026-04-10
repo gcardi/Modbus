@@ -11,5 +11,16 @@ var searchData=
   ['readwrite4xregisters_8',['ReadWrite4XRegisters',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a7967db388bc257fb32db18dd23fbbd0a',1,'Modbus']]],
   ['reportslave_9',['ReportSlave',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37aeabb66043058779c8b3e49dc7b3cfe9c',1,'Modbus']]],
   ['resetcommlink_10',['ResetCommLink',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a23b8019edd758aab91ad0cd4ec4cd579',1,'Modbus']]],
-  ['rx_11',['RX',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae1642a01da039d116dae63ef5031a7c1af9c24782c24c237d16e79f18e2fa9046',1,'Modbus::Master::RTUProtocol']]]
+  ['restartcommunicationsoption_11',['RestartCommunicationsOption',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435aa315015967a6ac315e139a344b4bc63d',1,'Modbus']]],
+  ['returnbuscharacteroverruncount_12',['ReturnBusCharacterOverrunCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435ac619cb9703da2544e3374aace88ec073',1,'Modbus']]],
+  ['returnbuscommunicationerrorcount_13',['ReturnBusCommunicationErrorCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a4db66670742d159f770cab3fc44e0692',1,'Modbus']]],
+  ['returnbusexceptionerrorcount_14',['ReturnBusExceptionErrorCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a8117dbbb24f306639116084044a92acc',1,'Modbus']]],
+  ['returnbusmessagecount_15',['ReturnBusMessageCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a0070845eea49786aef1889aa320d4127',1,'Modbus']]],
+  ['returndiagnosticregister_16',['ReturnDiagnosticRegister',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a466f61e1a2aadf478347665ae17a04ff',1,'Modbus']]],
+  ['returnquerydata_17',['ReturnQueryData',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a0a78c1fc491ea9c8f53e854d24f74b94',1,'Modbus']]],
+  ['returnslavebusycount_18',['ReturnSlaveBusyCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a3c9988695f9eb5e8365fa57e4f598e73',1,'Modbus']]],
+  ['returnslavemessagecount_19',['ReturnSlaveMessageCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a951152825fc0776781974cc9e4587e29',1,'Modbus']]],
+  ['returnslavenakcount_20',['ReturnSlaveNAKCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435a2b908386cff45dfa42b577fe811dd368',1,'Modbus']]],
+  ['returnslavenoresponsecount_21',['ReturnSlaveNoResponseCount',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435aaa3dcf55bbbe43bb159bbd500c8fde5a',1,'Modbus']]],
+  ['rx_22',['RX',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae1642a01da039d116dae63ef5031a7c1af9c24782c24c237d16e79f18e2fa9046',1,'Modbus::Master::RTUProtocol']]]
 ];

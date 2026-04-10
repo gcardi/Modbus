@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['regaddrtype_0',['RegAddrType',['../namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b',1,'Modbus']]],
-  ['regcounttype_1',['RegCountType',['../namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be',1,'Modbus']]],
-  ['regdatatype_2',['RegDataType',['../namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd',1,'Modbus']]]
+  ['fifoaddrtype_0',['FIFOAddrType',['../namespace_modbus.html#a49eb0d0be5b59dc466855c79be3b6646',1,'Modbus']]],
+  ['fifocounttype_1',['FIFOCountType',['../namespace_modbus.html#accff11a7e99cd1c664fc879955539f0c',1,'Modbus']]],
+  ['framecont_2',['FrameCont',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#a4a7b54eb315124279145ec78f61f37e8',1,'Modbus::Master::RTUProtocol']]]
 ];

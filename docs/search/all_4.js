@@ -1,15 +1,15 @@
 var searchData=
 [
-  ['eacknowledge_0',['EAcknowledge',['../namespace_modbus.html#adb3a3563502c34050ddfee7a948fd329',1,'Modbus']]],
+  ['eacknowledge_0',['EAcknowledge',['../namespace_modbus.html#a2dbc9abb9db1c37be1d4c896a96b5806',1,'Modbus']]],
   ['ebaseexception_1',['EBaseException',['../class_modbus_1_1_e_base_exception.html',1,'Modbus::EBaseException'],['../class_modbus_1_1_e_base_exception.html#a4b26ef2d5359322680ed971cf4ca961b',1,'Modbus::EBaseException::EBaseException(String Message)'],['../class_modbus_1_1_e_base_exception.html#a341d21165c93719756530504159175e6',1,'Modbus::EBaseException::EBaseException(String Msg, TVarRec *Args, int Args_High)']]],
   ['ecommerror_2',['ECommError',['../class_e_comm_error.html',1,'ECommError'],['../class_e_comm_error.html#ad7860de09c45ba7790dad486bf5aeec5',1,'ECommError::ECommError()']]],
   ['ecommerrorlocalfree_3',['ECommErrorLocalFree',['../class_e_comm_error_local_free.html',1,'ECommErrorLocalFree'],['../class_e_comm_error_local_free.html#ad28da3f577ab5aa9ddedf5267302d902',1,'ECommErrorLocalFree::ECommErrorLocalFree(PVOID Buffer)'],['../class_e_comm_error_local_free.html#afa4c61bc66b8434d7ddb7569521fd721',1,'ECommErrorLocalFree::ECommErrorLocalFree(ECommErrorLocalFree const &amp;Rhs)=delete'],['../class_e_comm_error_local_free.html#aaf3d5f0947a3afe4e7a559ccd1daa9de',1,'ECommErrorLocalFree::ECommErrorLocalFree(ECommErrorLocalFree &amp;&amp;Rhs)=delete']]],
   ['econtextexception_4',['EContextException',['../class_modbus_1_1_e_context_exception.html',1,'Modbus::EContextException'],['../class_modbus_1_1_e_context_exception.html#ae50f71089c67cb3a3f638f0c42e56f28',1,'Modbus::EContextException::EContextException(Context const &amp;Context, String Message)'],['../class_modbus_1_1_e_context_exception.html#a0e4d2f399a033b135135179aaa2a1bef',1,'Modbus::EContextException::EContextException(Context const &amp;Context, String Msg, TVarRec *Args, int Args_High)']]],
-  ['eillegaldataaddress_5',['EIllegalDataAddress',['../namespace_modbus.html#a1b16ae5f156133ff41bc700e53a1ad84',1,'Modbus']]],
-  ['eillegaldatavalue_6',['EIllegalDataValue',['../namespace_modbus.html#a0e4f858ad5dcde102048f8085d632da5',1,'Modbus']]],
-  ['eillegalfunction_7',['EIllegalFunction',['../namespace_modbus.html#aaca11ad66613968beb425474fd53c62c',1,'Modbus']]],
-  ['ememoryparityerror_8',['EMemoryParityError',['../namespace_modbus.html#adf1ff33e81f20d1f6ac020db6e28716d',1,'Modbus']]],
-  ['enegativeacknowledge_9',['ENegativeAcknowledge',['../namespace_modbus.html#a318446c7b45d8da1a66c3734dce6548e',1,'Modbus']]],
+  ['eillegaldataaddress_5',['EIllegalDataAddress',['../namespace_modbus.html#aca6e1d6a1e93cf7ea9a0b6062380c9d8',1,'Modbus']]],
+  ['eillegaldatavalue_6',['EIllegalDataValue',['../namespace_modbus.html#af35225214a45b3d559395b140f5e94d4',1,'Modbus']]],
+  ['eillegalfunction_7',['EIllegalFunction',['../namespace_modbus.html#a7bde2cc3bd951a0f1addb83c5280afcd',1,'Modbus']]],
+  ['ememoryparityerror_8',['EMemoryParityError',['../namespace_modbus.html#a3d451aa12282c403c966c7fb1cfc0542',1,'Modbus']]],
+  ['enegativeacknowledge_9',['ENegativeAcknowledge',['../namespace_modbus.html#a22ac78deebedcf123e834849d6b3ad86',1,'Modbus']]],
   ['enumserialport_10',['EnumSerialPort',['../namespace_modbus_1_1_utils.html#aaef4a763b2cfe26b4f47c3cd1be5eae1',1,'Modbus::Utils']]],
   ['eprotocolexception_11',['EProtocolException',['../class_modbus_1_1_e_protocol_exception.html',1,'Modbus::EProtocolException'],['../class_modbus_1_1_e_protocol_exception.html#a55b27e1561c71374959472a3ae7183be',1,'Modbus::EProtocolException::EProtocolException(Context const &amp;Context, ExceptionCode Code, String Message)'],['../class_modbus_1_1_e_protocol_exception.html#ac440f481c7d5ab1c59240a9df39092c2',1,'Modbus::EProtocolException::EProtocolException(Context const &amp;Context, ExceptionCode Code, String Msg, TVarRec *Args, int Args_High)']]],
   ['eprotocolstdexception_12',['EProtocolStdException',['../class_modbus_1_1_e_protocol_std_exception.html',1,'Modbus::EProtocolStdException&lt; Code &gt;'],['../class_modbus_1_1_e_protocol_std_exception.html#a416520eb1ed0ca5063c1a0c7015b4f11',1,'Modbus::EProtocolStdException::EProtocolStdException()']]],
@@ -25,7 +25,8 @@ var searchData=
   ['error_22',['Error',['../class_e_comm_error.html#a5f816fc4e847463ed30e8c4415eccbb5',1,'ECommError']]],
   ['errortype_23',['ErrorType',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86a',1,'ECommError']]],
   ['ertuparameterserror_24',['ERTUParametersError',['../class_modbus_1_1_e_r_t_u_parameters_error.html',1,'Modbus::ERTUParametersError'],['../class_modbus_1_1_e_r_t_u_parameters_error.html#ad4c2be3c57f44466a2708bc9aa39d806',1,'Modbus::ERTUParametersError::ERTUParametersError()']]],
-  ['eslavedevicebusy_25',['ESlaveDeviceBusy',['../namespace_modbus.html#a759a7d40790dee9f972168750da31b41',1,'Modbus']]],
-  ['eslavedevicefailure_26',['ESlaveDeviceFailure',['../namespace_modbus.html#ab8ad674e7d7abd982928a541979dd877',1,'Modbus']]],
-  ['exceptioncode_27',['ExceptionCode',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7',1,'Modbus']]]
+  ['eslavedevicebusy_25',['ESlaveDeviceBusy',['../namespace_modbus.html#a451517ea3267be8fab3a99eeae7a41dc',1,'Modbus']]],
+  ['eslavedevicefailure_26',['ESlaveDeviceFailure',['../namespace_modbus.html#a1b3eee2de1f7e173cf2f6a2a3c82b852',1,'Modbus']]],
+  ['exceptioncode_27',['ExceptionCode',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7',1,'Modbus']]],
+  ['exceptionstatusdatatype_28',['ExceptionStatusDataType',['../namespace_modbus.html#a6486b25896b076982cd61137a5523362',1,'Modbus']]]
 ];

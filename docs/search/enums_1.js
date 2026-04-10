@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['flowdirection_0',['FlowDirection',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae1642a01da039d116dae63ef5031a7c1',1,'Modbus::Master::RTUProtocol']]],
-  ['functioncode_1',['FunctionCode',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37',1,'Modbus']]]
+  ['errortype_0',['ErrorType',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86a',1,'ECommError']]],
+  ['exceptioncode_1',['ExceptionCode',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7',1,'Modbus']]]
 ];
