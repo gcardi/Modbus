@@ -158,6 +158,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0f9036c159ef47421b5ac2a6d6327a40" id="r_a0f9036c159ef47421b5ac2a6d6327a40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f9036c159ef47421b5ac2a6d6327a40">PresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
 <tr class="memdesc:a0f9036c159ef47421b5ac2a6d6327a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes multiple consecutive holding registers (FC16).  <br /></td></tr>
 <tr class="separator:a0f9036c159ef47421b5ac2a6d6327a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad9cfef85b6ea11e7567b6373d1e89d" id="r_a9ad9cfef85b6ea11e7567b6373d1e89d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ad9cfef85b6ea11e7567b6373d1e89d">ReadGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
+<tr class="memdesc:a9ad9cfef85b6ea11e7567b6373d1e89d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file records from the slave (FC20 — Read General Reference).  <br /></td></tr>
+<tr class="separator:a9ad9cfef85b6ea11e7567b6373d1e89d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc52b82d99bf06c1dcb9debc84fb146" id="r_a2bc52b82d99bf06c1dcb9debc84fb146"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2bc52b82d99bf06c1dcb9debc84fb146">WriteGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
+<tr class="memdesc:a2bc52b82d99bf06c1dcb9debc84fb146"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes file records to the slave (FC21 — Write General Reference).  <br /></td></tr>
+<tr class="separator:a2bc52b82d99bf06c1dcb9debc84fb146"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad03eec28cef0e862d9b4d8fc54874f97" id="r_ad03eec28cef0e862d9b4d8fc54874f97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad03eec28cef0e862d9b4d8fc54874f97">MaskWrite4XRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> AndMask, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> OrMask)</td></tr>
 <tr class="memdesc:ad03eec28cef0e862d9b4d8fc54874f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a masked write on a single holding register (FC22).  <br /></td></tr>
 <tr class="separator:ad03eec28cef0e862d9b4d8fc54874f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,6 +210,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:acf3c503e8a53794ef8ec0a888755ca38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0889c155d26e4a262e2e31fb5c1a5a9" id="r_ae0889c155d26e4a262e2e31fb5c1a5a9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0889c155d26e4a262e2e31fb5c1a5a9">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)=0</td></tr>
 <tr class="separator:ae0889c155d26e4a262e2e31fb5c1a5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0335b88bb29012a9fd09bb9a7b31162" id="r_ad0335b88bb29012a9fd09bb9a7b31162"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0335b88bb29012a9fd09bb9a7b31162">DoReadGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)=0</td></tr>
+<tr class="separator:ad0335b88bb29012a9fd09bb9a7b31162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3008fa2c65a0a6ef4e175275ca09a1c5" id="r_a3008fa2c65a0a6ef4e175275ca09a1c5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3008fa2c65a0a6ef4e175275ca09a1c5">DoWriteGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)=0</td></tr>
+<tr class="separator:a3008fa2c65a0a6ef4e175275ca09a1c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcab0cc42d11e8178227b4301355e340" id="r_afcab0cc42d11e8178227b4301355e340"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afcab0cc42d11e8178227b4301355e340">DoMaskWrite4XRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> AndMask, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> OrMask)=0</td></tr>
 <tr class="separator:afcab0cc42d11e8178227b4301355e340"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77f6c94e990b9a85e5ff458c77980cd1" id="r_a77f6c94e990b9a85e5ff458c77980cd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77f6c94e990b9a85e5ff458c77980cd1">DoReadWrite4XRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> ReadStartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> ReadPointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *ReadData, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> WriteStartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> WritePointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *WriteData)=0</td></tr>
@@ -845,6 +855,47 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ad0335b88bb29012a9fd09bb9a7b31162" name="ad0335b88bb29012a9fd09bb9a7b31162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0335b88bb29012a9fd09bb9a7b31162">&#9670;&#160;</a></span>DoReadGeneralReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::DoReadGeneralReference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *</td>          <td class="paramname"><span class="paramname"><em>SubRequests</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>SubReqCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a3affb921b5778cfa4d074c7646b7fd9c">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a75b27539f3eaf23260de19f053717d4f">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a9bb1611f061386a293ae84f11e0ef152">Modbus::Master::TCPIPProtocol</a>.</p>
+
+</div>
+</div>
 <a id="a1226c715888339d3539b76df4cd6c940" name="a1226c715888339d3539b76df4cd6c940"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1226c715888339d3539b76df4cd6c940">&#9670;&#160;</a></span>DoReadHoldingRegisters()</h2>
 
@@ -1021,6 +1072,47 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#a06af29551adcadff5bef745c15a18eb1">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a14b131ef34f5d2164c1fef1bb4aa0fa2">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#aa8fbd26a4cfc3a0f4650cc9aae6ed7b5">Modbus::Master::TCPIPProtocol</a>.</p>
+
+</div>
+</div>
+<a id="a3008fa2c65a0a6ef4e175275ca09a1c5" name="a3008fa2c65a0a6ef4e175275ca09a1c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3008fa2c65a0a6ef4e175275ca09a1c5">&#9670;&#160;</a></span>DoWriteGeneralReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::DoWriteGeneralReference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *</td>          <td class="paramname"><span class="paramname"><em>SubRequests</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>SubReqCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_dummy_protocol.html#afbb406840d13b6baa5cc5469ae51ac1c">Modbus::Master::DummyProtocol</a>, <a class="el" href="class_modbus_1_1_master_1_1_r_t_u_protocol.html#a9abb8a3740eda758d75c651d91804a21">Modbus::Master::RTUProtocol</a>, and <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a006e84f340eeab1a727b69a831ab3d5c">Modbus::Master::TCPIPProtocol</a>.</p>
 
 </div>
 </div>
@@ -1609,6 +1701,66 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a9ad9cfef85b6ea11e7567b6373d1e89d" name="a9ad9cfef85b6ea11e7567b6373d1e89d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad9cfef85b6ea11e7567b6373d1e89d">&#9670;&#160;</a></span>ReadGeneralReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::ReadGeneralReference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *</td>          <td class="paramname"><span class="paramname"><em>SubRequests</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>SubReqCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads file records from the slave (FC20 — Read General Reference). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname"><a class="el" href="class_modbus_1_1_context.html" title="Identifies the target of a Modbus transaction.">Context</a></td><td>Transaction context (slave address, transaction ID). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">SubRequests</td><td>Pointer to an array of sub-request descriptors. Each descriptor identifies a file number, starting record, and record count. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">SubReqCount</td><td>Number of sub-request descriptors (must be &gt;= 1). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">Data</td><td>Pointer to output buffer receiving the concatenated register values from all sub-requests. The caller must allocate at least the sum of all RecordLength fields (in <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd" title="Type for a single register value (16-bit word).">RegDataType</a> units).</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The slave reads the requested records from its file reference address space (6xxxx) and returns the register values. Data from each sub-request is written consecutively into <code class="param">Data</code> in sub-request order.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#aca6e1d6a1e93cf7ea9a0b6062380c9d8" title="Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range).">EIllegalDataAddress</a></td><td>if a file/record address is out of range. </td></tr>
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#af35225214a45b3d559395b140f5e94d4" title="Thrown when the slave reports ExceptionCode::IllegalDataValue (value not allowed).">EIllegalDataValue</a></td><td>if the request parameters are invalid. </td></tr>
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#a7bde2cc3bd951a0f1addb83c5280afcd" title="Thrown when the slave reports ExceptionCode::IllegalFunction (FC not allowed).">EIllegalFunction</a></td><td>if the slave does not support FC20. </td></tr>
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on communication error or timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a74263e84d1a042ecc6b6d4207a95ca2a" name="a74263e84d1a042ecc6b6d4207a95ca2a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a74263e84d1a042ecc6b6d4207a95ca2a">&#9670;&#160;</a></span>ReadHoldingRegisters()</h2>
 
@@ -1850,6 +2002,66 @@ Protected Member Functions</h2></td></tr>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="namespace_modbus.html#aca6e1d6a1e93cf7ea9a0b6062380c9d8" title="Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range).">EIllegalDataAddress</a></td><td>if any address or count is out of range on the slave. </td></tr>
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on communication error or timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2bc52b82d99bf06c1dcb9debc84fb146" name="a2bc52b82d99bf06c1dcb9debc84fb146"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bc52b82d99bf06c1dcb9debc84fb146">&#9670;&#160;</a></span>WriteGeneralReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::Protocol::WriteGeneralReference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *</td>          <td class="paramname"><span class="paramname"><em>SubRequests</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>SubReqCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes file records to the slave (FC21 — Write General Reference). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="class_modbus_1_1_context.html" title="Identifies the target of a Modbus transaction.">Context</a></td><td>Transaction context (slave address, transaction ID). </td></tr>
+    <tr><td class="paramname">SubRequests</td><td>Pointer to an array of sub-request descriptors. Each descriptor identifies a file number, starting record, and record count. </td></tr>
+    <tr><td class="paramname">SubReqCount</td><td>Number of sub-request descriptors (must be &gt;= 1). </td></tr>
+    <tr><td class="paramname">Data</td><td>Pointer to source buffer holding the concatenated register values for all sub-requests (in sub-request order). The caller must provide at least the sum of all RecordLength fields (in <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd" title="Type for a single register value (16-bit word).">RegDataType</a> units).</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The slave writes the supplied register values to its file reference address space (6xxxx). The response is an echo of the request.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#aca6e1d6a1e93cf7ea9a0b6062380c9d8" title="Thrown when the slave reports ExceptionCode::IllegalDataAddress (address out of range).">EIllegalDataAddress</a></td><td>if a file/record address is out of range. </td></tr>
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#af35225214a45b3d559395b140f5e94d4" title="Thrown when the slave reports ExceptionCode::IllegalDataValue (value not allowed).">EIllegalDataValue</a></td><td>if the request parameters are invalid. </td></tr>
+    <tr><td class="paramname"><a class="el" href="namespace_modbus.html#a7bde2cc3bd951a0f1addb83c5280afcd" title="Thrown when the slave reports ExceptionCode::IllegalFunction (FC not allowed).">EIllegalFunction</a></td><td>if the slave does not support FC21. </td></tr>
     <tr><td class="paramname"><a class="el" href="class_modbus_1_1_e_base_exception.html" title="Base exception class for all Modbus library exceptions.">EBaseException</a></td><td>on communication error or timeout. </td></tr>
   </table>
   </dd>

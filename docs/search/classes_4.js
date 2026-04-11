@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['protocol_0',['Protocol',['../class_modbus_1_1_master_1_1_protocol.html',1,'Modbus::Master']]]
+  ['filesubrequest_0',['FileSubRequest',['../struct_modbus_1_1_file_sub_request.html',1,'Modbus']]]
 ];

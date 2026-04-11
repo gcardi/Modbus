@@ -178,6 +178,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0f9036c159ef47421b5ac2a6d6327a40 inherit pub_methods_class_modbus_1_1_master_1_1_protocol" id="r_a0f9036c159ef47421b5ac2a6d6327a40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a0f9036c159ef47421b5ac2a6d6327a40">PresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
 <tr class="memdesc:a0f9036c159ef47421b5ac2a6d6327a40 inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes multiple consecutive holding registers (FC16).  <br /></td></tr>
 <tr class="separator:a0f9036c159ef47421b5ac2a6d6327a40 inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad9cfef85b6ea11e7567b6373d1e89d inherit pub_methods_class_modbus_1_1_master_1_1_protocol" id="r_a9ad9cfef85b6ea11e7567b6373d1e89d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a9ad9cfef85b6ea11e7567b6373d1e89d">ReadGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
+<tr class="memdesc:a9ad9cfef85b6ea11e7567b6373d1e89d inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads file records from the slave (FC20 — Read General Reference).  <br /></td></tr>
+<tr class="separator:a9ad9cfef85b6ea11e7567b6373d1e89d inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc52b82d99bf06c1dcb9debc84fb146 inherit pub_methods_class_modbus_1_1_master_1_1_protocol" id="r_a2bc52b82d99bf06c1dcb9debc84fb146"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a2bc52b82d99bf06c1dcb9debc84fb146">WriteGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data)</td></tr>
+<tr class="memdesc:a2bc52b82d99bf06c1dcb9debc84fb146 inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes file records to the slave (FC21 — Write General Reference).  <br /></td></tr>
+<tr class="separator:a2bc52b82d99bf06c1dcb9debc84fb146 inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad03eec28cef0e862d9b4d8fc54874f97 inherit pub_methods_class_modbus_1_1_master_1_1_protocol" id="r_ad03eec28cef0e862d9b4d8fc54874f97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_modbus_1_1_master_1_1_protocol.html#ad03eec28cef0e862d9b4d8fc54874f97">MaskWrite4XRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> AndMask, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> OrMask)</td></tr>
 <tr class="memdesc:ad03eec28cef0e862d9b4d8fc54874f97 inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a masked write on a single holding register (FC22).  <br /></td></tr>
 <tr class="separator:ad03eec28cef0e862d9b4d8fc54874f97 inherit pub_methods_class_modbus_1_1_master_1_1_protocol"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -250,6 +256,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a8a490c1af8001c016d053928dafad421"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fc2c145fe0d59a9ac80322476291cfb" id="r_a1fc2c145fe0d59a9ac80322476291cfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fc2c145fe0d59a9ac80322476291cfb">DoPresetMultipleRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> StartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> PointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> const *Data) override</td></tr>
 <tr class="separator:a1fc2c145fe0d59a9ac80322476291cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bb1611f061386a293ae84f11e0ef152" id="r_a9bb1611f061386a293ae84f11e0ef152"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9bb1611f061386a293ae84f11e0ef152">DoReadGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
+<tr class="separator:a9bb1611f061386a293ae84f11e0ef152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a006e84f340eeab1a727b69a831ab3d5c" id="r_a006e84f340eeab1a727b69a831ab3d5c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a006e84f340eeab1a727b69a831ab3d5c">DoWriteGeneralReference</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *SubRequests, size_t SubReqCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *Data) override</td></tr>
+<tr class="separator:a006e84f340eeab1a727b69a831ab3d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af264c4886dc00df7b57a395dd74c60df" id="r_af264c4886dc00df7b57a395dd74c60df"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af264c4886dc00df7b57a395dd74c60df">DoMaskWrite4XRegister</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> Addr, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> AndMask, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> OrMask) override</td></tr>
 <tr class="separator:af264c4886dc00df7b57a395dd74c60df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8fbd26a4cfc3a0f4650cc9aae6ed7b5" id="r_aa8fbd26a4cfc3a0f4650cc9aae6ed7b5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8fbd26a4cfc3a0f4650cc9aae6ed7b5">DoReadWrite4XRegisters</a> (<a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;<a class="el" href="class_modbus_1_1_context.html">Context</a>, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> ReadStartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> ReadPointCount, <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *ReadData, <a class="el" href="namespace_modbus.html#adb2bcf1d08a140acef20cd5150838a7b">RegAddrType</a> WriteStartAddr, <a class="el" href="namespace_modbus.html#aed5b751be7bac61e61f448bdc49118be">RegCountType</a> WritePointCount, const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *WriteData) override</td></tr>
@@ -294,7 +304,7 @@ Static Protected Member Functions</h2></td></tr>
 <li>Builds <a class="el" href="namespace_modbus.html">Modbus</a> request frames with proper MBAP headers.</li>
 <li>Delegates I/O to pure virtual <a class="el" href="#a8e61c0d74229d202a045a3ea5dc7a219" title="Sends the complete MBAP request frame to the server.">DoWrite()</a> and <a class="el" href="#a1f0b6fe8695c5c7a31d403b3489ab4f2" title="Reads exactly Length bytes from the server response into InBuffer.">DoRead()</a> hooks.</li>
 <li>Validates MBAP response headers (transaction ID, protocol ID = 0, unit identifier).</li>
-<li>Implements all <a class="el" href="namespace_modbus.html">Modbus</a> function codes (FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23) inherited by TCP/UDP transports.</li>
+<li>Implements all <a class="el" href="namespace_modbus.html">Modbus</a> function codes (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC20, FC21, FC22, FC23, FC24) inherited by TCP/UDP transports.</li>
 </ul>
 <p><b>NVI Architecture:</b></p><ul>
 <li>Concrete TCP/UDP subclasses (e.g., <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html" title="Embarcadero Indy TIdTCPClient-based TCP implementation of the Modbus master protocol.">TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html" title="WinSock2 UDP implementation of the Modbus master protocol.">UDPProtocolWinSock</a>) override the pure virtual Do…() hooks: <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aff9894dee8743fcff7fb77607490179c" title="Pure virtual hook for opening the communication channel (NVI implementation hook).">DoOpen()</a>, <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a71857c504ce9a0b3c81168ed248a0210" title="Pure virtual hook for closing the communication channel (NVI implementation hook).">DoClose()</a>, <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#aec70ce324d4e598f40eaf573bcab43ea" title="Pure virtual hook for checking connection state (NVI implementation hook).">DoIsConnected()</a>, <a class="el" href="#a8e61c0d74229d202a045a3ea5dc7a219" title="Sends the complete MBAP request frame to the server.">DoWrite()</a>, <a class="el" href="#a1f0b6fe8695c5c7a31d403b3489ab4f2" title="Reads exactly Length bytes from the server response into InBuffer.">DoRead()</a>.</li>
@@ -308,7 +318,7 @@ Static Protected Member Functions</h2></td></tr>
 </ul>
 </li>
 </ul>
-<p>All <a class="el" href="namespace_modbus.html">Modbus</a> function codes supported by this library (FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23) are fully implemented in <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a> and inherited by <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html" title="Abstract Modbus master protocol implementing MBAP framing over a byte-stream or datagram transport.">TCPIPProtocol</a>; concrete TCP/UDP subclasses do not need to reimplement function code logic. </p>
+<p>All <a class="el" href="namespace_modbus.html">Modbus</a> function codes supported by this library (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC20, FC21, FC22, FC23, FC24) are fully implemented in <a class="el" href="class_modbus_1_1_master_1_1_protocol.html" title="Abstract base class for all Modbus master transport implementations.">Protocol</a> and inherited by <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html" title="Abstract Modbus master protocol implementing MBAP framing over a byte-stream or datagram transport.">TCPIPProtocol</a>; concrete TCP/UDP subclasses do not need to reimplement function code logic. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a847b961cbd8ac45450349ecc96eac038" name="a847b961cbd8ac45450349ecc96eac038"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a847b961cbd8ac45450349ecc96eac038">&#9670;&#160;</a></span>BMAPDataLengthType</h2>
@@ -914,6 +924,47 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a9bb1611f061386a293ae84f11e0ef152" name="a9bb1611f061386a293ae84f11e0ef152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bb1611f061386a293ae84f11e0ef152">&#9670;&#160;</a></span>DoReadGeneralReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::TCPIPProtocol::DoReadGeneralReference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *</td>          <td class="paramname"><span class="paramname"><em>SubRequests</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>SubReqCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#ad0335b88bb29012a9fd09bb9a7b31162">Modbus::Master::Protocol</a>.</p>
+
+</div>
+</div>
 <a id="a5739096364adebf7cb99c40682549222" name="a5739096364adebf7cb99c40682549222"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5739096364adebf7cb99c40682549222">&#9670;&#160;</a></span>DoReadHoldingRegisters()</h2>
 
@@ -1183,6 +1234,47 @@ Static Protected Member Functions</h2></td></tr>
 </dl>
 
 <p>Implemented in <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_indy.html#ae338bddc2430384843c8112056ad2438">Modbus::Master::TCPProtocolIndy</a>, <a class="el" href="class_modbus_1_1_master_1_1_t_c_p_protocol_win_sock.html#a1bfa96e55d0b62feec4ff68296a0a1cd">Modbus::Master::TCPProtocolWinSock</a>, <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#ab2ff4641ee19ef499eb9664d0ee6ed88">Modbus::Master::UDPProtocolIndy</a>, and <a class="el" href="class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a1236cc185a912bd9d94cf4d1d214a3f1">Modbus::Master::UDPProtocolWinSock</a>.</p>
+
+</div>
+</div>
+<a id="a006e84f340eeab1a727b69a831ab3d5c" name="a006e84f340eeab1a727b69a831ab3d5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a006e84f340eeab1a727b69a831ab3d5c">&#9670;&#160;</a></span>DoWriteGeneralReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Modbus::Master::TCPIPProtocol::DoWriteGeneralReference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_modbus_1_1_context.html">Context</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>Context</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a> *</td>          <td class="paramname"><span class="paramname"><em>SubRequests</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>SubReqCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespace_modbus.html#a5c1743aba70e7780f4a77bc2208f3bdd">RegDataType</a> *</td>          <td class="paramname"><span class="paramname"><em>Data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="class_modbus_1_1_master_1_1_protocol.html#a3008fa2c65a0a6ef4e175275ca09a1c5">Modbus::Master::Protocol</a>.</p>
 
 </div>
 </div>

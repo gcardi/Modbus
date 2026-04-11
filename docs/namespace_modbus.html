@@ -122,6 +122,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_modbus_1_1_e_r_t_u_parameters_error.html">ERTUParametersError</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception thrown when invalid serial port parameters are supplied to RTUProtocol.  <a href="class_modbus_1_1_e_r_t_u_parameters_error.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_modbus_1_1_file_sub_request.html">FileSubRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a single sub-request for file record access (FC20/FC21).  <a href="struct_modbus_1_1_file_sub_request.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_modbus_1_1_t_c_p_i_p_context.html">TCPIPContext</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="namespace_modbus.html">Modbus</a> context extended with an explicit MBAP transaction identifier.  <a href="class_modbus_1_1_t_c_p_i_p_context.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,6 +185,15 @@ Typedefs</h2></td></tr>
 <tr class="memitem:accff11a7e99cd1c664fc879955539f0c" id="r_accff11a7e99cd1c664fc879955539f0c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accff11a7e99cd1c664fc879955539f0c">FIFOCountType</a> = uint16_t</td></tr>
 <tr class="memdesc:accff11a7e99cd1c664fc879955539f0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for the number of FIFO register values (FC24).  <br /></td></tr>
 <tr class="separator:accff11a7e99cd1c664fc879955539f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2f7386a2e27996d85f2116d478e1da8" id="r_ab2f7386a2e27996d85f2116d478e1da8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2f7386a2e27996d85f2116d478e1da8">FileNumberType</a> = uint16_t</td></tr>
+<tr class="memdesc:ab2f7386a2e27996d85f2116d478e1da8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for a file number in FC20/FC21 file record access.  <br /></td></tr>
+<tr class="separator:ab2f7386a2e27996d85f2116d478e1da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fa63194f93e2de367cc0511f6d3ab8f" id="r_a8fa63194f93e2de367cc0511f6d3ab8f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8fa63194f93e2de367cc0511f6d3ab8f">RecordNumberType</a> = uint16_t</td></tr>
+<tr class="memdesc:a8fa63194f93e2de367cc0511f6d3ab8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for a record number within a file (FC20/FC21).  <br /></td></tr>
+<tr class="separator:a8fa63194f93e2de367cc0511f6d3ab8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bdb8cb12e67b2b2b14ef65009545470" id="r_a7bdb8cb12e67b2b2b14ef65009545470"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bdb8cb12e67b2b2b14ef65009545470">RecordLengthType</a> = uint16_t</td></tr>
+<tr class="memdesc:a7bdb8cb12e67b2b2b14ef65009545470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for the number of registers in a file record (FC20/FC21).  <br /></td></tr>
+<tr class="separator:a7bdb8cb12e67b2b2b14ef65009545470"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -526,6 +538,54 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Type for the number of FIFO register values (FC24). </p>
+
+</div>
+</div>
+<a id="ab2f7386a2e27996d85f2116d478e1da8" name="ab2f7386a2e27996d85f2116d478e1da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2f7386a2e27996d85f2116d478e1da8">&#9670;&#160;</a></span>FileNumberType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ab2f7386a2e27996d85f2116d478e1da8">Modbus::FileNumberType</a> = uint16_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type for a file number in FC20/FC21 file record access. </p>
+
+</div>
+</div>
+<a id="a7bdb8cb12e67b2b2b14ef65009545470" name="a7bdb8cb12e67b2b2b14ef65009545470"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bdb8cb12e67b2b2b14ef65009545470">&#9670;&#160;</a></span>RecordLengthType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a7bdb8cb12e67b2b2b14ef65009545470">Modbus::RecordLengthType</a> = uint16_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type for the number of registers in a file record (FC20/FC21). </p>
+
+</div>
+</div>
+<a id="a8fa63194f93e2de367cc0511f6d3ab8f" name="a8fa63194f93e2de367cc0511f6d3ab8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fa63194f93e2de367cc0511f6d3ab8f">&#9670;&#160;</a></span>RecordNumberType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a8fa63194f93e2de367cc0511f6d3ab8f">Modbus::RecordNumberType</a> = uint16_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type for a record number within a file (FC20/FC21). </p>
 
 </div>
 </div>
