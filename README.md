@@ -43,6 +43,7 @@ Abstract base class exposing:
 - `ReadHoldingRegisters()`, `ReadInputRegisters()`
 - `ForceSingleCoil()`, `ForceMultipleCoils()`
 - `PresetSingleRegister()`, `PresetMultipleRegisters()`, `MaskWrite4XRegister()`
+- `ReadGeneralReference()`, `WriteGeneralReference()`
 - `ReadWrite4XRegisters()`
 - `ReadExceptionStatus()`, `Diagnostics()`, `ReadFIFOQueue()`
 
@@ -56,6 +57,8 @@ Abstract base class exposing:
 - FC06 Preset Single Register / FC16 Preset Multiple Registers
 - FC07 Read Exception Status
 - FC08 Diagnostics (Return Query Data and other sub-functions)
+- FC20 Read General Reference (File Records)
+- FC21 Write General Reference (File Records)
 - FC22 Mask Write 4X Register
 - FC23 Read/Write 4X Registers
 - FC24 Read FIFO Queue
