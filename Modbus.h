@@ -332,6 +332,28 @@ using DiagSubFnType = uint16_t;           ///< Type for a Diagnostics (FC08) sub
 using FIFOAddrType  = uint16_t;           ///< Type for the FIFO pointer register address (FC24).
 using FIFOCountType = uint16_t;           ///< Type for the number of FIFO register values (FC24).
 
+using FileNumberType   = uint16_t;  ///< Type for a file number in FC20/FC21 file record access.
+using RecordNumberType = uint16_t;  ///< Type for a record number within a file (FC20/FC21).
+using RecordLengthType = uint16_t;  ///< Type for the number of registers in a file record (FC20/FC21).
+
+/**
+ * @brief Describes a single sub-request for file record access (FC20/FC21).
+ *
+ * @details Each sub-request identifies a contiguous range of registers within a
+ *  numbered file.  FC20 (Read General Reference) reads the registers; FC21
+ *  (Write General Reference) writes them.  The Modbus specification requires
+ *  ReferenceType to be 0x06 (extended file reference).
+ *
+ *  Multiple FileSubRequest items can be batched into a single FC20/FC21
+ *  request.  The corresponding data buffers are concatenated in sub-request
+ *  order.
+ */
+struct FileSubRequest {
+    FileNumberType   FileNumber;    ///< File number (1–0xFFFF).
+    RecordNumberType RecordNumber;  ///< Starting record within the file (0x0000–0x270F).
+    RecordLengthType RecordLength;  ///< Number of registers to read/write.
+};
+
 /**
  * @brief Standard Diagnostics sub-function codes for FC08.
  *
@@ -602,8 +624,65 @@ public:
 //    ReportSlave
 //    Program884_M84
 //    ResetCommLink
-//    ReadGeneralReference
-//    WriteGeneralReference
+
+    /**
+     * @brief Reads file records from the slave (FC20 — Read General Reference).
+     *
+     * @param Context      Transaction context (slave address, transaction ID).
+     * @param SubRequests  Pointer to an array of sub-request descriptors.  Each
+     *                     descriptor identifies a file number, starting record,
+     *                     and record count.
+     * @param SubReqCount  Number of sub-request descriptors (must be >= 1).
+     * @param[out] Data    Pointer to output buffer receiving the concatenated
+     *                     register values from all sub-requests.  The caller must
+     *                     allocate at least the sum of all RecordLength fields
+     *                     (in RegDataType units).
+     *
+     * @details The slave reads the requested records from its file reference
+     *  address space (6xxxx) and returns the register values.  Data from each
+     *  sub-request is written consecutively into @p Data in sub-request order.
+     *
+     * @throws EIllegalDataAddress if a file/record address is out of range.
+     * @throws EIllegalDataValue if the request parameters are invalid.
+     * @throws EIllegalFunction if the slave does not support FC20.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void ReadGeneralReference( Context const & Context,
+                               const FileSubRequest* SubRequests,
+                               size_t SubReqCount,
+                               RegDataType* Data )
+    {
+        DoReadGeneralReference( Context, SubRequests, SubReqCount, Data );
+    }
+
+    /**
+     * @brief Writes file records to the slave (FC21 — Write General Reference).
+     *
+     * @param Context      Transaction context (slave address, transaction ID).
+     * @param SubRequests  Pointer to an array of sub-request descriptors.  Each
+     *                     descriptor identifies a file number, starting record,
+     *                     and record count.
+     * @param SubReqCount  Number of sub-request descriptors (must be >= 1).
+     * @param Data         Pointer to source buffer holding the concatenated
+     *                     register values for all sub-requests (in sub-request
+     *                     order).  The caller must provide at least the sum of
+     *                     all RecordLength fields (in RegDataType units).
+     *
+     * @details The slave writes the supplied register values to its file
+     *  reference address space (6xxxx).  The response is an echo of the request.
+     *
+     * @throws EIllegalDataAddress if a file/record address is out of range.
+     * @throws EIllegalDataValue if the request parameters are invalid.
+     * @throws EIllegalFunction if the slave does not support FC21.
+     * @throws EBaseException on communication error or timeout.
+     */
+    void WriteGeneralReference( Context const & Context,
+                                const FileSubRequest* SubRequests,
+                                size_t SubReqCount,
+                                const RegDataType* Data )
+    {
+        DoWriteGeneralReference( Context, SubRequests, SubReqCount, Data );
+    }
 
     /**
      * @brief Performs a masked write on a single holding register (FC22).
@@ -761,8 +840,14 @@ protected:
 //    DoReportSlave
 //    DoProgram884_M84
 //    DoResetCommLink
-//    DoReadGeneralReference
-//    DoWriteGeneralReference
+    virtual void DoReadGeneralReference( Context const & Context,
+                                         const FileSubRequest* SubRequests,
+                                         size_t SubReqCount,
+                                         RegDataType* Data ) = 0;
+    virtual void DoWriteGeneralReference( Context const & Context,
+                                          const FileSubRequest* SubRequests,
+                                          size_t SubReqCount,
+                                          const RegDataType* Data ) = 0;
     virtual void DoMaskWrite4XRegister( Context const & Context,
                                         RegAddrType Addr,
                                         RegDataType AndMask,

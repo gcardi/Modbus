@@ -687,11 +687,141 @@ void TCPIPProtocol::DoPresetMultipleRegisters( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoReadGeneralReference
+void TCPIPProtocol::DoReadGeneralReference( Context const & Context,
+                                            const FileSubRequest* SubRequests,
+                                            size_t SubReqCount,
+                                            RegDataType* Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "ReadGeneralReference failed" ) );
 
+    // FC20 request PDU: FC(1) + ByteCount(1) + N * [RefType(1)+FileNo(2)+RecNo(2)+RecLen(2)]
+    const size_t subReqBytes = SubReqCount * 7;
+
+    TBytes OutBuffer;
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 1 + subReqBytes );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<uint8_t>( FunctionCode::ReadGeneralReference );
+    OutBuffer[Idx++] = static_cast<uint8_t>( subReqBytes );
+
+    for ( size_t i = 0; i < SubReqCount; ++i ) {
+        OutBuffer[Idx++] = 0x06; // reference type
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].FileNumber >> 8 );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].FileNumber & 0xFF );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordNumber >> 8 );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordNumber & 0xFF );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordLength >> 8 );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordLength & 0xFF );
+    }
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive BMAP header
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+
+    // Receive payload
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    RaiseExceptionIfReplyIsNotValid(
+        Context, ReplyBuffer, FunctionCode::ReadGeneralReference
+    );
+
+    // Response: FC(1) + RespDataLen(1) + N * [SubRespLen(1) + RefType(1) + Data(RecLen*2)]
+    if ( GetLength( ReplyBuffer ) < 2 ) {
+        throw EContextException( Context, _D( "Invalid reply length" ) );
+    }
+
+    int off = 2; // skip FC + RespDataLen
+    RegDataType* dataOut = Data;
+    for ( size_t i = 0; i < SubReqCount; ++i ) {
+        if ( off + 2 > GetLength( ReplyBuffer ) ) {
+            throw EContextException( Context, _D( "Truncated response" ) );
+        }
+        const uint8_t subRespLen = ReplyBuffer[off++];
+        const uint8_t refType    = ReplyBuffer[off++];
+        if ( refType != 0x06 ) {
+            throw EContextException( Context, _D( "Invalid reference type" ) );
+        }
+        const size_t dataBytes = subRespLen - 1;
+        if ( dataBytes != SubRequests[i].RecordLength * 2 ) {
+            throw EContextException( Context, _D( "Sub-response length mismatch" ) );
+        }
+        for ( RecordLengthType r = 0; r < SubRequests[i].RecordLength; ++r ) {
+            *dataOut++ = static_cast<RegDataType>(
+                ( static_cast<uint16_t>( ReplyBuffer[off] ) << 8 ) |
+                ( static_cast<uint16_t>( ReplyBuffer[off + 1] ) & 0xFF )
+            );
+            off += 2;
+        }
+    }
+}
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoWriteGeneralReference
+void TCPIPProtocol::DoWriteGeneralReference( Context const & Context,
+                                             const FileSubRequest* SubRequests,
+                                             size_t SubReqCount,
+                                             const RegDataType* Data )
+{
+    RaiseExceptionIfIsNotConnected( _D( "WriteGeneralReference failed" ) );
 
+    // FC21 request PDU: FC(1) + ByteCount(1)
+    //   + N * [RefType(1)+FileNo(2)+RecNo(2)+RecLen(2)+Data(RecLen*2)]
+    size_t totalRegs = 0;
+    for ( size_t i = 0; i < SubReqCount; ++i )
+        totalRegs += SubRequests[i].RecordLength;
+
+    const size_t reqBytes = SubReqCount * 7 + totalRegs * 2;
+
+    TBytes OutBuffer;
+    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 1 + reqBytes );
+    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    OutBuffer[Idx++] =
+        static_cast<uint8_t>( FunctionCode::WriteGeneralReference );
+    OutBuffer[Idx++] = static_cast<uint8_t>( reqBytes );
+
+    const RegDataType* dataIn = Data;
+    for ( size_t i = 0; i < SubReqCount; ++i ) {
+        OutBuffer[Idx++] = 0x06; // reference type
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].FileNumber >> 8 );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].FileNumber & 0xFF );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordNumber >> 8 );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordNumber & 0xFF );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordLength >> 8 );
+        OutBuffer[Idx++] = static_cast<uint8_t>( SubRequests[i].RecordLength & 0xFF );
+        for ( RecordLengthType r = 0; r < SubRequests[i].RecordLength; ++r ) {
+            const RegDataType Reg = *dataIn++;
+            OutBuffer[Idx++] = static_cast<uint8_t>( ( Reg >> 8 ) & 0xFF );
+            OutBuffer[Idx++] = static_cast<uint8_t>( Reg & 0xFF );
+        }
+    }
+
+    DoInputBufferClear();
+    DoWrite( OutBuffer );
+
+    // Receive BMAP header
+    TBytes ReplyBMAPBuffer;
+    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
+
+    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+
+    // Receive payload (response is an echo)
+    TBytes ReplyBuffer;
+    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
+
+    RaiseExceptionIfReplyIsNotValid(
+        Context, ReplyBuffer, FunctionCode::WriteGeneralReference
+    );
+}
 //---------------------------------------------------------------------------
 
 //    TCPIPProtocol::DoMaskWrite4XRegister

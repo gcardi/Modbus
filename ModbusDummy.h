@@ -32,10 +32,12 @@ namespace Master {
  *
  *  Behavior:
  *  - All Modbus request methods are safe no-ops:
- *    - DoReadCoilStatus / DoReadInputStatus / DoReadHoldingRegisters / DoReadInputRegisters:
- *      leave @p Data buffer unchanged.
+ *    - DoReadCoilStatus / DoReadInputStatus / DoReadHoldingRegisters / DoReadInputRegisters /
+ *      DoReadGeneralReference / DoReadFIFOQueue: leave @p Data buffer unchanged.
  *    - DoForceSingleCoil / DoPresetSingleRegister / DoForceMultipleCoils /
- *      DoPresetMultipleRegisters / DoMaskWrite4XRegister / DoReadWrite4XRegisters: discarded.
+ *      DoPresetMultipleRegisters / DoMaskWrite4XRegister / DoReadWrite4XRegisters /
+ *      DoWriteGeneralReference: discarded.
+ *    - DoReadExceptionStatus returns 0; DoDiagnostics echoes input data.
  *  - DoOpen() sets the internal connected flag to @c true.
  *  - DoClose() sets the internal connected flag to @c false.
  *  - DoIsConnected() returns the current flag state.
@@ -103,8 +105,14 @@ protected:
 //    DoReportSlave
 //    DoProgram884_M84
 //    DoResetCommLink
-//    DoReadGeneralReference
-//    DoWriteGeneralReference
+    virtual void DoReadGeneralReference( Context const & Context,
+                                         const FileSubRequest* SubRequests,
+                                         size_t SubReqCount,
+                                         RegDataType* Data ) noexcept override {}
+    virtual void DoWriteGeneralReference( Context const & Context,
+                                          const FileSubRequest* SubRequests,
+                                          size_t SubReqCount,
+                                          const RegDataType* Data ) noexcept override {}
     virtual void DoMaskWrite4XRegister( Context const & Context,
                                         RegAddrType Addr,
                                         RegDataType AndMask,

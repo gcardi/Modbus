@@ -10,6 +10,7 @@
 //   inputBits[i]  = ((i % 3) == 0) (FC02)
 //   holdingRegs[i] = i          (FC03 / FC06 / FC16 / FC22)
 //   inputRegs[i]   = 0x1000 + i (FC04, read-only)
+//   fileRecords[f][r] = ((f+1)<<8)|r  (FC20/FC21, 4 files x 32 records)
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -51,6 +52,8 @@ static const uint16_t SERVER_PORT = 5020;
 static const int      REG_COUNT   = 256;
 
 static const int      FIFO_MAX    = 31;
+static const int      FILE_COUNT  = 4;     // FC20/FC21: number of files
+static const int      FILE_RECS   = 32;    // FC20/FC21: records per file
 
 static std::atomic<bool> gServerStop { false };
 static uint8_t           coilRegs[REG_COUNT];
@@ -60,6 +63,7 @@ static uint16_t          inputRegs[REG_COUNT];
 static uint8_t           exceptionStatus;          // FC07
 static uint16_t          fifoQueue[FIFO_MAX];      // FC24
 static uint16_t          fifoCount;
+static uint16_t          fileRecords[FILE_COUNT][FILE_RECS]; // FC20/FC21
 
 static void initRegisters()
 {
@@ -73,6 +77,10 @@ static void initRegisters()
     fifoCount = 5;           // FC24: 5 values in the FIFO
     for ( int i = 0; i < FIFO_MAX; ++i )
         fifoQueue[i] = static_cast<uint16_t>( 0x100 + i );
+    // FC20/FC21: file records — file F, record R = 0x(F+1)(R) pattern
+    for ( int f = 0; f < FILE_COUNT; ++f )
+        for ( int r = 0; r < FILE_RECS; ++r )
+            fileRecords[f][r] = static_cast<uint16_t>( ( ( f + 1 ) << 8 ) | r );
 }
 
 static bool srvRecvAll( SOCKET s, uint8_t* buf, int len )
@@ -322,6 +330,77 @@ static std::vector<uint8_t> handleFC24( const uint8_t* d, int len )
     return pdu;
 }
 
+static std::vector<uint8_t> handleFC20( const uint8_t* d, int len )
+{
+    // FC20 Read General Reference
+    // Request: ByteCount(1) + N * [RefType(1)+FileNo(2)+RecNo(2)+RecLen(2)]
+    if ( len < 1 ) return errorPdu( 0x14, 0x03 );
+    uint8_t byteCount = d[0];
+    if ( byteCount < 7 || byteCount > static_cast<uint8_t>( len - 1 ) )
+        return errorPdu( 0x14, 0x03 );
+
+    // Parse sub-requests and build response
+    // Response: FC(1) + RespDataLen(1) + N * [SubRespLen(1)+RefType(1)+Data(RecLen*2)]
+    std::vector<uint8_t> pdu;
+    pdu.push_back( 0x14 ); // FC
+    pdu.push_back( 0x00 ); // placeholder for RespDataLen
+
+    int off = 1; // skip ByteCount byte
+    while ( off + 7 <= 1 + byteCount ) {
+        uint8_t refType = d[off++];
+        if ( refType != 0x06 ) return errorPdu( 0x14, 0x03 );
+        uint16_t fileNo  = get16( d + off ); off += 2;
+        uint16_t recNo   = get16( d + off ); off += 2;
+        uint16_t recLen  = get16( d + off ); off += 2;
+        if ( fileNo < 1 || fileNo > FILE_COUNT )  return errorPdu( 0x14, 0x02 );
+        if ( recNo + recLen > FILE_RECS )          return errorPdu( 0x14, 0x02 );
+
+        uint8_t subRespLen = static_cast<uint8_t>( 1 + recLen * 2 ); // RefType + data
+        pdu.push_back( subRespLen );
+        pdu.push_back( 0x06 ); // reference type
+        for ( uint16_t r = 0; r < recLen; ++r ) {
+            uint16_t v = fileRecords[fileNo - 1][recNo + r];
+            pdu.push_back( static_cast<uint8_t>( v >> 8 ) );
+            pdu.push_back( static_cast<uint8_t>( v & 0xFF ) );
+        }
+    }
+    pdu[1] = static_cast<uint8_t>( pdu.size() - 2 ); // fill RespDataLen
+    return pdu;
+}
+
+static std::vector<uint8_t> handleFC21( const uint8_t* d, int len )
+{
+    // FC21 Write General Reference
+    // Request: ByteCount(1) + N * [RefType(1)+FileNo(2)+RecNo(2)+RecLen(2)+Data(RecLen*2)]
+    if ( len < 1 ) return errorPdu( 0x15, 0x03 );
+    uint8_t byteCount = d[0];
+    if ( byteCount < 7 || byteCount > static_cast<uint8_t>( len - 1 ) )
+        return errorPdu( 0x15, 0x03 );
+
+    // Parse and apply writes
+    int off = 1;
+    while ( off + 7 <= 1 + byteCount ) {
+        uint8_t refType = d[off++];
+        if ( refType != 0x06 ) return errorPdu( 0x15, 0x03 );
+        uint16_t fileNo  = get16( d + off ); off += 2;
+        uint16_t recNo   = get16( d + off ); off += 2;
+        uint16_t recLen  = get16( d + off ); off += 2;
+        if ( fileNo < 1 || fileNo > FILE_COUNT )  return errorPdu( 0x15, 0x02 );
+        if ( recNo + recLen > FILE_RECS )          return errorPdu( 0x15, 0x02 );
+        if ( off + recLen * 2 > 1 + byteCount )    return errorPdu( 0x15, 0x03 );
+        for ( uint16_t r = 0; r < recLen; ++r ) {
+            fileRecords[fileNo - 1][recNo + r] = get16( d + off );
+            off += 2;
+        }
+    }
+
+    // Response is echo of the request
+    std::vector<uint8_t> pdu;
+    pdu.push_back( 0x15 ); // FC
+    pdu.insert( pdu.end(), d, d + 1 + byteCount );
+    return pdu;
+}
+
 static bool handleRequest( SOCKET s )
 {
     uint8_t header[6];
@@ -349,6 +428,8 @@ static bool handleRequest( SOCKET s )
         case 0x08: pdu = handleFC08( data, dataLen ); break;
         case 0x0F: pdu = handleFC15( data, dataLen ); break;
         case 0x10: pdu = handleFC16( data, dataLen ); break;
+        case 0x14: pdu = handleFC20( data, dataLen ); break;
+        case 0x15: pdu = handleFC21( data, dataLen ); break;
         case 0x16: pdu = handleFC22( data, dataLen ); break;
         case 0x17: pdu = handleFC23( data, dataLen ); break;
         case 0x18: pdu = handleFC24( data, dataLen ); break;
@@ -963,6 +1044,93 @@ BOOST_FIXTURE_TEST_SUITE( FC24_ReadFIFOQueue, ProtoFixture )
         RegDataType buf[FIFO_MAX] = {};
         BOOST_CHECK_THROW(
             proto_.ReadFIFOQueue( ctx(), 256, buf ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC20_ReadGeneralReference, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( SingleSubRequest_ReadsCorrectValues )
+    {
+        // Read 3 records starting at record 0 from file 1
+        FileSubRequest sub { 1, 0, 3 };
+        RegDataType data[3] = {};
+        proto_.ReadGeneralReference( ctx(), &sub, 1, data );
+        // fileRecords[0][0..2] = 0x0100, 0x0101, 0x0102
+        BOOST_TEST( data[0] == 0x0100u );
+        BOOST_TEST( data[1] == 0x0101u );
+        BOOST_TEST( data[2] == 0x0102u );
+    }
+
+    BOOST_AUTO_TEST_CASE( MultipleSubRequests_ConcatenatedOutput )
+    {
+        // Sub-request 1: file 1, record 0, length 2
+        // Sub-request 2: file 2, record 4, length 3
+        FileSubRequest subs[2] = { { 1, 0, 2 }, { 2, 4, 3 } };
+        RegDataType data[5] = {};
+        proto_.ReadGeneralReference( ctx(), subs, 2, data );
+        // File 1: 0x0100, 0x0101
+        BOOST_TEST( data[0] == 0x0100u );
+        BOOST_TEST( data[1] == 0x0101u );
+        // File 2: 0x0204, 0x0205, 0x0206
+        BOOST_TEST( data[2] == 0x0204u );
+        BOOST_TEST( data[3] == 0x0205u );
+        BOOST_TEST( data[4] == 0x0206u );
+    }
+
+    BOOST_AUTO_TEST_CASE( InvalidFileNumber_Throws )
+    {
+        FileSubRequest sub { 99, 0, 1 }; // file 99 does not exist
+        RegDataType data[1] = {};
+        BOOST_CHECK_THROW(
+            proto_.ReadGeneralReference( ctx(), &sub, 1, data ),
+            EBaseException );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+
+BOOST_FIXTURE_TEST_SUITE( FC21_WriteGeneralReference, ProtoFixture )
+
+    BOOST_AUTO_TEST_CASE( WriteThenReadBack )
+    {
+        // Write 2 records to file 1, starting at record 10
+        FileSubRequest sub { 1, 10, 2 };
+        RegDataType wData[2] = { 0xAAAAu, 0xBBBBu };
+        proto_.WriteGeneralReference( ctx(), &sub, 1, wData );
+
+        // Read back the same records via FC20
+        RegDataType rData[2] = {};
+        proto_.ReadGeneralReference( ctx(), &sub, 1, rData );
+        BOOST_TEST( rData[0] == 0xAAAAu );
+        BOOST_TEST( rData[1] == 0xBBBBu );
+    }
+
+    BOOST_AUTO_TEST_CASE( MultipleSubRequests_WriteThenVerify )
+    {
+        FileSubRequest subs[2] = { { 1, 20, 1 }, { 2, 20, 1 } };
+        RegDataType wData[2] = { 0x1234u, 0x5678u };
+        proto_.WriteGeneralReference( ctx(), subs, 2, wData );
+
+        // Verify each independently
+        RegDataType r1 = 0, r2 = 0;
+        FileSubRequest s1 { 1, 20, 1 }, s2 { 2, 20, 1 };
+        proto_.ReadGeneralReference( ctx(), &s1, 1, &r1 );
+        proto_.ReadGeneralReference( ctx(), &s2, 1, &r2 );
+        BOOST_TEST( r1 == 0x1234u );
+        BOOST_TEST( r2 == 0x5678u );
+    }
+
+    BOOST_AUTO_TEST_CASE( InvalidFileNumber_Throws )
+    {
+        FileSubRequest sub { 99, 0, 1 };
+        RegDataType data[1] = { 0x0000u };
+        BOOST_CHECK_THROW(
+            proto_.WriteGeneralReference( ctx(), &sub, 1, data ),
             EBaseException );
     }
 

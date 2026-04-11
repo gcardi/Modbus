@@ -201,8 +201,14 @@ protected:
 //    DoReportSlave
 //    DoProgram884_M84
 //    DoResetCommLink
-//    DoReadGeneralReference
-//    DoWriteGeneralReference
+    virtual void DoReadGeneralReference( Context const & Context,
+                                         const FileSubRequest* SubRequests,
+                                         size_t SubReqCount,
+                                         RegDataType* Data ) override;
+    virtual void DoWriteGeneralReference( Context const & Context,
+                                          const FileSubRequest* SubRequests,
+                                          size_t SubReqCount,
+                                          const RegDataType* Data ) override;
     virtual void DoMaskWrite4XRegister( Context const & Context,
                                         RegAddrType Addr,
                                         RegDataType AndMask,

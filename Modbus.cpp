@@ -223,8 +223,25 @@ void Protocol::DoPresetMultipleRegisters( Context const & /* Context */,
 //    ReportSlave
 //    Program884_M84
 //    ResetCommLink
-//    ReadGeneralReference
-//    WriteGeneralReference
+
+void Protocol::DoReadGeneralReference( Context const & /* Context */,
+                                       const FileSubRequest* /*SubRequests*/,
+                                       size_t /*SubReqCount*/,
+                                       RegDataType* /*Data*/ )
+{
+    RaiseFunctionCodeNotImplementedException( FunctionCode::ReadGeneralReference );
+}
+//---------------------------------------------------------------------------
+
+void Protocol::DoWriteGeneralReference( Context const & /* Context */,
+                                        const FileSubRequest* /*SubRequests*/,
+                                        size_t /*SubReqCount*/,
+                                        const RegDataType* /*Data*/ )
+{
+    RaiseFunctionCodeNotImplementedException( FunctionCode::WriteGeneralReference );
+}
+//---------------------------------------------------------------------------
+
 //    MaskWrite4XRegister
 void Protocol::DoMaskWrite4XRegister( Context const & Context,
                                       RegAddrType Addr,

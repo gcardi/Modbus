@@ -5,7 +5,7 @@
  * @details Defines:
  *  - Modbus::TCPIPContext: extends Context with an explicit MBAP transaction identifier.
  *  - Modbus::Master::TCPIPProtocol: abstract base implementing all Modbus function codes
- *    (FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23) over a byte-stream/datagram
+ *    (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC20, FC21, FC22, FC23, FC24) over a byte-stream/datagram
  *    transport.  Concrete subclasses provide the actual I/O by implementing DoWrite() and DoRead().
  */
 
@@ -71,7 +71,7 @@ namespace Master {
  *  - Builds Modbus request frames with proper MBAP headers.
  *  - Delegates I/O to pure virtual DoWrite() and DoRead() hooks.
  *  - Validates MBAP response headers (transaction ID, protocol ID = 0, unit identifier).
- *  - Implements all Modbus function codes (FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23)
+ *  - Implements all Modbus function codes (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC20, FC21, FC22, FC23, FC24)
  *    inherited by TCP/UDP transports.
  *
  *  **NVI Architecture:**
@@ -88,7 +88,7 @@ namespace Master {
  *    (other Do…() methods for FC03, FC04, etc. are defined in Protocol and inherited here).
  *
  *  All Modbus function codes supported by this library
- *  (FC01, FC02, FC03, FC04, FC05, FC06, FC15, FC16, FC22, FC23) are
+ *  (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC20, FC21, FC22, FC23, FC24) are
  *  fully implemented in Protocol and inherited by TCPIPProtocol; concrete TCP/UDP subclasses
  *  do not need to reimplement function code logic.
  */
@@ -188,8 +188,14 @@ protected:
 //    DoReportSlave
 //    DoProgram884_M84
 //    DoResetCommLink
-//    DoReadGeneralReference
-//    DoWriteGeneralReference
+    virtual void DoReadGeneralReference( Context const & Context,
+                                         const FileSubRequest* SubRequests,
+                                         size_t SubReqCount,
+                                         RegDataType* Data ) override;
+    virtual void DoWriteGeneralReference( Context const & Context,
+                                          const FileSubRequest* SubRequests,
+                                          size_t SubReqCount,
+                                          const RegDataType* Data ) override;
       virtual void DoMaskWrite4XRegister( Context const & Context,
                                           RegAddrType Addr,
                                           RegDataType AndMask,

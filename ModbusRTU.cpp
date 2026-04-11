@@ -662,11 +662,252 @@ void RTUProtocol::DoPresetMultipleRegisters( Context const & Context,
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoReadGeneralReference
+void RTUProtocol::DoReadGeneralReference( Context const & Context,
+                                          const FileSubRequest* SubRequests,
+                                          size_t SubReqCount,
+                                          RegDataType* Data )
+{
+    // FC20 request PDU:
+    //   FC(1) + ByteCount(1) + N * [RefType(1) + FileNo(2) + RecNo(2) + RecLen(2)]
+    // Each sub-request group is 7 bytes; RefType is always 0x06.
+    const size_t subReqBytes = SubReqCount * 7;
 
+    FrameCont TxFrame;
+    TxFrame.reserve( 1 + 1 + 1 + subReqBytes + 2 ); // SlaveAddr+FC+ByteCount+subs+CRC
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<uint8_t>( FunctionCode::ReadGeneralReference );
+    *TxFrameBkInsIt++ = static_cast<uint8_t>( subReqBytes );
+
+    size_t totalRegs = 0;
+    for ( size_t i = 0; i < SubReqCount; ++i ) {
+        *TxFrameBkInsIt++ = 0x06; // reference type
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, SubRequests[i].FileNumber );
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, SubRequests[i].RecordNumber );
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, SubRequests[i].RecordLength );
+        totalRegs += SubRequests[i].RecordLength;
+    }
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    // FC20 response PDU (variable-length):
+    //   SlaveAddr(1) + FC(1) + RespDataLen(1)
+    //   + N * [SubRespLen(1) + RefType(1) + Data(RecordLength*2)]
+    //   + CRC(2)
+    // We use manual I/O like DoReadFIFOQueue because the response is variable-length.
+
+    if ( onFlowEvent_ )
+        onFlowEvent_( *this, FlowDirection::TX, TxFrame );
+
+    commPort_.PurgeCommPort();
+    commPort_.WriteBuffer(
+        const_cast<FrameCont::value_type*>( &TxFrame[0] ), TxFrame.size()
+    );
+
+    if ( CancelTXEcho ) {
+        for ( FrameCont::size_type Cnt = TxFrame.size() ; Cnt ; --Cnt ) {
+            uint8_t Char;
+            if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+                throw EContextException( Context, _D( "TX echo timeout" ) );
+            }
+        }
+    }
+
+    // Read fixed header: SlaveAddr(1) + FC(1) + RespDataLen(1) = 3
+    FrameCont RxFrame;
+    RxFrame.reserve( 3 + SubReqCount * ( 2 + totalRegs * 2 ) + 2 );
+
+    for ( int I = 0; I < 3; ++I ) {
+        uint8_t Char;
+        if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+            throw EContextException( Context, _D( "Timeout error" ) );
+        }
+        RxFrame.push_back( Char );
+
+        if ( I == 1 && ( Char & 0x80 ) ) {
+            // Exception response
+            for ( int J = 0; J < 3; ++J ) {
+                if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+                    throw EContextException( Context, _D( "Timeout error" ) );
+                }
+                RxFrame.push_back( Char );
+            }
+            if ( ComputeCRC( RxFrame.begin(), RxFrame.end() ) ) {
+                throw EContextException( Context, _D( "Bad CRC (RX)" ) );
+            }
+            if ( RxFrame[0] != Context.GetSlaveAddr() ) {
+                throw EContextException( Context, _D( "Slave address mismatch" ) );
+            }
+            RaiseStandardException( Context, ExceptionCode( RxFrame[2] ) );
+        }
+    }
+
+    if ( RxFrame[0] != Context.GetSlaveAddr() ) {
+        throw EContextException( Context, _D( "Slave address mismatch" ) );
+    }
+    if ( RxFrame[1] != static_cast<uint8_t>( FunctionCode::ReadGeneralReference ) ) {
+        throw EContextException( Context, _D( "Function code mismatch" ) );
+    }
+
+    const uint8_t respDataLen = RxFrame[2];
+
+    // Read remaining bytes: respDataLen + CRC(2)
+    const int Remaining = respDataLen + 2;
+    for ( int I = 0; I < Remaining; ++I ) {
+        uint8_t Char;
+        if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+            throw EContextException( Context, _D( "Timeout error" ) );
+        }
+        RxFrame.push_back( Char );
+    }
+
+    if ( onFlowEvent_ ) {
+        onFlowEvent_( *this, FlowDirection::RX, RxFrame );
+    }
+
+    if ( ComputeCRC( RxFrame.begin(), RxFrame.end() ) ) {
+        throw EContextException( Context, _D( "Bad CRC (RX)" ) );
+    }
+
+    // Parse sub-response groups starting at offset 3
+    size_t off = 3;
+    RegDataType* dataOut = Data;
+    for ( size_t i = 0; i < SubReqCount; ++i ) {
+        if ( off >= RxFrame.size() - 2 ) {
+            throw EContextException( Context, _D( "Truncated response" ) );
+        }
+        const uint8_t subRespLen = RxFrame[off++];
+        const uint8_t refType    = RxFrame[off++];
+        if ( refType != 0x06 ) {
+            throw EContextException( Context, _D( "Invalid reference type" ) );
+        }
+        // subRespLen includes RefType(1) + Data(N*2), so data bytes = subRespLen - 1
+        const size_t dataBytes = subRespLen - 1;
+        if ( dataBytes != SubRequests[i].RecordLength * 2 ) {
+            throw EContextException( Context, _D( "Sub-response length mismatch" ) );
+        }
+        for ( RecordLengthType r = 0; r < SubRequests[i].RecordLength; ++r ) {
+            *dataOut++ = static_cast<RegDataType>(
+                ( static_cast<uint16_t>( RxFrame[off] ) << 8 ) |
+                ( static_cast<uint16_t>( RxFrame[off + 1] ) & 0xFF )
+            );
+            off += 2;
+        }
+    }
+}
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoWriteGeneralReference
+void RTUProtocol::DoWriteGeneralReference( Context const & Context,
+                                           const FileSubRequest* SubRequests,
+                                           size_t SubReqCount,
+                                           const RegDataType* Data )
+{
+    // FC21 request PDU:
+    //   FC(1) + ByteCount(1) + N * [RefType(1) + FileNo(2) + RecNo(2) + RecLen(2) + Data(RecLen*2)]
+    size_t totalRegs = 0;
+    for ( size_t i = 0; i < SubReqCount; ++i )
+        totalRegs += SubRequests[i].RecordLength;
 
+    const size_t reqBytes = SubReqCount * 7 + totalRegs * 2;
+
+    FrameCont TxFrame;
+    TxFrame.reserve( 1 + 1 + 1 + reqBytes + 2 ); // SlaveAddr+FC+ByteCount+data+CRC
+    back_insert_iterator<FrameCont> TxFrameBkInsIt( TxFrame );
+
+    *TxFrameBkInsIt++ = Context.GetSlaveAddr();
+    *TxFrameBkInsIt++ =
+        static_cast<uint8_t>( FunctionCode::WriteGeneralReference );
+    *TxFrameBkInsIt++ = static_cast<uint8_t>( reqBytes );
+
+    const RegDataType* dataIn = Data;
+    for ( size_t i = 0; i < SubReqCount; ++i ) {
+        *TxFrameBkInsIt++ = 0x06; // reference type
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, SubRequests[i].FileNumber );
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, SubRequests[i].RecordNumber );
+        TxFrameBkInsIt = Write( TxFrameBkInsIt, SubRequests[i].RecordLength );
+        for ( RecordLengthType r = 0; r < SubRequests[i].RecordLength; ++r ) {
+            TxFrameBkInsIt = Write( TxFrameBkInsIt, *dataIn++ );
+        }
+    }
+    WriteCRC( TxFrameBkInsIt, TxFrame.begin(), TxFrame.end() );
+
+    // FC21 response is an echo of the request (variable-length).
+    // Use manual I/O.
+
+    if ( onFlowEvent_ )
+        onFlowEvent_( *this, FlowDirection::TX, TxFrame );
+
+    commPort_.PurgeCommPort();
+    commPort_.WriteBuffer(
+        const_cast<FrameCont::value_type*>( &TxFrame[0] ), TxFrame.size()
+    );
+
+    if ( CancelTXEcho ) {
+        for ( FrameCont::size_type Cnt = TxFrame.size() ; Cnt ; --Cnt ) {
+            uint8_t Char;
+            if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+                throw EContextException( Context, _D( "TX echo timeout" ) );
+            }
+        }
+    }
+
+    // Read fixed header: SlaveAddr(1) + FC(1) + RespDataLen(1) = 3
+    FrameCont RxFrame;
+    RxFrame.reserve( TxFrame.size() );
+
+    for ( int I = 0; I < 3; ++I ) {
+        uint8_t Char;
+        if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+            throw EContextException( Context, _D( "Timeout error" ) );
+        }
+        RxFrame.push_back( Char );
+
+        if ( I == 1 && ( Char & 0x80 ) ) {
+            for ( int J = 0; J < 3; ++J ) {
+                if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+                    throw EContextException( Context, _D( "Timeout error" ) );
+                }
+                RxFrame.push_back( Char );
+            }
+            if ( ComputeCRC( RxFrame.begin(), RxFrame.end() ) ) {
+                throw EContextException( Context, _D( "Bad CRC (RX)" ) );
+            }
+            if ( RxFrame[0] != Context.GetSlaveAddr() ) {
+                throw EContextException( Context, _D( "Slave address mismatch" ) );
+            }
+            RaiseStandardException( Context, ExceptionCode( RxFrame[2] ) );
+        }
+    }
+
+    if ( RxFrame[0] != Context.GetSlaveAddr() ) {
+        throw EContextException( Context, _D( "Slave address mismatch" ) );
+    }
+    if ( RxFrame[1] != static_cast<uint8_t>( FunctionCode::WriteGeneralReference ) ) {
+        throw EContextException( Context, _D( "Function code mismatch" ) );
+    }
+
+    const uint8_t respDataLen = RxFrame[2];
+
+    // Read remaining bytes: respDataLen + CRC(2)
+    const int Remaining = respDataLen + 2;
+    for ( int I = 0; I < Remaining; ++I ) {
+        uint8_t Char;
+        if ( !commPort_.ReadBytes( &Char, 1 ) ) {
+            throw EContextException( Context, _D( "Timeout error" ) );
+        }
+        RxFrame.push_back( Char );
+    }
+
+    if ( onFlowEvent_ ) {
+        onFlowEvent_( *this, FlowDirection::RX, RxFrame );
+    }
+
+    if ( ComputeCRC( RxFrame.begin(), RxFrame.end() ) ) {
+        throw EContextException( Context, _D( "Bad CRC (RX)" ) );
+    }
+}
 //---------------------------------------------------------------------------
 
 //    RTUProtocol::DoMaskWrite4XRegister
