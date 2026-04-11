@@ -156,6 +156,19 @@ Fix:
 
 - Always run rsvars.bat in the same command session before building
 
+## 6.4 Address notation vs protocol address field
+
+In the actual Modbus PDU, the start address is a 16-bit unsigned value (`0..65535`) and is interpreted as an offset.
+This library uses that offset directly (zero-based) for coil/register API calls.
+The API method already identifies the target table, so no leading table digit is required in the address value.
+
+Practical mapping:
+
+- First item in a table (`1`) maps to library address `0`
+- Item `108` in that table maps to library address `107`
+
+Some external tools display formatted references, but this is only a representation format. The library API expects the numeric zero-based Modbus offset.
+
 ## 7. Branching Workflow (Recommended)
 
 To move pending work to develop branch safely:

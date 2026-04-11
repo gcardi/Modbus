@@ -64,6 +64,21 @@ Abstract base class exposing:
 - FC24 Read FIFO Queue
 - Standard exceptions: IllegalFunction, IllegalDataAddress, IllegalDataValue, SlaveDeviceFailure, etc.
 
+## Addressing Convention
+
+Important notes for this library:
+
+- The Modbus protocol start-address field is a 16-bit unsigned value (`0..65535`).
+- This library expects **zero-based** start addresses for all coil/register functions.
+- The function you call already defines the table (coils, discrete inputs, input registers, or holding registers), so no table-leading digit is needed.
+- If your device manual numbers items starting from 1, convert using: `library_address = manual_item_number - 1`.
+- Some HMIs/tag editors may show formatted references (for example six digits), but this is display-only. The API input remains the numeric zero-based offset.
+
+Examples (manual item number -> library address argument):
+
+- `1` -> `0`
+- `108` -> `107`
+
 ## Protocol Implementations
 
 ### Modbus RTU
