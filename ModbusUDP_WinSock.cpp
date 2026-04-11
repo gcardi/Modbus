@@ -88,7 +88,12 @@ void UDPProtocolWinSock::DoOpen()
         if ( sock == INVALID_SOCKET )
             continue;
 
-        // Store resolved server address for sendto
+        // Store resolved server address for sendto — guard against oversized entries
+        if ( ptr->ai_addrlen > sizeof( serverAddr_ ) ) {
+            closesocket( sock );
+            sock = INVALID_SOCKET;
+            continue;
+        }
         memcpy( &serverAddr_, ptr->ai_addr, ptr->ai_addrlen );
         serverAddrLen_ = static_cast<int>( ptr->ai_addrlen );
         break;

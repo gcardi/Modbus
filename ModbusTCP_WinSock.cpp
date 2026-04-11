@@ -101,6 +101,17 @@ void TCPProtocolWinSock::DoOpen()
             sock = INVALID_SOCKET;
             continue;
         }
+
+        // Verify the connect completed cleanly even when writeable
+        int soError = 0;
+        int soErrorLen = sizeof( soError );
+        if ( getsockopt( sock, SOL_SOCKET, SO_ERROR,
+                         reinterpret_cast<char*>( &soError ), &soErrorLen ) == SOCKET_ERROR
+             || soError != 0 ) {
+            closesocket( sock );
+            sock = INVALID_SOCKET;
+            continue;
+        }
         break; // connected
     }
     FreeAddrInfoW( result );
@@ -154,7 +165,7 @@ void TCPProtocolWinSock::DoWrite( TBytes const OutBuffer )
 
     while ( total < length ) {
         int sent = send( socket_, data + total, length - total, 0 );
-        if ( sent == SOCKET_ERROR ) {
+        if ( sent <= 0 ) {
             throw EBaseException( _D( "TCP: send failed" ) );
         }
         total += sent;

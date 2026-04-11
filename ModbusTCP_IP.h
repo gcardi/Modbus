@@ -213,6 +213,8 @@ protected:
 private:
     static void RaiseExceptionIfBMAPIsNotValid( Context const & Context,
                                                 TBytes const Buffer );
+    static void RaiseExceptionIfBMAPDataLengthIsNotValid( Context const & Context,
+                                                          BMAPDataLengthType DataLength );
     static void RaiseExceptionIfBMAPIsNotEQ( Context const & Context,
                                              TBytes const LBuffer,
                                              TBytes const RBuffer );

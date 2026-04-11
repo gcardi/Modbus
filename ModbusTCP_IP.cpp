@@ -60,6 +60,18 @@ void TCPIPProtocol::RaiseExceptionIfBMAPIsNotValid( Context const & Context,
 }
 //---------------------------------------------------------------------------
 
+void TCPIPProtocol::RaiseExceptionIfBMAPDataLengthIsNotValid( Context const & Context,
+                                                              BMAPDataLengthType DataLength )
+{
+    // MBAP length field covers Unit ID (1) + PDU. Minimum valid PDU is 2 bytes
+    // (FC + 1 data byte), so minimum total is 3. Maximum Modbus PDU is 253 bytes,
+    // so maximum MBAP length is 254.
+    if ( DataLength < 3 || DataLength > 254 ) {
+        throw EContextException( Context, _D( "MBAP length out of valid range" ) );
+    }
+}
+//---------------------------------------------------------------------------
+
 void TCPIPProtocol::RaiseExceptionIfBMAPIsNotEQ( Context const & Context,
                                                  TBytes const LBuffer,
                                                  TBytes const RBuffer )
@@ -77,6 +89,7 @@ void TCPIPProtocol::RaiseExceptionIfBMAPIsNotEQ( Context const & Context,
     if ( GetBMAPUnitIdentifier( LBuffer ) != GetBMAPUnitIdentifier( RBuffer ) ) {
         throw EContextException( Context, _D( "Invalid BMAP Unit Identifier" ) );
     }
+    RaiseExceptionIfBMAPDataLengthIsNotValid( Context, GetBMAPDataLength( RBuffer ) );
 }
 //---------------------------------------------------------------------------
 
