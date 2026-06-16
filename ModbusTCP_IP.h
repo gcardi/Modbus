@@ -19,6 +19,8 @@
 
 //#include "ExceptUtils.h"
 #include "Modbus.h"
+#include "ModbusMBAP.h"
+#include "ModbusPDU.h"
 
 /** @brief Default Modbus TCP/UDP server hostname used when none is specified. */
 #define  DEFAULT_MODBUS_TCPIP_HOST  "localhost"
@@ -106,11 +108,6 @@ public:
     /** @brief Sets the TCP/UDP port number. */
     void SetPort( uint16_t Val );
 protected:
-    using BMAPTransactionIdType = uint16_t;  ///< MBAP Transaction Identifier field type.
-    using BMAPProtocolType      = uint16_t;  ///< MBAP Protocol Identifier field type (always 0 for Modbus).
-    using BMAPDataLengthType    = uint16_t;  ///< MBAP Length field type.
-    using BMAPUnitIdType        = uint8_t;   ///< MBAP Unit Identifier field type.
-
     /** @brief Returns a string describing host and port for diagnostic purposes. */
     virtual String DoGetProtocolParamsStr() const override;
 
@@ -211,39 +208,6 @@ protected:
                                           FIFOAddrType FIFOAddr,
                                           RegDataType* Data ) override;
 private:
-    static void RaiseExceptionIfBMAPIsNotValid( Context const & Context,
-                                                TBytes const Buffer );
-    static void RaiseExceptionIfBMAPDataLengthIsNotValid( Context const & Context,
-                                                          BMAPDataLengthType DataLength );
-    static void RaiseExceptionIfBMAPIsNotEQ( Context const & Context,
-                                             TBytes const LBuffer,
-                                             TBytes const RBuffer );
-    static void RaiseExceptionIfReplyIsNotValid( Context const & Context,
-                                                 TBytes const Buffer,
-                                                 FunctionCode ExpectedFunctionCode );
-    static FunctionCode GetFunctionCode( TBytes const Buffer ) noexcept;
-    static ExceptionCode GetExceptCode( TBytes const Buffer ) noexcept;
-    static BMAPDataLengthType GetDataLength( TBytes const Buffer ) noexcept;
-    static BMAPTransactionIdType GetBMAPTransactionIdentifier( TBytes const Buffer ) noexcept;
-    static BMAPProtocolType GetBMAPProtocol( TBytes const Buffer ) noexcept;
-    static BMAPDataLengthType GetBMAPDataLength( TBytes const Buffer ) noexcept;
-    static BMAPUnitIdType GetBMAPUnitIdentifier( TBytes const Buffer ) noexcept;
-    static BMAPDataLengthType GetBMAPHeaderLength() noexcept { return 7; }
-    static int WriteBMAPHeader( TBytes & OutBuffer, int StartIdx,
-                                Context const & Context );
-    static int GetAddressPointCountPairLength() noexcept { return 4; }
-    static int WriteAddressPointCountPair( TBytes & OutBuffer, int StartIdx,
-                                           RegAddrType StartAddr,
-                                           RegCountType PointCount ) noexcept;
-    static int WriteData( TBytes & OutBuffer, int StartIdx, RegAddrType Data ) noexcept;
-
-    static void CopyDataWord( Context const & Context, TBytes const Buffer,
-                              int BufferOffset, uint16_t* Data );
-
-    static int GetPayloadLength( Context const & Context,
-                                 TBytes const  Buffer,
-                                 int BufferOffset );
-
     void ReadRegisters( FunctionCode FnCode, Context const & Context,
                         RegAddrType StartAddr, RegCountType PointCount,
                         RegDataType* Data );
@@ -255,8 +219,8 @@ private:
 protected:
     template<typename T>
     static uint16_t GetLength( T const & Data ) {
-        //return static_cast<BMAPDataLengthType>( Data.size() );
-        return static_cast<BMAPDataLengthType>( Data.Length );
+        //return static_cast<uint16_t>( Data.size() );
+        return static_cast<uint16_t>( Data.Length );
     }
 
     template<typename T>

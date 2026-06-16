@@ -8,13 +8,7 @@
 #include "Modbus.h"
 #include "ModbusTCP_IP.h"
 
-#define  MODBUS_TCP_IP_BMAP_TRANSACTION_ID_OFFSET  0
-#define  MODBUS_TCP_IP_BMAP_PROTOCOL_OFFSET        2
-#define  MODBUS_TCP_IP_BMAP_DATA_LENGTH_OFFSET     4
-#define  MODBUS_TCP_IP_BMAP_UNIT_ID_OFFSET         6
-
-#define  MODBUS_TCP_IP_REPLY_FUNCTION_CODE_OFFSET  0
-#define  MODBUS_TCP_IP_REPLY_EXCEPTION_CODE_OFFSET 1
+/** @brief Offset of the first register-data byte following the Byte Count field in a read-register reply PDU. */
 #define  MODBUS_TCP_IP_REPLY_DATA_OFFSET           1
 
 using std::min;
@@ -51,220 +45,6 @@ void TCPIPProtocol::SetPort( uint16_t Val )
 }
 //---------------------------------------------------------------------------
 
-void TCPIPProtocol::RaiseExceptionIfBMAPIsNotValid( Context const & Context,
-                                                    TBytes const Buffer )
-{
-    if ( GetLength( Buffer ) < GetBMAPHeaderLength() ) {
-        throw EContextException( Context, _D( "Invalid BMAP length" ) );
-    }
-}
-//---------------------------------------------------------------------------
-
-void TCPIPProtocol::RaiseExceptionIfBMAPDataLengthIsNotValid( Context const & Context,
-                                                              BMAPDataLengthType DataLength )
-{
-    // MBAP length field covers Unit ID (1) + PDU. Minimum valid PDU is 2 bytes
-    // (FC + 1 data byte), so minimum total is 3. Maximum Modbus PDU is 253 bytes,
-    // so maximum MBAP length is 254.
-    if ( DataLength < 3 || DataLength > 254 ) {
-        throw EContextException( Context, _D( "MBAP length out of valid range" ) );
-    }
-}
-//---------------------------------------------------------------------------
-
-void TCPIPProtocol::RaiseExceptionIfBMAPIsNotEQ( Context const & Context,
-                                                 TBytes const LBuffer,
-                                                 TBytes const RBuffer )
-{
-    RaiseExceptionIfBMAPIsNotValid( Context, LBuffer );
-    RaiseExceptionIfBMAPIsNotValid( Context, RBuffer );
-    if ( GetBMAPTransactionIdentifier( LBuffer ) != GetBMAPTransactionIdentifier( RBuffer ) ) {
-        throw EContextException( Context, _D( "Invalid BMAP Transaction Identifier" ) );
-    }
-
-    BMAPProtocolType const LBMAPProtocol = GetBMAPProtocol( LBuffer );
-    if ( LBMAPProtocol != GetBMAPProtocol( RBuffer ) || LBMAPProtocol ) {
-        throw EContextException( Context, _D( "Invalid BMAP Protocol" ) );
-    }
-    if ( GetBMAPUnitIdentifier( LBuffer ) != GetBMAPUnitIdentifier( RBuffer ) ) {
-        throw EContextException( Context, _D( "Invalid BMAP Unit Identifier" ) );
-    }
-    RaiseExceptionIfBMAPDataLengthIsNotValid( Context, GetBMAPDataLength( RBuffer ) );
-}
-//---------------------------------------------------------------------------
-
-void TCPIPProtocol::RaiseExceptionIfReplyIsNotValid( Context const & Context,
-                                                     TBytes const Buffer,
-                                                     FunctionCode ExpectedFunctionCode )
-{
-    if ( GetLength( Buffer ) > 1 ) {
-        FunctionCode const FnCode = GetFunctionCode( Buffer );
-        if ( static_cast<int>( FnCode ) & 0x80 ) {
-            RaiseStandardException( Context, GetExceptCode( Buffer ) );
-        }
-        else if ( FnCode != ExpectedFunctionCode ) {
-            throw EContextException(
-                Context,
-                Format(
-                    _D( "Invalid Function Code: expected 0x%.2X, read 0x%.2X" )
-                  , ARRAYOFCONST( (
-                        ( static_cast<int>( ExpectedFunctionCode ) & 0xFF ),
-                        ( static_cast<int>( FnCode ) & 0xFF )
-                    ) )
-                )
-            );
-        }
-    }
-    else {
-        throw EContextException( Context, _D( "reply is too short" ) );
-    }
-}
-//---------------------------------------------------------------------------
-
-FunctionCode TCPIPProtocol::GetFunctionCode( TBytes const Buffer ) noexcept
-{
-    return FunctionCode( Buffer[MODBUS_TCP_IP_REPLY_FUNCTION_CODE_OFFSET] );
-}
-//---------------------------------------------------------------------------
-
-ExceptionCode TCPIPProtocol::GetExceptCode( TBytes const Buffer ) noexcept
-{
-    return ExceptionCode( Buffer[MODBUS_TCP_IP_REPLY_EXCEPTION_CODE_OFFSET] );
-}
-//---------------------------------------------------------------------------
-
-TCPIPProtocol::BMAPDataLengthType TCPIPProtocol::GetDataLength( TBytes const Buffer ) noexcept
-{
-    return Buffer[MODBUS_TCP_IP_REPLY_DATA_OFFSET];
-}
-//---------------------------------------------------------------------------
-
-TCPIPProtocol::BMAPTransactionIdType TCPIPProtocol::GetBMAPTransactionIdentifier(
-                                                 TBytes const Buffer ) noexcept
-{
-    int const Idx = MODBUS_TCP_IP_BMAP_TRANSACTION_ID_OFFSET;
-    return ( static_cast<BMAPTransactionIdType>( Buffer[Idx] ) << 8 ) |
-           ( static_cast<BMAPTransactionIdType>( Buffer[Idx + 1] ) & 0xFF );
-}
-//---------------------------------------------------------------------------
-
-TCPIPProtocol::BMAPProtocolType TCPIPProtocol::GetBMAPProtocol(
-                                                 TBytes const Buffer ) noexcept
-{
-    const int Idx = MODBUS_TCP_IP_BMAP_PROTOCOL_OFFSET;
-    return ( static_cast<BMAPProtocolType>( Buffer[Idx] << 8 ) ) |
-           ( static_cast<BMAPProtocolType>( Buffer[Idx + 1] & 0xFF ) );
-}
-//---------------------------------------------------------------------------
-
-TCPIPProtocol::BMAPDataLengthType TCPIPProtocol::GetBMAPDataLength(
-                                                 TBytes const Buffer ) noexcept
-{
-    const int Idx = MODBUS_TCP_IP_BMAP_DATA_LENGTH_OFFSET;
-    return ( static_cast<BMAPDataLengthType>( Buffer[Idx] << 8 ) ) |
-           ( static_cast<BMAPDataLengthType>( Buffer[Idx + 1] & 0xFF ) );
-}
-//---------------------------------------------------------------------------
-
-TCPIPProtocol::BMAPUnitIdType TCPIPProtocol::GetBMAPUnitIdentifier(
-                                                 TBytes const Buffer ) noexcept
-{
-    return Buffer[MODBUS_TCP_IP_BMAP_UNIT_ID_OFFSET];
-}
-//---------------------------------------------------------------------------
-
-int TCPIPProtocol::WriteBMAPHeader( TBytes & OutBuffer, int StartIdx,
-                                    Context const & Context )
-{
-    /*-----------------------------------------------------------------------*/
-    /*                                  BMAP                                 */
-    /*-------------------------+-----+---------------------------------------*/
-    /*        Field            | Len |          Description                  */
-    /*-------------------------+-----+---------------------------------------*/
-    /* Transaction Identifier  |   2 | Identification of a MODBUS            */
-    /*                         |     | Request / Response transaction        */
-    /*-------------------------+-----+---------------------------------------*/
-    /* Protocol Identifier     |   2 | 0 = MODBUS protocol                   */
-    /*-------------------------+-----+---------------------------------------*/
-    /* Length                  |   2 |  Number of following bytes            */
-    /*-------------------------+-----+---------------------------------------*/
-    /* Unit Identifier         |   1 | Identification of a remote slave con- */
-    /*                         |     | nected on a serial line or on other   */
-    /*                         |     | buses                                 */
-    /*-------------------------+-----+---------------------------------------*/
-
-    BMAPTransactionIdType const TransactionId = Context.GetTransactionIdentifier();
-    OutBuffer[StartIdx++] = ( TransactionId >> 8 ) & 0xFF;   // Transaction Identifier Lo
-    OutBuffer[StartIdx++] = TransactionId & 0xFF;            // Transaction Identifier Hi
-
-    OutBuffer[StartIdx++] = 0x00;   // Protocol Identifier Lo
-    OutBuffer[StartIdx++] = 0x00;   // Protocol Identifier Hi
-
-    BMAPDataLengthType const PayloadLength = GetLength( OutBuffer ) - 6;
-    OutBuffer[StartIdx++] = ( PayloadLength >> 8 ) & 0xFF;   // Length Lo
-    OutBuffer[StartIdx++] = PayloadLength & 0xFF;            // Length Hi
-
-    OutBuffer[StartIdx++] = Context.GetSlaveAddr();   // Unit Identifier
-
-    return StartIdx;
-}
-//---------------------------------------------------------------------------
-
-int TCPIPProtocol::WriteAddressPointCountPair( TBytes & OutBuffer,
-                                               int StartIdx,
-                                               RegAddrType StartAddr,
-                                               RegCountType PointCount ) noexcept
-{
-    OutBuffer[StartIdx++] = ( StartAddr >> 8 ) & 0xFF;   // Starting Address Hi
-    OutBuffer[StartIdx++] = StartAddr & 0xFF;            // Starting Address Lo
-    OutBuffer[StartIdx++] = ( PointCount >> 8 ) & 0xFF;  // No. of Points Hi
-    OutBuffer[StartIdx++] = PointCount & 0xFF;           // No. of Points Lo
-    return StartIdx;
-}
-//---------------------------------------------------------------------------
-
-int TCPIPProtocol::WriteData( TBytes & OutBuffer,
-                              int StartIdx, RegAddrType Data ) noexcept
-{
-    OutBuffer[StartIdx++] = ( Data >> 8 ) & 0xFF;   // Data Hi
-    OutBuffer[StartIdx++] = Data & 0xFF;            // Data Lo
-    return StartIdx;
-}
-//---------------------------------------------------------------------------
-
-void TCPIPProtocol::CopyDataWord( Context const & Context, TBytes const Buffer,
-                                  int BufferOffset, uint16_t* Data )
-{
-    int DataLength = GetPayloadLength( Context, Buffer, BufferOffset );
-    for ( int Idx = BufferOffset + 1 ; DataLength ; DataLength -= 2 ) {
-        *Data++ = ( (uint16_t)Buffer[Idx] << 8 ) | ( (uint16_t)Buffer[Idx + 1] & 0xFF );
-        Idx += 2;
-    }
-}
-//---------------------------------------------------------------------------
-
-int TCPIPProtocol::GetPayloadLength( Context const & Context,
-                                     TBytes const Buffer,
-                                     int BufferOffset )
-{
-    int const DataLength = GetDataLength( Buffer );
-    if ( ( GetLength( Buffer ) - 2 != DataLength ) ||
-         ( ~( GetLength( Buffer ) - BufferOffset ) & 1 ) )
-    {
-        throw EContextException(
-            Context,
-            Format(
-                _D( "Invalid received frame lenght %d" )
-              , ARRAYOFCONST( (
-                    DataLength
-                ) )
-            )
-        );
-    }
-    return DataLength;
-}
-//---------------------------------------------------------------------------
-
 String TCPIPProtocol::DoGetProtocolParamsStr() const
 {
     return Format( _D( "%s:%u" ), ARRAYOFCONST( ( GetHost(), GetPort() ) ) );
@@ -286,24 +66,24 @@ void TCPIPProtocol::ReadBits( FunctionCode FnCode, Context const & Context,
 
     // Send
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + GetAddressPointCountPairLength() );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + PDU::AddressPointCountPairLength );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] = static_cast<RegDataType>( FnCode );
-    Idx = WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
+    Idx = PDU::WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Validate BMAP and payload function code
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FnCode );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FnCode );
 
     if ( GetLength( ReplyBuffer ) < 2 ) {
         throw EContextException( Context, _D( "Invalid reply length" ) );
@@ -351,28 +131,28 @@ void TCPIPProtocol::ReadRegisters( FunctionCode FnCode, Context const & Context,
 {
     // Send
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + GetAddressPointCountPairLength() );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + PDU::AddressPointCountPairLength );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] = static_cast<RegDataType>( FnCode );
-    Idx = WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
+    Idx = PDU::WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FnCode );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FnCode );
 
-    CopyDataWord( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, Data );
+    PDU::CopyDataWords( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, Data );
 }
 //---------------------------------------------------------------------------
 
@@ -409,29 +189,29 @@ void TCPIPProtocol::DoForceSingleCoil( Context const & Context,
     // Send
     TBytes OutBuffer;
 
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 + 2 );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 2 + 2 );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::ForceSingleCoil );
-    Idx = WriteData( OutBuffer, Idx, Addr );
-    Idx = WriteData( OutBuffer, Idx, static_cast<RegDataType>( Value ? 0xFF00 : 0x0000 ) );
+    Idx = PDU::WriteWord( OutBuffer, Idx, Addr );
+    Idx = PDU::WriteWord( OutBuffer, Idx, static_cast<RegDataType>( Value ? 0xFF00 : 0x0000 ) );
 
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ForceSingleCoil );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ForceSingleCoil );
 }
 //---------------------------------------------------------------------------
 
@@ -444,30 +224,30 @@ void TCPIPProtocol::DoPresetSingleRegister( Context const & Context,
     // Send
     TBytes OutBuffer;
 
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 + 2 );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 2 + 2 );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::PresetSingleRegister );
 
-    Idx = WriteData( OutBuffer, Idx, Addr );
-    Idx = WriteData( OutBuffer, Idx, Data );
+    Idx = PDU::WriteWord( OutBuffer, Idx, Addr );
+    Idx = PDU::WriteWord( OutBuffer, Idx, Data );
 
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::PresetSingleRegister );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::PresetSingleRegister );
 }
 //---------------------------------------------------------------------------
 
@@ -479,8 +259,8 @@ ExceptionStatusDataType TCPIPProtocol::DoReadExceptionStatus(
 
     // Send: BMAP(7) + FC(1) — no additional payload
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::ReadExceptionStatus );
 
@@ -489,17 +269,17 @@ ExceptionStatusDataType TCPIPProtocol::DoReadExceptionStatus(
 
     // Receive BMAP header
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
 
     // Receive payload: FC(1) + ExceptionStatus(1)
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
-    RaiseExceptionIfReplyIsNotValid(
+    PDU::RaiseExceptionIfReplyIsNotValid(
         Context, ReplyBuffer, FunctionCode::ReadExceptionStatus
     );
 
@@ -520,29 +300,29 @@ RegDataType TCPIPProtocol::DoDiagnostics( Context const & Context,
 
     // Send: BMAP(7) + FC(1) + SubFunction(2) + Data(2)
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 + 2 );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 2 + 2 );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::Diagnostics );
-    Idx = WriteData( OutBuffer, Idx, SubFunction );
-    Idx = WriteData( OutBuffer, Idx, Data );
+    Idx = PDU::WriteWord( OutBuffer, Idx, SubFunction );
+    Idx = PDU::WriteWord( OutBuffer, Idx, Data );
 
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive BMAP header
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
 
     // Receive payload: FC(1) + SubFunction(2) + Data(2)
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
-    RaiseExceptionIfReplyIsNotValid(
+    PDU::RaiseExceptionIfReplyIsNotValid(
         Context, ReplyBuffer, FunctionCode::Diagnostics
     );
 
@@ -610,12 +390,12 @@ void TCPIPProtocol::DoForceMultipleCoils( Context const & Context,
 
     SetLength(
         OutBuffer,
-        GetBMAPHeaderLength() + 1 + GetAddressPointCountPairLength() + 1 + ByteCount
+        MBAP::HeaderLength + 1 + PDU::AddressPointCountPairLength + 1 + ByteCount
     );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::ForceMultipleCoils );
-    Idx = WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
+    Idx = PDU::WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
     OutBuffer[Idx++] = ByteCount;
 
     for ( uint8_t I = 0; I < ByteCount; ++I ) {
@@ -627,17 +407,17 @@ void TCPIPProtocol::DoForceMultipleCoils( Context const & Context,
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ForceMultipleCoils );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ForceMultipleCoils );
 }
 //---------------------------------------------------------------------------
 
@@ -653,13 +433,13 @@ void TCPIPProtocol::DoPresetMultipleRegisters( Context const & Context,
 
     SetLength(
         OutBuffer,
-        GetBMAPHeaderLength() + GetAddressPointCountPairLength() +
+        MBAP::HeaderLength + PDU::AddressPointCountPairLength +
         PointCount * sizeof( RegDataType ) + 2
     );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::PresetMultipleRegisters );
-    Idx = WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
+    Idx = PDU::WriteAddressPointCountPair( OutBuffer, Idx, StartAddr, PointCount );
     OutBuffer[Idx++] = PointCount * sizeof( RegDataType );
 
     for ( RegCountType DataIdx = 0 ; DataIdx < PointCount ; ++DataIdx ) {
@@ -673,17 +453,17 @@ void TCPIPProtocol::DoPresetMultipleRegisters( Context const & Context,
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::PresetMultipleRegisters );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::PresetMultipleRegisters );
 }
 //---------------------------------------------------------------------------
 
@@ -711,8 +491,8 @@ void TCPIPProtocol::DoReadGeneralReference( Context const & Context,
     const size_t subReqBytes = SubReqCount * 7;
 
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 1 + subReqBytes );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 1 + subReqBytes );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<uint8_t>( FunctionCode::ReadGeneralReference );
     OutBuffer[Idx++] = static_cast<uint8_t>( subReqBytes );
@@ -732,17 +512,17 @@ void TCPIPProtocol::DoReadGeneralReference( Context const & Context,
 
     // Receive BMAP header
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
 
     // Receive payload
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
-    RaiseExceptionIfReplyIsNotValid(
+    PDU::RaiseExceptionIfReplyIsNotValid(
         Context, ReplyBuffer, FunctionCode::ReadGeneralReference
     );
 
@@ -794,8 +574,8 @@ void TCPIPProtocol::DoWriteGeneralReference( Context const & Context,
     const size_t reqBytes = SubReqCount * 7 + totalRegs * 2;
 
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 1 + reqBytes );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 1 + reqBytes );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<uint8_t>( FunctionCode::WriteGeneralReference );
     OutBuffer[Idx++] = static_cast<uint8_t>( reqBytes );
@@ -821,17 +601,17 @@ void TCPIPProtocol::DoWriteGeneralReference( Context const & Context,
 
     // Receive BMAP header
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
 
     // Receive payload (response is an echo)
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
-    RaiseExceptionIfReplyIsNotValid(
+    PDU::RaiseExceptionIfReplyIsNotValid(
         Context, ReplyBuffer, FunctionCode::WriteGeneralReference
     );
 }
@@ -848,30 +628,30 @@ void TCPIPProtocol::DoMaskWrite4XRegister( Context const & Context,
     // Send
     TBytes OutBuffer;
 
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 + 2 + 2 );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 2 + 2 + 2 );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::MaskWrite4XRegister );
-    Idx = WriteData( OutBuffer, Idx, Addr );
-    Idx = WriteData( OutBuffer, Idx, AndMask );
-    Idx = WriteData( OutBuffer, Idx, OrMask );
+    Idx = PDU::WriteWord( OutBuffer, Idx, Addr );
+    Idx = PDU::WriteWord( OutBuffer, Idx, AndMask );
+    Idx = PDU::WriteWord( OutBuffer, Idx, OrMask );
 
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::MaskWrite4XRegister );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::MaskWrite4XRegister );
 
 }
 //---------------------------------------------------------------------------
@@ -894,14 +674,14 @@ void TCPIPProtocol::DoReadWrite4XRegisters( Context const & Context,
 
     SetLength(
         OutBuffer,
-        GetBMAPHeaderLength() + 1 + 2 + 2 + 2 + 2 + 1 +
+        MBAP::HeaderLength + 1 + 2 + 2 + 2 + 2 + 1 +
         WritePointCount * sizeof( RegDataType )
     );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::ReadWrite4XRegisters );
-    Idx = WriteAddressPointCountPair( OutBuffer, Idx, ReadStartAddr, ReadPointCount );
-    Idx = WriteAddressPointCountPair( OutBuffer, Idx, WriteStartAddr, WritePointCount );
+    Idx = PDU::WriteAddressPointCountPair( OutBuffer, Idx, ReadStartAddr, ReadPointCount );
+    Idx = PDU::WriteAddressPointCountPair( OutBuffer, Idx, WriteStartAddr, WritePointCount );
     OutBuffer[Idx++] =
         static_cast<uint8_t>( WritePointCount * sizeof( RegDataType ) );
 
@@ -916,19 +696,19 @@ void TCPIPProtocol::DoReadWrite4XRegisters( Context const & Context,
 
     // Receive
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
     // Verifica BMAP di risposta
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
     // Verifica parametri di risposta
-    RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ReadWrite4XRegisters );
+    PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ReadWrite4XRegisters );
 
-    CopyDataWord( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, ReadData );
+    PDU::CopyDataWords( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, ReadData );
 }
 //---------------------------------------------------------------------------
 
@@ -941,28 +721,28 @@ FIFOCountType TCPIPProtocol::DoReadFIFOQueue( Context const & Context,
 
     // Send: BMAP(7) + FC(1) + FIFOPointerAddr(2)
     TBytes OutBuffer;
-    SetLength( OutBuffer, GetBMAPHeaderLength() + 1 + 2 );
-    int Idx = WriteBMAPHeader( OutBuffer, 0, Context );
+    SetLength( OutBuffer, MBAP::HeaderLength + 1 + 2 );
+    int Idx = MBAP::WriteHeader( OutBuffer, 0, Context );
     OutBuffer[Idx++] =
         static_cast<RegDataType>( FunctionCode::ReadFIFOQueue );
-    Idx = WriteData( OutBuffer, Idx, FIFOAddr );
+    Idx = PDU::WriteWord( OutBuffer, Idx, FIFOAddr );
 
     DoInputBufferClear();
     DoWrite( OutBuffer );
 
     // Receive BMAP header
     TBytes ReplyBMAPBuffer;
-    SetLength( ReplyBMAPBuffer, GetBMAPHeaderLength() );
+    SetLength( ReplyBMAPBuffer, MBAP::HeaderLength );
     DoRead( ReplyBMAPBuffer, GetLength( ReplyBMAPBuffer ) );
 
-    RaiseExceptionIfBMAPIsNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
+    MBAP::RaiseExceptionIfHeadersAreNotEQ( Context, OutBuffer, ReplyBMAPBuffer );
 
     // Receive payload
     TBytes ReplyBuffer;
-    SetLength( ReplyBuffer, GetBMAPDataLength( ReplyBMAPBuffer ) - 1 );
+    SetLength( ReplyBuffer, MBAP::GetDataLength( ReplyBMAPBuffer ) - 1 );
     DoRead( ReplyBuffer, GetLength( ReplyBuffer ) );
 
-    RaiseExceptionIfReplyIsNotValid(
+    PDU::RaiseExceptionIfReplyIsNotValid(
         Context, ReplyBuffer, FunctionCode::ReadFIFOQueue
     );
 
