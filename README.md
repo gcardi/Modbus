@@ -166,6 +166,49 @@ Use the server classes when tests or applications need an in-process slave:
 - Start `Modbus::Server::TCPProtocolWinSock` for TCP or `Modbus::Server::RTUProtocol` for serial RTU.
 - For RTU tests, use paired virtual COM ports or physical serial ports.
 
+Minimal TCP server example:
+
+```cpp
+#include "ModbusServerTCP_WinSock.h"
+
+#include <array>
+#include <iostream>
+#include <optional>
+
+class HoldingRegisterServer : public Modbus::Server::RequestHandler {
+public:
+    std::optional<Modbus::ExceptionCode> OnReadHoldingRegisters(
+        Modbus::RegAddrType start,
+        Modbus::RegCountType count,
+        Modbus::RegDataType* data ) override
+    {
+        if ( start + count > registers.size() ) {
+            return Modbus::ExceptionCode::IllegalDataAddress;
+        }
+
+        for ( Modbus::RegCountType i = 0; i < count; ++i ) {
+            data[i] = registers[start + i];
+        }
+
+        return std::nullopt;
+    }
+
+private:
+    std::array<Modbus::RegDataType, 4> registers { 10, 20, 30, 40 };
+};
+
+int main()
+{
+    HoldingRegisterServer handler;
+    Modbus::Server::TCPProtocolWinSock server( handler );
+
+    server.Start( 5020 );
+    std::cout << "Modbus TCP server listening on port 5020. Press Enter to stop.\n";
+    std::cin.get();
+    server.Stop();
+}
+```
+
 ### 3) Integration Test Flow
 
 1. Start slave emulator/device.
