@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 // Modbus TCP test suite — Boost.Test 1.89, static library variant.
 //
-// A Modbus TCP slave runs in a background std::thread on 127.0.0.1:5020.
+// A Modbus TCP slave runs via Modbus::Server::TCPProtocolWinSock on 127.0.0.1:5020.
 // ServerFixture (global fixture) starts it before any test runs and stops
 // it cleanly after the last test completes.
 //
@@ -17,21 +17,15 @@
 
 #include <System.SysUtils.hpp>
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-#include <atomic>
 #include <cstdint>
-#include <cstring>
-#include <future>
 #include <tchar.h>
-#include <thread>
-#include <vector>
 
 #include "ModbusTCP_IP.h"
 #include "ModbusTCP_WinSock.h"
 #include "ModbusDummy.h"
 #include "ModbusRTU.h"
+#include "ModbusServerTCP_WinSock.h"
+#include "ModbusServerRTU.h"
 
 // --- Boost.Test static-link -----------------------------------------------
 // Keep Boost-provided main() and use a Unicode _tmain wrapper at the end
@@ -45,7 +39,7 @@ using namespace Modbus;
 using namespace Modbus::Master;
 
 //---------------------------------------------------------------------------
-// Embedded server
+// Shared register state accessed by both server handler and tests directly
 //---------------------------------------------------------------------------
 
 static const uint16_t SERVER_PORT = 5020;
@@ -55,15 +49,14 @@ static const int      FIFO_MAX    = 31;
 static const int      FILE_COUNT  = 4;     // FC20/FC21: number of files
 static const int      FILE_RECS   = 32;    // FC20/FC21: records per file
 
-static std::atomic<bool> gServerStop { false };
-static uint8_t           coilRegs[REG_COUNT];
-static uint8_t           inputBits[REG_COUNT];
-static uint16_t          holdingRegs[REG_COUNT];
-static uint16_t          inputRegs[REG_COUNT];
-static uint8_t           exceptionStatus;          // FC07
-static uint16_t          fifoQueue[FIFO_MAX];      // FC24
-static uint16_t          fifoCount;
-static uint16_t          fileRecords[FILE_COUNT][FILE_RECS]; // FC20/FC21
+static uint8_t  coilRegs[REG_COUNT];
+static uint8_t  inputBits[REG_COUNT];
+static uint16_t holdingRegs[REG_COUNT];
+static uint16_t inputRegs[REG_COUNT];
+static uint8_t  exceptionStatus;          // FC07
+static uint16_t fifoQueue[FIFO_MAX];      // FC24
+static uint16_t fifoCount;
+static uint16_t fileRecords[FILE_COUNT][FILE_RECS]; // FC20/FC21
 
 static void initRegisters()
 {
@@ -83,407 +76,172 @@ static void initRegisters()
             fileRecords[f][r] = static_cast<uint16_t>( ( ( f + 1 ) << 8 ) | r );
 }
 
-static bool srvRecvAll( SOCKET s, uint8_t* buf, int len )
-{
-    int done = 0;
-    while ( done < len ) {
-        int r = recv( s, reinterpret_cast<char*>( buf + done ), len - done, 0 );
-        if ( r <= 0 ) return false;
-        done += r;
+//---------------------------------------------------------------------------
+// TestRequestHandler — drives all FC calls through the shared globals above
+//---------------------------------------------------------------------------
+
+class TestRequestHandler : public Modbus::Server::RequestHandler {
+public:
+    std::optional<ExceptionCode> OnReadCoilStatus(
+        CoilAddrType addr, CoilCountType count, CoilDataType* data ) override
+    {
+        if ( addr + count > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        for ( CoilCountType i = 0; i < count; ++i )
+            if ( coilRegs[addr + i] )
+                data[i / 8] = static_cast<uint8_t>( data[i / 8] | ( 1u << ( i % 8 ) ) );
+        return std::nullopt;
     }
-    return true;
-}
 
-static bool srvSendAll( SOCKET s, const uint8_t* buf, int len )
-{
-    int done = 0;
-    while ( done < len ) {
-        int r = send( s, reinterpret_cast<const char*>( buf + done ), len - done, 0 );
-        if ( r == SOCKET_ERROR ) return false;
-        done += r;
+    std::optional<ExceptionCode> OnReadInputStatus(
+        CoilAddrType addr, CoilCountType count, CoilDataType* data ) override
+    {
+        if ( addr + count > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        for ( CoilCountType i = 0; i < count; ++i )
+            if ( inputBits[addr + i] )
+                data[i / 8] = static_cast<uint8_t>( data[i / 8] | ( 1u << ( i % 8 ) ) );
+        return std::nullopt;
     }
-    return true;
-}
 
-static uint16_t get16( const uint8_t* p )
-{
-    return static_cast<uint16_t>( ( p[0] << 8 ) | p[1] );
-}
-
-static void put16( uint8_t* p, uint16_t v )
-{
-    p[0] = static_cast<uint8_t>( v >> 8 );
-    p[1] = static_cast<uint8_t>( v & 0xFF );
-}
-
-static std::vector<uint8_t> buildFrame( uint16_t tid, uint8_t unitId,
-                                        const std::vector<uint8_t>& pdu )
-{
-    uint16_t len = static_cast<uint16_t>( 1 + pdu.size() );
-    std::vector<uint8_t> frame( 6 + 1 + pdu.size() );
-    put16( frame.data() + 0, tid );
-    put16( frame.data() + 2, 0 );
-    put16( frame.data() + 4, len );
-    frame[6] = unitId;
-    memcpy( frame.data() + 7, pdu.data(), pdu.size() );
-    return frame;
-}
-
-static std::vector<uint8_t> errorPdu( uint8_t fc, uint8_t exCode )
-{
-    return { static_cast<uint8_t>( fc | 0x80 ), exCode };
-}
-
-static std::vector<uint8_t> handleFC03( const uint8_t* d, int len )
-{
-    if ( len < 4 ) return errorPdu( 0x03, 0x03 );
-    uint16_t addr = get16( d ), count = get16( d + 2 );
-    if ( count == 0 || count > 125 )  return errorPdu( 0x03, 0x03 );
-    if ( addr + count > REG_COUNT )   return errorPdu( 0x03, 0x02 );
-    std::vector<uint8_t> pdu { 0x03, static_cast<uint8_t>( count * 2 ) };
-    for ( int i = 0; i < count; ++i ) {
-        uint16_t v = holdingRegs[addr + i];
-        pdu.push_back( v >> 8 ); pdu.push_back( v & 0xFF );
+    std::optional<ExceptionCode> OnReadHoldingRegisters(
+        RegAddrType addr, RegCountType count, RegDataType* data ) override
+    {
+        if ( addr + count > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        for ( RegCountType i = 0; i < count; ++i )
+            data[i] = holdingRegs[addr + i];
+        return std::nullopt;
     }
-    return pdu;
-}
 
-static std::vector<uint8_t> handleFC01( const uint8_t* d, int len )
-{
-    if ( len < 4 ) return errorPdu( 0x01, 0x03 );
-    uint16_t addr = get16( d ), count = get16( d + 2 );
-    if ( count == 0 || count > 2000 ) return errorPdu( 0x01, 0x03 );
-    if ( addr + count > REG_COUNT )   return errorPdu( 0x01, 0x02 );
+    std::optional<ExceptionCode> OnReadInputRegisters(
+        RegAddrType addr, RegCountType count, RegDataType* data ) override
+    {
+        if ( addr + count > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        for ( RegCountType i = 0; i < count; ++i )
+            data[i] = inputRegs[addr + i];
+        return std::nullopt;
+    }
 
-    const uint8_t byteCount = static_cast<uint8_t>( ( count + 7 ) / 8 );
-    std::vector<uint8_t> pdu { 0x01, byteCount };
-    pdu.resize( static_cast<size_t>( 2 + byteCount ), 0 );
+    std::optional<ExceptionCode> OnForceSingleCoil(
+        CoilAddrType addr, bool value ) override
+    {
+        if ( addr >= REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        coilRegs[addr] = value ? 1 : 0;
+        return std::nullopt;
+    }
 
-    for ( uint16_t i = 0; i < count; ++i ) {
-        if ( coilRegs[addr + i] ) {
-            pdu[2 + i / 8] |= static_cast<uint8_t>( 1u << ( i % 8 ) );
+    std::optional<ExceptionCode> OnPresetSingleRegister(
+        RegAddrType addr, RegDataType value ) override
+    {
+        if ( addr >= REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        holdingRegs[addr] = value;
+        return std::nullopt;
+    }
+
+    std::optional<ExceptionCode> OnReadExceptionStatus(
+        ExceptionStatusDataType& status ) override
+    {
+        status = exceptionStatus;
+        return std::nullopt;
+    }
+
+    std::optional<ExceptionCode> OnDiagnostics(
+        DiagSubFnType /*subFn*/, RegDataType data, RegDataType& reply ) override
+    {
+        reply = data; // echo data for all sub-functions (simplified slave)
+        return std::nullopt;
+    }
+
+    std::optional<ExceptionCode> OnForceMultipleCoils(
+        CoilAddrType addr, CoilCountType count, const CoilDataType* data ) override
+    {
+        if ( addr + count > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        for ( CoilCountType i = 0; i < count; ++i )
+            coilRegs[addr + i] = static_cast<uint8_t>( ( data[i / 8] >> ( i % 8 ) ) & 1 );
+        return std::nullopt;
+    }
+
+    std::optional<ExceptionCode> OnPresetMultipleRegisters(
+        RegAddrType addr, RegCountType count, const RegDataType* data ) override
+    {
+        if ( addr + count > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        for ( RegCountType i = 0; i < count; ++i )
+            holdingRegs[addr + i] = data[i];
+        return std::nullopt;
+    }
+
+    std::optional<ExceptionCode> OnReadGeneralReference(
+        const FileSubRequest* subs, size_t subCount, RegDataType* data ) override
+    {
+        size_t off = 0;
+        for ( size_t s = 0; s < subCount; ++s ) {
+            uint16_t fileNo = subs[s].FileNumber;
+            uint16_t recNo  = subs[s].RecordNumber;
+            uint16_t recLen = subs[s].RecordLength;
+            if ( fileNo < 1 || fileNo > FILE_COUNT )  return ExceptionCode::IllegalDataAddress;
+            if ( recNo + recLen > FILE_RECS )          return ExceptionCode::IllegalDataAddress;
+            for ( uint16_t r = 0; r < recLen; ++r )
+                data[off++] = fileRecords[fileNo - 1][recNo + r];
         }
+        return std::nullopt;
     }
-    return pdu;
-}
 
-static std::vector<uint8_t> handleFC02( const uint8_t* d, int len )
-{
-    if ( len < 4 ) return errorPdu( 0x02, 0x03 );
-    uint16_t addr = get16( d ), count = get16( d + 2 );
-    if ( count == 0 || count > 2000 ) return errorPdu( 0x02, 0x03 );
-    if ( addr + count > REG_COUNT )   return errorPdu( 0x02, 0x02 );
-
-    const uint8_t byteCount = static_cast<uint8_t>( ( count + 7 ) / 8 );
-    std::vector<uint8_t> pdu { 0x02, byteCount };
-    pdu.resize( static_cast<size_t>( 2 + byteCount ), 0 );
-
-    for ( uint16_t i = 0; i < count; ++i ) {
-        if ( inputBits[addr + i] ) {
-            pdu[2 + i / 8] |= static_cast<uint8_t>( 1u << ( i % 8 ) );
+    std::optional<ExceptionCode> OnWriteGeneralReference(
+        const FileSubRequest* subs, size_t subCount, const RegDataType* data ) override
+    {
+        // Validate all sub-requests before writing
+        size_t totalWords = 0;
+        for ( size_t s = 0; s < subCount; ++s ) {
+            uint16_t fileNo = subs[s].FileNumber;
+            uint16_t recNo  = subs[s].RecordNumber;
+            uint16_t recLen = subs[s].RecordLength;
+            if ( fileNo < 1 || fileNo > FILE_COUNT )  return ExceptionCode::IllegalDataAddress;
+            if ( recNo + recLen > FILE_RECS )          return ExceptionCode::IllegalDataAddress;
+            totalWords += recLen;
         }
-    }
-    return pdu;
-}
-
-static std::vector<uint8_t> handleFC04( const uint8_t* d, int len )
-{
-    if ( len < 4 ) return errorPdu( 0x04, 0x03 );
-    uint16_t addr = get16( d ), count = get16( d + 2 );
-    if ( count == 0 || count > 125 )  return errorPdu( 0x04, 0x03 );
-    if ( addr + count > REG_COUNT )   return errorPdu( 0x04, 0x02 );
-    std::vector<uint8_t> pdu { 0x04, static_cast<uint8_t>( count * 2 ) };
-    for ( int i = 0; i < count; ++i ) {
-        uint16_t v = inputRegs[addr + i];
-        pdu.push_back( v >> 8 ); pdu.push_back( v & 0xFF );
-    }
-    return pdu;
-}
-
-static std::vector<uint8_t> handleFC05( const uint8_t* d, int len )
-{
-    if ( len < 4 ) return errorPdu( 0x05, 0x03 );
-    uint16_t addr  = get16( d );
-    uint16_t value = get16( d + 2 );
-    if ( value != 0xFF00 && value != 0x0000 ) return errorPdu( 0x05, 0x03 );
-    if ( addr >= REG_COUNT ) return errorPdu( 0x05, 0x02 );
-    coilRegs[addr] = ( value == 0xFF00 ) ? 1 : 0;
-    return { 0x05, d[0], d[1], d[2], d[3] };
-}
-
-static std::vector<uint8_t> handleFC06( const uint8_t* d, int len )
-{
-    if ( len < 4 ) return errorPdu( 0x06, 0x03 );
-    uint16_t addr = get16( d ), value = get16( d + 2 );
-    if ( addr >= REG_COUNT ) return errorPdu( 0x06, 0x02 );
-    holdingRegs[addr] = value;
-    return { 0x06, d[0], d[1], d[2], d[3] };
-}
-
-static std::vector<uint8_t> handleFC15( const uint8_t* d, int len )
-{
-    if ( len < 5 ) return errorPdu( 0x0F, 0x03 );
-    uint16_t addr  = get16( d );
-    uint16_t count = get16( d + 2 );
-    uint8_t  bytes = d[4];
-    if ( count == 0 || count > 1968 )       return errorPdu( 0x0F, 0x03 );
-    if ( bytes != ( count + 7 ) / 8 )       return errorPdu( 0x0F, 0x03 );
-    if ( len < 5 + bytes )                  return errorPdu( 0x0F, 0x03 );
-    if ( addr + count > REG_COUNT )         return errorPdu( 0x0F, 0x02 );
-    for ( uint16_t i = 0; i < count; ++i ) {
-        coilRegs[addr + i] =
-            ( d[5 + i / 8] >> ( i % 8 ) ) & 1;
-    }
-    return { 0x0F, d[0], d[1], d[2], d[3] };
-}
-
-static std::vector<uint8_t> handleFC16( const uint8_t* d, int len )
-{
-    if ( len < 5 ) return errorPdu( 0x10, 0x03 );
-    uint16_t addr = get16( d ), count = get16( d + 2 );
-    uint8_t  bytes = d[4];
-    if ( count == 0 || count > 123 ) return errorPdu( 0x10, 0x03 );
-    if ( bytes != count * 2 )        return errorPdu( 0x10, 0x03 );
-    if ( len < 5 + bytes )           return errorPdu( 0x10, 0x03 );
-    if ( addr + count > REG_COUNT )  return errorPdu( 0x10, 0x02 );
-    for ( int i = 0; i < count; ++i )
-        holdingRegs[addr + i] = get16( d + 5 + i * 2 );
-    return { 0x10, d[0], d[1], d[2], d[3] };
-}
-
-static std::vector<uint8_t> handleFC22( const uint8_t* d, int len )
-{
-    if ( len < 6 ) return errorPdu( 0x16, 0x03 );
-    uint16_t addr = get16( d ), andMask = get16( d + 2 ), orMask = get16( d + 4 );
-    if ( addr >= REG_COUNT ) return errorPdu( 0x16, 0x02 );
-    holdingRegs[addr] = static_cast<uint16_t>(
-        ( holdingRegs[addr] & andMask ) | ( orMask & ~andMask ) );
-    return { 0x16, d[0], d[1], d[2], d[3], d[4], d[5] };
-}
-
-static std::vector<uint8_t> handleFC23( const uint8_t* d, int len )
-{
-    // ReadAddr(2) + ReadCount(2) + WriteAddr(2) + WriteCount(2) + WriteByteCnt(1) + WriteData
-    if ( len < 9 ) return errorPdu( 0x17, 0x03 );
-    uint16_t rAddr  = get16( d );
-    uint16_t rCount = get16( d + 2 );
-    uint16_t wAddr  = get16( d + 4 );
-    uint16_t wCount = get16( d + 6 );
-    uint8_t  wBytes = d[8];
-    if ( rCount == 0 || rCount > 125 )       return errorPdu( 0x17, 0x03 );
-    if ( wCount == 0 || wCount > 121 )       return errorPdu( 0x17, 0x03 );
-    if ( wBytes != wCount * 2 )              return errorPdu( 0x17, 0x03 );
-    if ( len < 9 + wBytes )                  return errorPdu( 0x17, 0x03 );
-    if ( rAddr + rCount > REG_COUNT )        return errorPdu( 0x17, 0x02 );
-    if ( wAddr + wCount > REG_COUNT )        return errorPdu( 0x17, 0x02 );
-
-    // Write first (per Modbus spec, write is performed before read)
-    for ( int i = 0; i < wCount; ++i )
-        holdingRegs[wAddr + i] = get16( d + 9 + i * 2 );
-
-    // Then read
-    std::vector<uint8_t> pdu { 0x17, static_cast<uint8_t>( rCount * 2 ) };
-    for ( int i = 0; i < rCount; ++i ) {
-        uint16_t v = holdingRegs[rAddr + i];
-        pdu.push_back( v >> 8 ); pdu.push_back( v & 0xFF );
-    }
-    return pdu;
-}
-
-static std::vector<uint8_t> handleFC07( const uint8_t* /*d*/, int /*len*/ )
-{
-    // FC07: no request data; response is FC(1) + ExceptionStatus(1)
-    return { 0x07, exceptionStatus };
-}
-
-static std::vector<uint8_t> handleFC08( const uint8_t* d, int len )
-{
-    // FC08 Diagnostics: SubFunction(2) + Data(2)
-    if ( len < 4 ) return errorPdu( 0x08, 0x03 );
-    uint16_t subFn = get16( d );
-    // For sub-function 0x0000 (Return Query Data), echo the data back.
-    // For all other implemented sub-functions, also echo (simplified server).
-    return { 0x08, d[0], d[1], d[2], d[3] };
-    (void)subFn;
-}
-
-static std::vector<uint8_t> handleFC24( const uint8_t* d, int len )
-{
-    // FC24 Read FIFO Queue: FIFOPointerAddr(2)
-    if ( len < 2 ) return errorPdu( 0x18, 0x03 );
-    uint16_t addr = get16( d );
-    if ( addr >= REG_COUNT ) return errorPdu( 0x18, 0x02 );
-
-    // Response: FC(1) + ByteCount(2) + FIFOCount(2) + FIFOValues(fifoCount*2)
-    uint16_t byteCount = static_cast<uint16_t>( 2 + fifoCount * 2 );
-    std::vector<uint8_t> pdu;
-    pdu.reserve( 5 + fifoCount * 2 );
-    pdu.push_back( 0x18 );
-    pdu.push_back( static_cast<uint8_t>( byteCount >> 8 ) );
-    pdu.push_back( static_cast<uint8_t>( byteCount & 0xFF ) );
-    pdu.push_back( static_cast<uint8_t>( fifoCount >> 8 ) );
-    pdu.push_back( static_cast<uint8_t>( fifoCount & 0xFF ) );
-    for ( uint16_t i = 0; i < fifoCount; ++i ) {
-        pdu.push_back( static_cast<uint8_t>( fifoQueue[i] >> 8 ) );
-        pdu.push_back( static_cast<uint8_t>( fifoQueue[i] & 0xFF ) );
-    }
-    return pdu;
-}
-
-static std::vector<uint8_t> handleFC20( const uint8_t* d, int len )
-{
-    // FC20 Read General Reference
-    // Request: ByteCount(1) + N * [RefType(1)+FileNo(2)+RecNo(2)+RecLen(2)]
-    if ( len < 1 ) return errorPdu( 0x14, 0x03 );
-    uint8_t byteCount = d[0];
-    if ( byteCount < 7 || byteCount > static_cast<uint8_t>( len - 1 ) )
-        return errorPdu( 0x14, 0x03 );
-
-    // Parse sub-requests and build response
-    // Response: FC(1) + RespDataLen(1) + N * [SubRespLen(1)+RefType(1)+Data(RecLen*2)]
-    std::vector<uint8_t> pdu;
-    pdu.push_back( 0x14 ); // FC
-    pdu.push_back( 0x00 ); // placeholder for RespDataLen
-
-    int off = 1; // skip ByteCount byte
-    while ( off + 7 <= 1 + byteCount ) {
-        uint8_t refType = d[off++];
-        if ( refType != 0x06 ) return errorPdu( 0x14, 0x03 );
-        uint16_t fileNo  = get16( d + off ); off += 2;
-        uint16_t recNo   = get16( d + off ); off += 2;
-        uint16_t recLen  = get16( d + off ); off += 2;
-        if ( fileNo < 1 || fileNo > FILE_COUNT )  return errorPdu( 0x14, 0x02 );
-        if ( recNo + recLen > FILE_RECS )          return errorPdu( 0x14, 0x02 );
-
-        uint8_t subRespLen = static_cast<uint8_t>( 1 + recLen * 2 ); // RefType + data
-        pdu.push_back( subRespLen );
-        pdu.push_back( 0x06 ); // reference type
-        for ( uint16_t r = 0; r < recLen; ++r ) {
-            uint16_t v = fileRecords[fileNo - 1][recNo + r];
-            pdu.push_back( static_cast<uint8_t>( v >> 8 ) );
-            pdu.push_back( static_cast<uint8_t>( v & 0xFF ) );
+        size_t off = 0;
+        for ( size_t s = 0; s < subCount; ++s ) {
+            uint16_t fileNo = subs[s].FileNumber;
+            uint16_t recNo  = subs[s].RecordNumber;
+            uint16_t recLen = subs[s].RecordLength;
+            for ( uint16_t r = 0; r < recLen; ++r )
+                fileRecords[fileNo - 1][recNo + r] = data[off++];
         }
-    }
-    pdu[1] = static_cast<uint8_t>( pdu.size() - 2 ); // fill RespDataLen
-    return pdu;
-}
-
-static std::vector<uint8_t> handleFC21( const uint8_t* d, int len )
-{
-    // FC21 Write General Reference
-    // Request: ByteCount(1) + N * [RefType(1)+FileNo(2)+RecNo(2)+RecLen(2)+Data(RecLen*2)]
-    if ( len < 1 ) return errorPdu( 0x15, 0x03 );
-    uint8_t byteCount = d[0];
-    if ( byteCount < 7 || byteCount > static_cast<uint8_t>( len - 1 ) )
-        return errorPdu( 0x15, 0x03 );
-
-    // Parse and apply writes
-    int off = 1;
-    while ( off + 7 <= 1 + byteCount ) {
-        uint8_t refType = d[off++];
-        if ( refType != 0x06 ) return errorPdu( 0x15, 0x03 );
-        uint16_t fileNo  = get16( d + off ); off += 2;
-        uint16_t recNo   = get16( d + off ); off += 2;
-        uint16_t recLen  = get16( d + off ); off += 2;
-        if ( fileNo < 1 || fileNo > FILE_COUNT )  return errorPdu( 0x15, 0x02 );
-        if ( recNo + recLen > FILE_RECS )          return errorPdu( 0x15, 0x02 );
-        if ( off + recLen * 2 > 1 + byteCount )    return errorPdu( 0x15, 0x03 );
-        for ( uint16_t r = 0; r < recLen; ++r ) {
-            fileRecords[fileNo - 1][recNo + r] = get16( d + off );
-            off += 2;
-        }
+        (void)totalWords;
+        return std::nullopt;
     }
 
-    // Response is echo of the request
-    std::vector<uint8_t> pdu;
-    pdu.push_back( 0x15 ); // FC
-    pdu.insert( pdu.end(), d, d + 1 + byteCount );
-    return pdu;
-}
-
-static bool handleRequest( SOCKET s )
-{
-    uint8_t header[6];
-    if ( !srvRecvAll( s, header, 6 ) ) return false;
-    uint16_t tid       = get16( header + 0 );
-    uint16_t remaining = get16( header + 4 );
-    if ( remaining < 2 ) return false;
-    std::vector<uint8_t> body( remaining );
-    if ( !srvRecvAll( s, body.data(), remaining ) ) return false;
-
-    uint8_t        unitId  = body[0];
-    uint8_t        fc      = body[1];
-    const uint8_t* data    = body.data() + 2;
-    int            dataLen = static_cast<int>( remaining ) - 2;
-
-    std::vector<uint8_t> pdu;
-    switch ( fc ) {
-        case 0x01: pdu = handleFC01( data, dataLen ); break;
-        case 0x02: pdu = handleFC02( data, dataLen ); break;
-        case 0x03: pdu = handleFC03( data, dataLen ); break;
-        case 0x04: pdu = handleFC04( data, dataLen ); break;
-        case 0x05: pdu = handleFC05( data, dataLen ); break;
-        case 0x06: pdu = handleFC06( data, dataLen ); break;
-        case 0x07: pdu = handleFC07( data, dataLen ); break;
-        case 0x08: pdu = handleFC08( data, dataLen ); break;
-        case 0x0F: pdu = handleFC15( data, dataLen ); break;
-        case 0x10: pdu = handleFC16( data, dataLen ); break;
-        case 0x14: pdu = handleFC20( data, dataLen ); break;
-        case 0x15: pdu = handleFC21( data, dataLen ); break;
-        case 0x16: pdu = handleFC22( data, dataLen ); break;
-        case 0x17: pdu = handleFC23( data, dataLen ); break;
-        case 0x18: pdu = handleFC24( data, dataLen ); break;
-        default:   pdu = errorPdu( fc, 0x01 );        break;
+    std::optional<ExceptionCode> OnMaskWrite4XRegister(
+        RegAddrType addr, RegDataType andMask, RegDataType orMask ) override
+    {
+        if ( addr >= REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        holdingRegs[addr] = static_cast<uint16_t>(
+            ( holdingRegs[addr] & andMask ) | ( orMask & ~andMask ) );
+        return std::nullopt;
     }
 
-    auto frame = buildFrame( tid, unitId, pdu );
-    return srvSendAll( s, frame.data(), static_cast<int>( frame.size() ) );
-}
-
-static void serverThread( std::promise<void> readyPromise )
-{
-    WSADATA wsaData;
-    WSAStartup( MAKEWORD( 2, 2 ), &wsaData );
-
-    SOCKET listenSock = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-    int reuseAddr = 1;
-    setsockopt( listenSock, SOL_SOCKET, SO_REUSEADDR,
-                reinterpret_cast<const char*>( &reuseAddr ), sizeof( reuseAddr ) );
-
-    sockaddr_in addr4 = {};
-    addr4.sin_family      = AF_INET;
-    addr4.sin_port        = htons( SERVER_PORT );
-    addr4.sin_addr.s_addr = htonl( INADDR_LOOPBACK );
-    bind  ( listenSock, reinterpret_cast<sockaddr*>( &addr4 ), sizeof( addr4 ) );
-    listen( listenSock, SOMAXCONN );
-
-    readyPromise.set_value(); // port is open — tests may begin
-
-    while ( !gServerStop ) {
-        fd_set readSet;
-        FD_ZERO( &readSet );
-        FD_SET( listenSock, &readSet );
-        timeval tv = { 0, 100000 }; // 100 ms
-        if ( select( 0, &readSet, nullptr, nullptr, &tv ) > 0 ) {
-            sockaddr_in clientAddr = {};
-            int addrLen = sizeof( clientAddr );
-            SOCKET clientSock = accept( listenSock,
-                                        reinterpret_cast<sockaddr*>( &clientAddr ),
-                                        &addrLen );
-            if ( clientSock != INVALID_SOCKET ) {
-                DWORD readTimeout = 2000;
-                setsockopt( clientSock, SOL_SOCKET, SO_RCVTIMEO,
-                            reinterpret_cast<const char*>( &readTimeout ),
-                            sizeof( readTimeout ) );
-                while ( handleRequest( clientSock ) ) {}
-                closesocket( clientSock );
-            }
-        }
+    std::optional<ExceptionCode> OnReadWrite4XRegisters(
+        RegAddrType rAddr, RegCountType rCount, RegDataType* rData,
+        RegAddrType wAddr, RegCountType wCount, const RegDataType* wData ) override
+    {
+        if ( rAddr + rCount > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        if ( wAddr + wCount > REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        // Write first (per Modbus spec)
+        for ( RegCountType i = 0; i < wCount; ++i )
+            holdingRegs[wAddr + i] = wData[i];
+        for ( RegCountType i = 0; i < rCount; ++i )
+            rData[i] = holdingRegs[rAddr + i];
+        return std::nullopt;
     }
 
-    closesocket( listenSock );
-    WSACleanup();
-}
+    std::optional<ExceptionCode> OnReadFIFOQueue(
+        FIFOAddrType addr, RegDataType* data, FIFOCountType& count ) override
+    {
+        if ( addr >= REG_COUNT ) return ExceptionCode::IllegalDataAddress;
+        count = fifoCount;
+        for ( FIFOCountType i = 0; i < fifoCount; ++i )
+            data[i] = fifoQueue[i];
+        return std::nullopt;
+    }
+};
 
 //---------------------------------------------------------------------------
 // Global fixture — starts/stops the server around the entire test run
@@ -493,27 +251,100 @@ struct ServerFixture {
     ServerFixture()
     {
         initRegisters();
-        std::promise<void> ready;
-        readyFuture_ = ready.get_future();
-        thread_ = std::thread( serverThread, std::move( ready ) );
-        readyFuture_.wait();
+        server_.Start( SERVER_PORT );
         BOOST_TEST_MESSAGE( "Embedded Modbus server listening on 127.0.0.1:" << SERVER_PORT );
     }
     ~ServerFixture()
     {
         try {
-            gServerStop = true;
-            thread_.join();
+            server_.Stop();
         }
         catch ( ... ) {
         }
     }
 private:
-    std::thread        thread_;
-    std::future<void>  readyFuture_;
+    TestRequestHandler              handler_;
+    Modbus::Server::TCPProtocolWinSock server_{ handler_ };
 };
 
 BOOST_TEST_GLOBAL_FIXTURE( ServerFixture );
+
+//---------------------------------------------------------------------------
+// RTU test infrastructure — optional, activated by the user at startup
+//---------------------------------------------------------------------------
+
+static bool   gRTUEnabled    = false;
+static String gRTUMasterPort;
+static String gRTUSlavePort;
+
+// Global fixture: asks the user (once, before all tests) whether to run the
+// RTU round-trip suite and — if yes — which COM ports to use.  In a
+// non-interactive session (piped stdin / CI) the fixture falls back to the
+// environment variables MODBUS_RTU_MASTER and MODBUS_RTU_SLAVE so the RTU
+// tests can still be driven from a script without modification.
+struct RTUServerFixture {
+    RTUServerFixture()
+    {
+        HANDLE hStdin = GetStdHandle( STD_INPUT_HANDLE );
+        DWORD  mode   = 0;
+        bool   isConsole = ( GetConsoleMode( hStdin, &mode ) != FALSE );
+
+        // Env vars take precedence — supports both scripted and CI runs.
+        // Interactive prompt is the fallback when no env vars are set and
+        // we are attached to a real console.
+        const char* envMaster = getenv( "MODBUS_RTU_MASTER" );
+        const char* envSlave  = getenv( "MODBUS_RTU_SLAVE" );
+        if ( envMaster && envSlave && *envMaster && *envSlave ) {
+            gRTUMasterPort = envMaster;
+            gRTUSlavePort  = envSlave;
+            gRTUEnabled    = true;
+        } else if ( isConsole ) {
+            std::cout << "\nRun RTU COM port tests? [y/N] " << std::flush;
+            std::string answer;
+            if ( std::getline( std::cin, answer ) && !answer.empty()
+                     && ( answer[0] == 'y' || answer[0] == 'Y' ) ) {
+                std::string master, slave;
+                std::cout << "Master COM port (e.g. COM8): " << std::flush;
+                std::getline( std::cin, master );
+                std::cout << "Slave  COM port (e.g. COM9): " << std::flush;
+                std::getline( std::cin, slave );
+                if ( !master.empty() && !slave.empty() ) {
+                    gRTUMasterPort = master.c_str();
+                    gRTUSlavePort  = slave.c_str();
+                    gRTUEnabled    = true;
+                }
+            }
+        }
+
+        if ( gRTUEnabled ) {
+            handler_ = std::make_unique<TestRequestHandler>();
+            server_  = std::make_unique<Modbus::Server::RTUProtocol>( *handler_ );
+            try {
+                server_->Start( gRTUSlavePort );
+                BOOST_TEST_MESSAGE( "RTU slave listening on "
+                    << AnsiString( gRTUSlavePort ).c_str() );
+            }
+            catch ( ... ) {
+                gRTUEnabled = false;
+                server_.reset();
+                handler_.reset();
+                BOOST_TEST_MESSAGE( "RTU slave failed to start — RTU tests skipped" );
+            }
+        }
+    }
+
+    ~RTUServerFixture()
+    {
+        if ( server_ )
+            try { server_->Stop(); } catch ( ... ) {}
+    }
+
+private:
+    std::unique_ptr<TestRequestHandler>          handler_;
+    std::unique_ptr<Modbus::Server::RTUProtocol> server_;
+};
+
+BOOST_TEST_GLOBAL_FIXTURE( RTUServerFixture );
 
 //---------------------------------------------------------------------------
 // Per-suite fixture — creates a fresh protocol connection for each suite
@@ -1184,6 +1015,158 @@ BOOST_AUTO_TEST_SUITE( FC01_FC02_RTUEndpoint )
         BOOST_CHECK_THROW(
             proto.ReadInputStatus( Context( 1 ), 0, 1, v ),
             Exception );
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+//---------------------------------------------------------------------------
+// RTU round-trip tests — skipped unless the user enabled COM ports at startup
+//---------------------------------------------------------------------------
+
+struct RTUMasterFixture {
+    RTUMasterFixture()
+    {
+        if ( !gRTUEnabled ) return;
+        initRegisters();
+        proto_.SetCommPort( gRTUMasterPort );
+        proto_.SetCommSpeed( 9600 );
+        proto_.Open();
+    }
+    ~RTUMasterFixture()
+    {
+        if ( !gRTUEnabled ) return;
+        try { proto_.Close(); } catch ( ... ) {}
+    }
+    RTUProtocol proto_;
+};
+
+BOOST_FIXTURE_TEST_SUITE( RTU_RoundTrip, RTUMasterFixture )
+
+    BOOST_AUTO_TEST_CASE( ReadCoilStatus )
+    {
+        if ( !gRTUEnabled ) return;
+        CoilDataType v[2] = {};
+        proto_.ReadCoilStatus( Context( 1 ), 0, 16, v );
+        // coilRegs[i] = i & 1 → packed LSB-first: 0,1,0,1,... → 0xAA per byte
+        BOOST_TEST( v[0] == 0xAAu );
+        BOOST_TEST( v[1] == 0xAAu );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadInputStatus )
+    {
+        if ( !gRTUEnabled ) return;
+        CoilDataType v[2] = {};
+        proto_.ReadInputStatus( Context( 1 ), 0, 16, v );
+        // inputBits[i] = (i%3)==0 → bits 0-7: 1,0,0,1,0,0,1,0 = 0x49
+        //                          → bits 8-15: 0,1,0,0,1,0,0,1 = 0x92
+        BOOST_TEST( v[0] == 0x49u );
+        BOOST_TEST( v[1] == 0x92u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadHoldingRegisters )
+    {
+        if ( !gRTUEnabled ) return;
+        RegDataType v[4] = {};
+        proto_.ReadHoldingRegisters( Context( 1 ), 10, 4, v );
+        BOOST_TEST( v[0] == 10u );
+        BOOST_TEST( v[1] == 11u );
+        BOOST_TEST( v[2] == 12u );
+        BOOST_TEST( v[3] == 13u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadInputRegisters )
+    {
+        if ( !gRTUEnabled ) return;
+        RegDataType v[3] = {};
+        proto_.ReadInputRegisters( Context( 1 ), 5, 3, v );
+        BOOST_TEST( v[0] == 0x1005u );
+        BOOST_TEST( v[1] == 0x1006u );
+        BOOST_TEST( v[2] == 0x1007u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ForceSingleCoil )
+    {
+        if ( !gRTUEnabled ) return;
+        proto_.ForceSingleCoil( Context( 1 ), 4, true );
+        CoilDataType v = 0;
+        proto_.ReadCoilStatus( Context( 1 ), 4, 1, &v );
+        BOOST_TEST( ( v & 1u ) == 1u );
+        proto_.ForceSingleCoil( Context( 1 ), 4, false );
+        v = 0;
+        proto_.ReadCoilStatus( Context( 1 ), 4, 1, &v );
+        BOOST_TEST( ( v & 1u ) == 0u );
+    }
+
+    BOOST_AUTO_TEST_CASE( PresetSingleRegister )
+    {
+        if ( !gRTUEnabled ) return;
+        proto_.PresetSingleRegister( Context( 1 ), 20, 0xABCDu );
+        RegDataType v = 0;
+        proto_.ReadHoldingRegisters( Context( 1 ), 20, 1, &v );
+        BOOST_TEST( v == 0xABCDu );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadExceptionStatus )
+    {
+        if ( !gRTUEnabled ) return;
+        auto status = proto_.ReadExceptionStatus( Context( 1 ) );
+        BOOST_TEST( status == 0x6Du );
+    }
+
+    BOOST_AUTO_TEST_CASE( Diagnostics )
+    {
+        if ( !gRTUEnabled ) return;
+        auto reply = proto_.Diagnostics(
+            Context( 1 ),
+            static_cast<DiagSubFnType>( DiagnosticsSubFunction::ReturnQueryData ),
+            0x1234u );
+        BOOST_TEST( reply == 0x1234u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ForceMultipleCoils )
+    {
+        if ( !gRTUEnabled ) return;
+        CoilDataType src[2] = { 0xF0u, 0x0Fu };
+        proto_.ForceMultipleCoils( Context( 1 ), 0, 16, src );
+        CoilDataType v[2] = {};
+        proto_.ReadCoilStatus( Context( 1 ), 0, 16, v );
+        BOOST_TEST( v[0] == 0xF0u );
+        BOOST_TEST( v[1] == 0x0Fu );
+    }
+
+    BOOST_AUTO_TEST_CASE( PresetMultipleRegisters )
+    {
+        if ( !gRTUEnabled ) return;
+        RegDataType src[3] = { 100u, 200u, 300u };
+        proto_.PresetMultipleRegisters( Context( 1 ), 30, 3, src );
+        RegDataType v[3] = {};
+        proto_.ReadHoldingRegisters( Context( 1 ), 30, 3, v );
+        BOOST_TEST( v[0] == 100u );
+        BOOST_TEST( v[1] == 200u );
+        BOOST_TEST( v[2] == 300u );
+    }
+
+    BOOST_AUTO_TEST_CASE( MaskWrite4XRegister )
+    {
+        if ( !gRTUEnabled ) return;
+        // holdingRegs[10] = 10 = 0x000A
+        // (0x000A & 0xFF00) | (0x00F0 & ~0xFF00) = 0x0000 | 0x00F0 = 0x00F0
+        proto_.MaskWrite4XRegister( Context( 1 ), 10, 0xFF00u, 0x00F0u );
+        RegDataType v = 0;
+        proto_.ReadHoldingRegisters( Context( 1 ), 10, 1, &v );
+        BOOST_TEST( v == 0x00F0u );
+    }
+
+    BOOST_AUTO_TEST_CASE( ReadWrite4XRegisters )
+    {
+        if ( !gRTUEnabled ) return;
+        RegDataType wData[2] = { 0xABCDu, 0xEF01u };
+        RegDataType rData[2] = {};
+        proto_.ReadWrite4XRegisters( Context( 1 ),
+            50, 2, rData,
+            50, 2, wData );
+        BOOST_TEST( rData[0] == 0xABCDu );
+        BOOST_TEST( rData[1] == 0xEF01u );
     }
 
 BOOST_AUTO_TEST_SUITE_END()

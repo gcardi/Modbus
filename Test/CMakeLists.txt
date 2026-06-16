@@ -26,9 +26,14 @@ set(MODBUS_TEST_SOURCES
   ../CommPort.cpp
   ../Modbus.cpp
   ../ModbusDummy.cpp
+  ../ModbusMBAP.cpp
+  ../ModbusPDU.cpp
   ../ModbusRTU.cpp
   ../ModbusTCP_IP.cpp
   ../ModbusTCP_WinSock.cpp
+  ../ModbusServer.cpp
+  ../ModbusServerRTU.cpp
+  ../ModbusServerTCP_WinSock.cpp
   ModbusTest.cpp
 )
 
