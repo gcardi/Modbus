@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['timeoutvalue_0',['TimeoutValue',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#aedca1d64e2424bb4b7a4b477ffbd3949',1,'Modbus::Master::RTUProtocol']]]
+  ['headerlength_0',['HeaderLength',['../namespace_modbus_1_1_m_b_a_p.html#a8ce733614e497879ec23e6136604b961',1,'Modbus::MBAP']]]
 ];

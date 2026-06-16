@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['cadence_0',['Suggested Review Cadence',['../md__c_l_a_u_d_e.html#autotoc_md14',1,'']]],
+  ['checklist_1',['Checklist',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md60',1,'9. Quick Verification Checklist'],['../md__c_l_a_u_d_e.html#autotoc_md11',1,'Validation Checklist']]],
+  ['claude_20md_2',['CLAUDE.md',['../md__c_l_a_u_d_e.html',1,'']]],
+  ['client_20demo_3',['1) Modbus Master Client Demo',['../index.html#autotoc_md31',1,'']]],
+  ['cmake_20build_4',['6.2 SysInit.o link error in CMake build',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md55',1,'']]],
+  ['cmake_20ninja_5',['ModbusTest with CMake + Ninja',['../md__test_2_r_e_a_d_m_e-cmake.html',1,'']]],
+  ['cmake_20ninja_20after_20environment_20setup_6',['CMake + Ninja (After Environment Setup)',['../md__c_l_a_u_d_e.html#autotoc_md3',1,'']]],
+  ['cmake_20ninja_20primary_7',['CMake + Ninja (Primary)',['../md__c_l_a_u_d_e.html#autotoc_md2',1,'']]],
+  ['cmake_20ninja_20release_20default_8',['4.1 CMake + Ninja (Release default)',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md48',1,'']]],
+  ['cmake_20test_20project_9',['3.2 CMake Test Project',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md46',1,'']]],
+  ['code_20conventions_10',['Code Conventions',['../md__c_l_a_u_d_e.html#autotoc_md8',1,'']]],
+  ['codes_11',['Supported Modbus Function Codes',['../index.html#autotoc_md23',1,'']]],
+  ['command_20prompt_12',['Configure and build (Command Prompt)',['../md__test_2_r_e_a_d_m_e-cmake.html#autotoc_md63',1,'']]],
+  ['commands_13',['Build Commands',['../md__c_l_a_u_d_e.html#autotoc_md1',1,'']]],
+  ['compilers_14',['Modbus master/server library for Embarcadero compilers',['../index.html#autotoc_md16',1,'']]],
+  ['concepts_15',['Key Concepts',['../index.html#autotoc_md19',1,'']]],
+  ['configure_20and_20build_20command_20prompt_16',['Configure and build (Command Prompt)',['../md__test_2_r_e_a_d_m_e-cmake.html#autotoc_md63',1,'']]],
+  ['constraint_17',['5.2 Important Constraint',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md52',1,'']]],
+  ['contribution_18',['Contribution',['../index.html#autotoc_md36',1,'']]],
+  ['convention_19',['Addressing Convention',['../index.html#autotoc_md24',1,'']]],
+  ['conventions_20',['Code Conventions',['../md__c_l_a_u_d_e.html#autotoc_md8',1,'']]],
+  ['core_20protocol_20abstractions_21',['2.1 Core Protocol Abstractions',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md41',1,'']]]
+];

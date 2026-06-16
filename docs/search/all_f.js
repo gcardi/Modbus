@@ -1,6 +1,29 @@
 var searchData=
 [
-  ['udpprotocol_0',['UDPProtocol',['../class_modbus_1_1_master_1_1_u_d_p_protocol.html',1,'Modbus::Master']]],
-  ['udpprotocolindy_1',['UDPProtocolIndy',['../class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html',1,'Modbus::Master::UDPProtocolIndy'],['../class_modbus_1_1_master_1_1_u_d_p_protocol_indy.html#a648317d94d9d1455901d86c55e945ce0',1,'Modbus::Master::UDPProtocolIndy::UDPProtocolIndy()']]],
-  ['udpprotocolwinsock_2',['UDPProtocolWinSock',['../class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html',1,'Modbus::Master::UDPProtocolWinSock'],['../class_modbus_1_1_master_1_1_u_d_p_protocol_win_sock.html#a69fb221cd0ffa1eb0a279c662549e990',1,'Modbus::Master::UDPProtocolWinSock::UDPProtocolWinSock()']]]
+  ['fetchcommeventctr_0',['FetchCommEventCtr',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a1a8bbeca68fd25ac0daaa03606f880ba',1,'Modbus']]],
+  ['fetchcommeventlog_1',['FetchCommEventLog',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37ab84b23f9754e51516f52f400de622da5',1,'Modbus']]],
+  ['field_2',['6.4 Address notation vs protocol address field',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md57',1,'']]],
+  ['fifoaddrtype_3',['FIFOAddrType',['../namespace_modbus.html#a49eb0d0be5b59dc466855c79be3b6646',1,'Modbus']]],
+  ['fifocounttype_4',['FIFOCountType',['../namespace_modbus.html#accff11a7e99cd1c664fc879955539f0c',1,'Modbus']]],
+  ['filenumber_5',['FileNumber',['../struct_modbus_1_1_file_sub_request.html#a33f399a395bc0d46b4d0c12b592dfbfe',1,'Modbus::FileSubRequest']]],
+  ['filenumbertype_6',['FileNumberType',['../namespace_modbus.html#ab2f7386a2e27996d85f2116d478e1da8',1,'Modbus']]],
+  ['filesubrequest_7',['FileSubRequest',['../struct_modbus_1_1_file_sub_request.html',1,'Modbus']]],
+  ['fixes_8',['6. Known Pitfalls and Fixes',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md53',1,'']]],
+  ['flow_9',['3) Integration Test Flow',['../index.html#autotoc_md33',1,'']]],
+  ['flowdirection_10',['FlowDirection',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#ae1642a01da039d116dae63ef5031a7c1',1,'Modbus::Master::RTUProtocol']]],
+  ['flushcommport_11',['FlushCommPort',['../class_t_comm_port.html#a830b27a326aec8dbf698a4b20509507b',1,'TCommPort']]],
+  ['flushfilebuffers_12',['FLUSHFILEBUFFERS',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86aae05806fce785f7415918008f0814c68c',1,'ECommError']]],
+  ['for_20embarcadero_20compilers_13',['Modbus master/server library for Embarcadero compilers',['../index.html#autotoc_md16',1,'']]],
+  ['forcelistenonlymode_14',['ForceListenOnlyMode',['../namespace_modbus.html#a42a12fa70eb77c2c0815ae876e767435af02aee6020296f937887b9a84a782867',1,'Modbus']]],
+  ['forcemultiplecoils_15',['ForceMultipleCoils',['../class_modbus_1_1_master_1_1_protocol.html#aa86a316497998b74f8401732f17f4be1',1,'Modbus::Master::Protocol::ForceMultipleCoils()'],['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a2cefca6f3273b33737cc7cecaebf8244',1,'Modbus::ForceMultipleCoils']]],
+  ['forcesinglecoil_16',['ForceSingleCoil',['../class_modbus_1_1_master_1_1_protocol.html#adc4d856553de3b366b0b93e1fec65e47',1,'Modbus::Master::Protocol::ForceSingleCoil()'],['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37a572636c4a5769b2e012edddc50784d34',1,'Modbus::ForceSingleCoil']]],
+  ['framecont_17',['FrameCont',['../class_modbus_1_1_master_1_1_r_t_u_protocol.html#a4a7b54eb315124279145ec78f61f37e8',1,'Modbus::Master::RTUProtocol']]],
+  ['ft_5fday_18',['FT_DAY',['../_modbus_r_t_u_8h.html#ab0fe3c0a9530a7fe08dfe10b2f0e6f3b',1,'ModbusRTU.h']]],
+  ['ft_5fhour_19',['FT_HOUR',['../_modbus_r_t_u_8h.html#aebc373c2b90841bbcd0b9fc8ae282351',1,'ModbusRTU.h']]],
+  ['ft_5fmicrosecond_20',['FT_MICROSECOND',['../_modbus_r_t_u_8h.html#a4dbf6351cbcb64b7178ab5aeb6dd2541',1,'ModbusRTU.h']]],
+  ['ft_5fmillisecond_21',['FT_MILLISECOND',['../_modbus_r_t_u_8h.html#adbc697926cd8dae19ac531ffd3f4d3b5',1,'ModbusRTU.h']]],
+  ['ft_5fminute_22',['FT_MINUTE',['../_modbus_r_t_u_8h.html#acb7d8bb25050f32803c26fe4e9654143',1,'ModbusRTU.h']]],
+  ['ft_5fsecond_23',['FT_SECOND',['../_modbus_r_t_u_8h.html#aafe2340b61f5774a49f35ef727a27358',1,'ModbusRTU.h']]],
+  ['function_20codes_24',['Supported Modbus Function Codes',['../index.html#autotoc_md23',1,'']]],
+  ['functioncode_25',['FunctionCode',['../namespace_modbus.html#a03f5f077bb72f3da7c63b6e978ef9f37',1,'Modbus']]]
 ];

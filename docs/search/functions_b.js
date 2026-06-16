@@ -15,5 +15,7 @@ var searchData=
   ['setparity_12',['SetParity',['../class_t_comm_port.html#acd2179873af63268ffdd2c148ac5c610',1,'TCommPort']]],
   ['setport_13',['SetPort',['../class_modbus_1_1_master_1_1_t_c_p_i_p_protocol.html#a6098567819cecd4a6227094fb588f519',1,'Modbus::Master::TCPIPProtocol']]],
   ['setrts_14',['SetRTS',['../class_t_comm_port.html#ad8f579fd379cadb066e51d2f97cee871',1,'TCommPort']]],
-  ['setstopbits_15',['SetStopBits',['../class_t_comm_port.html#ab19d0d8cb1e2387872925039b75cb8ef',1,'TCommPort']]]
+  ['setstopbits_15',['SetStopBits',['../class_t_comm_port.html#ab19d0d8cb1e2387872925039b75cb8ef',1,'TCommPort']]],
+  ['start_16',['Start',['../class_modbus_1_1_server_1_1_t_c_p_i_p_protocol.html#a07e23ca844c588f353a81dfee352724e',1,'Modbus::Server::TCPIPProtocol::Start()'],['../class_modbus_1_1_server_1_1_r_t_u_protocol.html#a48a540531e295474d121dc0cc55adac5',1,'Modbus::Server::RTUProtocol::Start()']]],
+  ['stop_17',['Stop',['../class_modbus_1_1_server_1_1_protocol.html#ae6f4fb167c7bd504942b1c001cc0cdf1',1,'Modbus::Server::Protocol::Stop()'],['../class_modbus_1_1_server_1_1_t_c_p_i_p_protocol.html#a407e744688b60415b82b297704d816cd',1,'Modbus::Server::TCPIPProtocol::Stop()'],['../class_modbus_1_1_server_1_1_r_t_u_protocol.html#aa355645200526f956865d42a8886d2a9',1,'Modbus::Server::RTUProtocol::Stop()']]]
 ];

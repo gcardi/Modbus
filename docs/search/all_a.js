@@ -1,8 +1,15 @@
 var searchData=
 [
-  ['open_0',['Open',['../class_modbus_1_1_master_1_1_protocol.html#a6311cf34aed49a96c7651a255755fa21',1,'Modbus::Master::Protocol']]],
-  ['open_5ferror_1',['OPEN_ERROR',['../class_e_comm_error.html#a6eaaa5652a7d5676bd64e30f99a7e86aa5d79fa804fffcf29a0110afd2ae82ddb',1,'ECommError']]],
-  ['opencommport_2',['OpenCommPort',['../class_t_comm_port.html#ad17990a72e6473d3a29be83ef05913cd',1,'TCommPort']]],
-  ['operator_28_29_3',['operator()',['../struct_modbus_1_1_utils_1_1_build_serial_port_info_tuple_fnctr.html#af5310cb08d2abed78b894a2c0e59029e',1,'Modbus::Utils::BuildSerialPortInfoTupleFnctr']]],
-  ['operator_3d_4',['operator=',['../class_e_comm_error_local_free.html#a8ca8674131680763d501ae6231fd91c3',1,'ECommErrorLocalFree::operator=(ECommErrorLocalFree const &amp;Rhs)=delete'],['../class_e_comm_error_local_free.html#a048c655615aadf1f86fe40a2e9501d85',1,'ECommErrorLocalFree::operator=(ECommErrorLocalFree &amp;&amp;Rhs)=delete'],['../class_modbus_1_1_master_1_1_session_manager.html#a059f641c741c0edb261711cce408c78c',1,'Modbus::Master::SessionManager::operator=(SessionManager const &amp;Rhs)=delete'],['../class_modbus_1_1_master_1_1_session_manager.html#ac8647cd81ecfba3e876e51972a720035',1,'Modbus::Master::SessionManager::operator=(SessionManager &amp;&amp;Rhs)=delete']]]
+  ['abstractions_0',['2.1 Core Protocol Abstractions',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md41',1,'']]],
+  ['acknowledge_1',['Acknowledge',['../namespace_modbus.html#a60d94134f28f30e110e2b7b4b2c60eb7add279c1edcfbecb780a4a20917a766c1',1,'Modbus']]],
+  ['address_20field_2',['6.4 Address notation vs protocol address field',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md57',1,'']]],
+  ['address_20notation_20vs_20protocol_20address_20field_3',['6.4 Address notation vs protocol address field',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md57',1,'']]],
+  ['addressing_20convention_4',['Addressing Convention',['../index.html#autotoc_md24',1,'']]],
+  ['addresspointcountpairlength_5',['AddressPointCountPairLength',['../namespace_modbus_1_1_p_d_u.html#abaaeecbd4d216124ede77da3466db270',1,'Modbus::PDU']]],
+  ['after_20environment_20setup_6',['CMake + Ninja (After Environment Setup)',['../md__c_l_a_u_d_e.html#autotoc_md3',1,'']]],
+  ['and_20build_20command_20prompt_7',['Configure and build (Command Prompt)',['../md__test_2_r_e_a_d_m_e-cmake.html#autotoc_md63',1,'']]],
+  ['and_20fixes_8',['6. Known Pitfalls and Fixes',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md53',1,'']]],
+  ['api_20docs_9',['Generate API Docs',['../md__c_l_a_u_d_e.html#autotoc_md5',1,'']]],
+  ['api_20documentation_10',['4.2 Doxygen/API documentation',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md49',1,'']]],
+  ['architecture_11',['Architecture',['../md__t_e_c_h_n_i_c_a_l___d_o_c_s.html#autotoc_md40',1,'2. Repository Architecture'],['../md__c_l_a_u_d_e.html#autotoc_md6',1,'Architecture'],['../index.html#autotoc_md18',1,'Architecture']]]
 ];
