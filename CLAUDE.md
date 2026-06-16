@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build Commands
 
-### MSBuild (Primary)
+### CMake + Ninja (Primary)
 
 Must source `rsvars.bat` first to set up the Embarcadero compiler environment. The installed toolchain can be discovered from the Registry — the `RootDir` value under the numerically highest BDS subkey contains the path:
 
@@ -28,13 +28,14 @@ Currently installed versions (all verified on disk):
 | 23.0 | 12 Athens | `C:\Program Files (x86)\Embarcadero\Studio\23.0\` |
 | 37.0 | 13 Florence | `C:\Program Files (x86)\Embarcadero\Studio\37.0\` |
 
-Build using the latest (37.0 / Florence):
+Configure and build using the latest (37.0 / Florence):
 
-```powershell
-cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && msbuild .\Test\ModbusTest.cbproj /t:Build /p:Config=Debug /p:Platform=Win64x /v:minimal'
+```cmd
+call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && cmake -S Test -B Test/build/win64x-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=bcc64x
+call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && cmake --build Test/build/win64x-release -v
 ```
 
-### CMake + Ninja (Alternative)
+### CMake + Ninja (After Environment Setup)
 
 ```powershell
 cmake -S Test -B Test/build/win64x-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=bcc64x
@@ -57,12 +58,12 @@ Output goes to `docs/`.
 
 ## Architecture
 
-This is a **Modbus Master library** for Embarcadero C++Builder/RAD Studio targeting Windows. It implements a layered, protocol-agnostic design:
+This is a **Modbus master/server library** for Embarcadero C++Builder/RAD Studio targeting Windows. It implements a layered, protocol-agnostic design:
 
 ```text
 Application
     │
-Protocol (abstract base, Modbus.h)
+Master::Protocol (abstract base, Modbus.h)
     ├── RTUProtocol       — Serial RTU over COM port (ModbusRTU.h)
     │       └── TCommPort — Win32 serial wrapper (CommPort.h)
     ├── TCPIPProtocol     — MBAP framing base (ModbusTCP_IP.h)
@@ -71,6 +72,11 @@ Protocol (abstract base, Modbus.h)
     │       ├── UDPProtocolIndy     — Indy TIdUDPClient (ModbusUDP_Indy.h)
     │       └── UDPProtocolWinSock  — WinSock2 UDP (ModbusUDP_WinSock.h)
     └── DummyProtocol     — No-op stub for tests (ModbusDummy.h)
+
+Server::Protocol (abstract dispatch base, ModbusServer.h)
+    ├── RTUProtocol          — Serial RTU slave over COM port (ModbusServerRTU.h)
+    └── TCPIPProtocol        — MBAP-framed server base (ModbusServer.h)
+            └── TCPProtocolWinSock — WinSock2 TCP slave (ModbusServerTCP_WinSock.h)
 ```
 
 **`Modbus::Master::Protocol`** is the abstract base. Subclasses implement protected `Do*()` virtual hooks for transport I/O and connection management. Public methods (FC01, FC02, FC03, FC04, FC05, FC06, FC07, FC08, FC15, FC16, FC20, FC21, FC22, FC23, FC24) are implemented in the base class on top of those hooks.
@@ -78,6 +84,10 @@ Protocol (abstract base, Modbus.h)
 **`Modbus::Master::SessionManager`** is an RAII guard: calls `Open()` on construction, `Close()` on destruction.
 
 **`Modbus::Context`** carries the slave address (unit ID). `TCPIPContext` extends it with an explicit MBAP transaction ID.
+
+**`Modbus::Server::RequestHandler`** is the server-side callback interface. Override the function-code handlers your simulated or embedded slave supports; default handlers return `IllegalFunction`.
+
+**`Modbus::PDU`** and **`Modbus::MBAP`** provide shared framing helpers used by both master and server code.
 
 **Exception hierarchy** (all derive from VCL `Exception` → `EBaseException`):
 
@@ -116,6 +126,8 @@ Example: To add a new transport (e.g., SerialProtocolCustom extending RTUProtoco
 
 - `Modbus::` — types, exceptions, `Context`
 - `Modbus::Master::` — `Protocol`, `SessionManager`, all transport classes
+- `Modbus::Server::` — `RequestHandler`, server dispatch base, TCP/RTU slave transports
+- `Modbus::PDU` / `Modbus::MBAP` — shared protocol framing helpers
 - `Modbus::Utils::` — serial enumeration (`SerEnum.h`)
 
 **Compiler compatibility:** `[[noreturn]]` attribute placement differs between BCC32 and BCC32C/BCC64 — see existing exception class declarations for the guarded pattern.
@@ -137,6 +149,7 @@ Update this file in the same PR whenever any of the following changes:
 - Exception model, key types (`Context`, `TCPIPContext`), or namespaces
 - Coding conventions (macro usage, compatibility notes, language standard)
 - Documentation commands/locations (Doxygen path, output directories)
+- Class hierarchy image/source (`Images/ClassHierarchy.svg`, `Images/ClassHierarchy.dot`)
 
 ### Validation Checklist
 

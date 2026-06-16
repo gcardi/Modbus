@@ -1,0 +1,102 @@
+digraph ClassHierarchy {
+  graph [
+    label="Modbus Class Hierarchy Summary",
+    labelloc=t,
+    fontsize=22,
+    fontname="Arial",
+    rankdir=TB,
+    splines=ortho,
+    nodesep=0.45,
+    ranksep=0.65,
+    bgcolor="#ffffcc"
+  ];
+
+  node [
+    shape=box,
+    style="filled",
+    fillcolor="#ffffff",
+    color="#000000",
+    fontname="Arial",
+    fontsize=11,
+    margin="0.12,0.08"
+  ];
+
+  edge [
+    color="#000000",
+    arrowsize=0.7,
+    fontname="Arial",
+    fontsize=9
+  ];
+
+  subgraph cluster_context {
+    label="Context";
+    color="#777777";
+    style="rounded";
+
+    context [label="Modbus::Context"];
+    tcpip_context [label="Modbus::TCPIPContext", fillcolor="#ccf2ff"];
+
+    context -> tcpip_context;
+  }
+
+  subgraph cluster_master {
+    label="Master";
+    color="#777777";
+    style="rounded";
+
+    master_protocol [label="Modbus::Master::Protocol"];
+    master_dummy [label="Modbus::Master::DummyProtocol", fillcolor="#00ccff"];
+    master_rtu [label="Modbus::Master::RTUProtocol", fillcolor="#00ccff"];
+    master_tcpip [label="Modbus::Master::TCPIPProtocol"];
+    master_tcp [label="Modbus::Master::TCPProtocol"];
+    master_udp [label="Modbus::Master::UDPProtocol"];
+    master_tcp_indy [label="Modbus::Master::TCPProtocolIndy", fillcolor="#00ccff"];
+    master_tcp_winsock [label="Modbus::Master::TCPProtocolWinSock", fillcolor="#00ccff"];
+    master_udp_indy [label="Modbus::Master::UDPProtocolIndy", fillcolor="#00ccff"];
+    master_udp_winsock [label="Modbus::Master::UDPProtocolWinSock", fillcolor="#00ccff"];
+
+    master_protocol -> master_dummy;
+    master_protocol -> master_rtu;
+    master_protocol -> master_tcpip;
+    master_tcpip -> master_tcp;
+    master_tcpip -> master_udp;
+    master_tcp -> master_tcp_indy;
+    master_tcp -> master_tcp_winsock;
+    master_udp -> master_udp_indy;
+    master_udp -> master_udp_winsock;
+  }
+
+  subgraph cluster_server {
+    label="Server";
+    color="#777777";
+    style="rounded";
+
+    server_handler [label="Modbus::Server::RequestHandler", fillcolor="#e6ffe6"];
+    server_protocol [label="Modbus::Server::Protocol"];
+    server_rtu [label="Modbus::Server::RTUProtocol", fillcolor="#00ccff"];
+    server_tcpip [label="Modbus::Server::TCPIPProtocol"];
+    server_tcp_winsock [label="Modbus::Server::TCPProtocolWinSock", fillcolor="#00ccff"];
+
+    server_protocol -> server_rtu;
+    server_protocol -> server_tcpip;
+    server_tcpip -> server_tcp_winsock;
+  }
+
+  subgraph cluster_helpers {
+    label="Framing helpers";
+    color="#777777";
+    style="rounded,dashed";
+
+    pdu [label="Modbus::PDU", shape=component, fillcolor="#fff2cc"];
+    mbap [label="Modbus::MBAP", shape=component, fillcolor="#fff2cc"];
+  }
+
+  master_protocol -> context [style=dashed, arrowhead=open, xlabel="uses"];
+  master_tcpip -> tcpip_context [style=dashed, arrowhead=open, xlabel="uses"];
+  server_protocol -> server_handler [style=dashed, arrowhead=open, xlabel="delegates"];
+
+  master_protocol -> pdu [style=dashed, arrowhead=open, xlabel="builds/parses"];
+  server_protocol -> pdu [style=dashed, arrowhead=open, xlabel="dispatches"];
+  master_tcpip -> mbap [style=dashed, arrowhead=open, xlabel="frames"];
+  server_tcpip -> mbap [style=dashed, arrowhead=open, xlabel="frames"];
+}

@@ -8,7 +8,8 @@ This document provides technical guidance for the Modbus repository with emphasi
 
 - Library architecture and module responsibilities
 - Test suite structure
-- Build workflows for Embarcadero MSBuild and CMake + Ninja
+- Build workflow for Embarcadero C++Builder with CMake + Ninja
+- Doxygen/API documentation generation
 - Recent migration notes (`_T` to `_D`)
 - Common troubleshooting steps
 
@@ -20,6 +21,10 @@ This document provides technical guidance for the Modbus repository with emphasi
   - Core types, context, exception hierarchy, base protocol behavior
 - ModbusRTU.h / ModbusRTU.cpp
   - RTU frame and serial protocol implementation
+- ModbusPDU.h / ModbusPDU.cpp
+  - Shared Modbus PDU request/response helpers
+- ModbusMBAP.h / ModbusMBAP.cpp
+  - Shared MBAP header helpers for TCP/IP framing
 - ModbusTCP_IP.h / ModbusTCP_IP.cpp
   - TCP framing and shared IP transport logic
 
@@ -33,6 +38,12 @@ This document provides technical guidance for the Modbus repository with emphasi
   - TCP transport using WinSock
 - ModbusUDP_WinSock.h / ModbusUDP_WinSock.cpp
   - UDP transport using WinSock
+- ModbusServer.h / ModbusServer.cpp
+  - Server/slave RequestHandler interface, shared dispatch engine, and TCP/IP server base
+- ModbusServerTCP_WinSock.h / ModbusServerTCP_WinSock.cpp
+  - TCP slave/server transport using WinSock
+- ModbusServerRTU.h / ModbusServerRTU.cpp
+  - RTU slave/server transport using CommPort
 
 ### 2.3 Support Modules
 
@@ -51,47 +62,30 @@ This document provides technical guidance for the Modbus repository with emphasi
   - Main Boost.Test suite and embedded server integration tests
   - Covers FC01/FC02/FC03/FC04/FC05/FC06/FC07/FC08/FC15/FC16/FC20/FC21/FC22/FC23/FC24
   - Includes endpoint coverage for TCP/IP, Dummy, and RTU
+  - Uses an embedded TCP server fixture and optional RTU round-trip fixture
 
-### 3.2 Legacy Project (RAD Studio)
-
-- Test/ModbusTest.cbproj
-  - C++Builder/MSBuild test project
-
-### 3.3 CMake Test Project
+### 3.2 CMake Test Project
 
 - Test/CMakeLists.txt
-  - Alternative test build path using CMake and Ninja
+  - Primary test build path using CMake and Ninja
 - Test/README-cmake.md
   - Practical commands and usage instructions
 
 ## 4. Build Workflows
 
-### 4.1 Embarcadero MSBuild
-
-Always initialize environment first:
-
-```powershell
-cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && msbuild .\Test\ModbusTest.cbproj /t:Build /p:Config=Debug /p:Platform=Win64x /v:minimal'
-```
-
-Notes:
-
-- The rsvars.bat call is required so bcc64x, linker, and SDK paths are configured.
-- Without rsvars.bat, msbuild and toolchain discovery can fail.
-
-### 4.2 CMake + Ninja (Release default)
+### 4.1 CMake + Ninja (Release default)
 
 Configure and build:
 
-```powershell
-cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && cmake -S Test -B Test/build/win64x-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=bcc64x'
-cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && cmake --build Test/build/win64x-release -v'
+```cmd
+call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && cmake -S Test -B Test/build/win64x-release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=bcc64x
+call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && cmake --build Test/build/win64x-release -v
 ```
 
 Run tests:
 
-```powershell
-cmd /d /c '"C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && ctest --test-dir Test/build/win64x-release --output-on-failure'
+```cmd
+call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && ctest --test-dir Test/build/win64x-release --output-on-failure
 ```
 
 Implementation details in Test/CMakeLists.txt:
@@ -99,6 +93,17 @@ Implementation details in Test/CMakeLists.txt:
 - Uses bcc64x compiler
 - Forces include of Test/ModbusTestPCH2.h for VCL/TCHAR-related macro availability
 - Links required runtime/system libs and SysInit.o
+- Builds the full current test suite, including PDU/MBAP helpers and TCP/RTU server sources
+
+### 4.2 Doxygen/API documentation
+
+Generate API documentation:
+
+```powershell
+& "C:\Program Files\doxygen\bin\doxygen.exe" Doxyfile
+```
+
+Output is written to `docs/`. The Doxygen main page is `README.md`, and the class hierarchy diagram source is `Images/ClassHierarchy.dot`, rendered as `Images/ClassHierarchy.svg`.
 
 ## 5. Macro Migration Notes (`_T` to `_D`)
 
@@ -150,7 +155,7 @@ Fix:
 
 Symptom:
 
-- msbuild or bcc64x not recognized
+- bcc64x not recognized
 
 Fix:
 
@@ -183,12 +188,13 @@ git stash pop
 
 ## 8. Suggested Maintenance Practices
 
-- Keep both test build paths healthy:
-  - Test/ModbusTest.cbproj
+- Keep the CMake test build path healthy:
   - Test/CMakeLists.txt
 - Validate Release build regularly (not only Debug)
 - Run CTest after changes in transport/protocol code
 - Keep Test/README-cmake.md synchronized with actual commands
+- Keep Images/ClassHierarchy.dot synchronized with class hierarchy changes, then regenerate Images/ClassHierarchy.svg with Graphviz
+- Regenerate Doxygen output after public API or Doxygen comment changes
 
 ## 9. Quick Verification Checklist
 
@@ -197,3 +203,4 @@ git stash pop
 - CTest returns 100% pass
 - No `_T(...)` usages remain in source files
 - Default host constructor arguments use `String(DEFAULT_MODBUS_TCPIP_HOST)`
+- Doxygen completes without new warnings for documented public headers

@@ -1,12 +1,12 @@
 # Modbus
 
-## Modbus master library for Embarcadero compilers
+## Modbus master/server library for Embarcadero compilers
 
 ![diagram](Images/ClassHierarchy.svg?v=2)
 
 ## Overview
 
-This repository hosts a Modbus Master library implemented in C++ for Embarcadero C++Builder and RAD Studio. The library supports Modbus RTU, Modbus TCP/UDP and a dummy protocol. It provides a protocol-agnostic API for reading and writing Modbus registers and coils from a master application.
+This repository hosts a Modbus library implemented in C++ for Embarcadero C++Builder and RAD Studio. The library supports Modbus master clients over RTU, TCP, and UDP, plus embedded Modbus slave/server implementations for TCP and RTU test or integration scenarios. It provides protocol-agnostic APIs for reading and writing Modbus registers and coils, and a server-side dispatch layer for handling incoming function-code requests.
 
 For a deeper project-oriented reference, see [Technical Documentation](TECHNICAL_DOCS.md).
 
@@ -15,11 +15,16 @@ For a deeper project-oriented reference, see [Technical Documentation](TECHNICAL
 - `Modbus.h`: core types, exceptions, `Context` and abstract `Master::Protocol` interface.
     Implements the **Non-Virtual Interface (NVI)** pattern: all public methods are non-virtual
     and forward to protected `Do…()` virtual hooks in subclasses.
+- `ModbusPDU.*`: shared helpers for Modbus PDU construction, parsing, and validation.
+- `ModbusMBAP.*`: shared helpers for Modbus TCP/IP MBAP header framing.
 - `ModbusRTU.*`: implementation of Modbus RTU over serial (`CommPort` helper, CRC, frame format).
 - `ModbusTCP_IP.*`: shared Modbus TCP/MBAP framing and validation layer.
 - `ModbusTCP.*`, `ModbusUDP.*`: marker base classes for TCP and UDP transports.
 - `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`: Indy concrete classes (`TCPProtocolIndy`, `UDPProtocolIndy`).
 - `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`: WinSock concrete classes (`TCPProtocolWinSock`, `UDPProtocolWinSock`).
+- `ModbusServer.*`: abstract server/slave dispatch framework and TCP/IP server base.
+- `ModbusServerTCP_WinSock.*`: WinSock TCP slave/server implementation.
+- `ModbusServerRTU.*`: Win32 serial RTU slave/server implementation.
 - `ModbusDummy.*`: no-op implementation for testing.
 - `CommPort.*`: serial control layer for RTU.
 - `SerEnum.*`: serial port enumeration utilities.
@@ -48,6 +53,18 @@ Abstract base class exposing:
 - `ReadExceptionStatus()`, `Diagnostics()`, `ReadFIFOQueue()`
 
 `SessionManager` RAII wrapper ensures connection lifecycle.
+
+### Server::Protocol
+
+Server-side classes expose a callback-driven slave implementation:
+
+- `Modbus::Server::RequestHandler`: application callback interface for supported function codes.
+- `Modbus::Server::Protocol`: shared dispatch engine that converts requests into handler calls.
+- `Modbus::Server::TCPIPProtocol`: MBAP-framed server base for Modbus TCP.
+- `Modbus::Server::TCPProtocolWinSock`: concrete WinSock TCP slave/server.
+- `Modbus::Server::RTUProtocol`: concrete serial RTU slave/server.
+
+Unsupported handler methods return `ExceptionCode::IllegalFunction` by default, so a server only needs to override the function codes it supports.
 
 ## Supported Modbus Function Codes
 
@@ -101,6 +118,13 @@ Examples (manual item number -> library address argument):
 - `Modbus::Master::DummyProtocol`
 - No actual transport; useful for unit tests and placeholder behavior.
 
+### Server/Slave Protocols
+
+- `Modbus::Server::RequestHandler` maps incoming requests to application state.
+- `Modbus::Server::TCPProtocolWinSock` listens for MBAP-framed TCP requests and responds through the shared dispatch engine.
+- `Modbus::Server::RTUProtocol` listens on a COM port, validates RTU CRC frames, dispatches requests, and suppresses replies for broadcast frames.
+- `Modbus::PDU` and `Modbus::MBAP` keep request/response framing shared between master and server code.
+
 ## Demonstration Projects
 
 ### 1) Modbus Master Client Demo
@@ -133,13 +157,14 @@ int main() {
 }
 ```
 
-### 2) Modbus Server/Slave Demo
+### 2) Embedded Modbus Server/Slave
 
-For a server-demo, run an emulator or physical slave, then connect from the client.
+Use the server classes when tests or applications need an in-process slave:
 
-- Use Modbus slave tools like `modbuspoll`, `mbslave`, `CAS Modbus Scanner`.
-- For RTU, use virtual COM ports or actual serial.
-- Emulate holding registers and validate client reads/writes.
+- Derive a class from `Modbus::Server::RequestHandler`.
+- Override only the function-code callbacks your simulated device supports.
+- Start `Modbus::Server::TCPProtocolWinSock` for TCP or `Modbus::Server::RTUProtocol` for serial RTU.
+- For RTU tests, use paired virtual COM ports or physical serial ports.
 
 ### 3) Integration Test Flow
 
@@ -151,15 +176,17 @@ For a server-demo, run an emulator or physical slave, then connect from the clie
 ## Build & Usage
 
 - Target C++Builder / RAD Studio (Windows).
-- Add all sources to project: `Modbus.h/cpp`, `ModbusRTU.*`, `ModbusTCP_IP.*`, `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`, `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`, `ModbusDummy.*`, `CommPort.*`, `SerEnum.*`.
+- Add all sources to project: `Modbus.h/cpp`, `ModbusPDU.*`, `ModbusMBAP.*`, `ModbusRTU.*`, `ModbusTCP_IP.*`, `ModbusTCP.*`, `ModbusUDP.*`, `ModbusTCP_Indy.*`, `ModbusUDP_Indy.*`, `ModbusTCP_WinSock.*`, `ModbusUDP_WinSock.*`, `ModbusServer.*`, `ModbusServerTCP_WinSock.*`, `ModbusServerRTU.*`, `ModbusDummy.*`, `CommPort.*`, `SerEnum.*`.
 - Required Indy units: `IdTCPClient`, `IdUDPClient`, `IdIOHandler`, `IdIOHandlerSocket`.
 - Optional: `boost::crc` for RTU CRC.
 - C++17 compatible compiler settings are recommended.
 
 ## Testing
 
-- Use Modbus slave simulator to verify opearations.
-- Create small harness for protocol validation and exception cases.
+- The primary test build is CMake + Ninja under `Test/CMakeLists.txt`.
+- Build and run instructions live in `Test/README-cmake.md`.
+- The test suite uses Boost.Test and includes an embedded TCP slave fixture.
+- RTU round-trip tests are optional and require paired COM ports. Set `MODBUS_RTU_MASTER` and `MODBUS_RTU_SLAVE`, or answer the interactive prompt at startup.
 
 ## Contribution
 
