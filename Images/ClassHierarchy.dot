@@ -5,6 +5,8 @@ digraph ClassHierarchy {
     fontsize=22,
     fontname="Arial",
     rankdir=TB,
+    size="11.69,8.27!",
+    ratio=fill,
     splines=ortho,
     nodesep=0.45,
     ranksep=0.65,
