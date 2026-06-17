@@ -2,7 +2,7 @@
 
 ## Modbus master/server library for Embarcadero compilers
 
-![diagram](Images/ClassHierarchy.svg?v=2)
+<img src="Images/ClassHierarchy.svg?v=3" alt="Modbus class hierarchy diagram" style="max-width:100%; height:auto; pointer-events:none;">
 
 ## Overview
 
