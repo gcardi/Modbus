@@ -2,14 +2,14 @@ digraph ClassHierarchy {
   graph [
     label="Modbus Class Hierarchy Summary",
     labelloc=t,
-    fontsize=22,
+    fontsize=24,
     fontname="Arial",
-    rankdir=TB,
-    size="11.69,8.27!",
+    rankdir=LR,
+    size="16,11!",
     ratio=fill,
     splines=ortho,
-    nodesep=0.45,
-    ranksep=0.65,
+    nodesep=0.28,
+    ranksep=0.45,
     bgcolor="#ffffcc"
   ];
 
@@ -19,8 +19,8 @@ digraph ClassHierarchy {
     fillcolor="#ffffff",
     color="#000000",
     fontname="Arial",
-    fontsize=11,
-    margin="0.12,0.08"
+    fontsize=13,
+    margin="0.24,0.14"
   ];
 
   edge [
