@@ -152,6 +152,13 @@ void TCPIPProtocol::ReadRegisters( FunctionCode FnCode, Context const & Context,
     // Verifica parametri di risposta
     PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FnCode );
 
+    // Guard against a slave returning more data than we requested: CopyDataWords
+    // copies ByteCount/2 words into Data, which the caller sized for PointCount.
+    if ( GetLength( ReplyBuffer ) < 2 ||
+         ReplyBuffer[1] != PointCount * sizeof( RegDataType ) ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
+
     PDU::CopyDataWords( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, Data );
 }
 //---------------------------------------------------------------------------
@@ -546,6 +553,9 @@ void TCPIPProtocol::DoReadGeneralReference( Context const & Context,
         if ( dataBytes != SubRequests[i].RecordLength * 2 ) {
             throw EContextException( Context, _D( "Sub-response length mismatch" ) );
         }
+        if ( off + dataBytes > static_cast<size_t>( GetLength( ReplyBuffer ) ) ) {
+            throw EContextException( Context, _D( "Truncated response" ) );
+        }
         for ( RecordLengthType r = 0; r < SubRequests[i].RecordLength; ++r ) {
             *dataOut++ = static_cast<RegDataType>(
                 ( static_cast<uint16_t>( ReplyBuffer[off] ) << 8 ) |
@@ -707,6 +717,12 @@ void TCPIPProtocol::DoReadWrite4XRegisters( Context const & Context,
 
     // Verifica parametri di risposta
     PDU::RaiseExceptionIfReplyIsNotValid( Context, ReplyBuffer, FunctionCode::ReadWrite4XRegisters );
+
+    // Guard against a slave returning more data than we asked to read.
+    if ( GetLength( ReplyBuffer ) < 2 ||
+         ReplyBuffer[1] != ReadPointCount * sizeof( RegDataType ) ) {
+        throw EContextException( Context, _D( "Byte count mismatch" ) );
+    }
 
     PDU::CopyDataWords( Context, ReplyBuffer, MODBUS_TCP_IP_REPLY_DATA_OFFSET, ReadData );
 }

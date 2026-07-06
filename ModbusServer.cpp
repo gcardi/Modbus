@@ -365,6 +365,11 @@ std::vector<uint8_t> Protocol::HandleFC20( const uint8_t* d, int len )
         totalWords += sr.RecordLength;
     }
 
+    // Cap the aggregate read size: a 253-byte response PDU cannot carry more than
+    // 125 registers, so a larger request is bogus and would only force a big alloc.
+    if ( totalWords > 125 )
+        return MakeErrorPDU( 0x14, ExceptionCode::IllegalDataValue );
+
     std::vector<uint16_t> data( totalWords, 0 );
     auto ex = handler_.OnReadGeneralReference( subReqs.data(), subReqs.size(), data.data() );
     if ( ex ) return MakeErrorPDU( 0x14, *ex );

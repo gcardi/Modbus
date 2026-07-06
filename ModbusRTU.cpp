@@ -787,6 +787,10 @@ void RTUProtocol::DoReadGeneralReference( Context const & Context,
         if ( dataBytes != SubRequests[i].RecordLength * 2 ) {
             throw EContextException( Context, _D( "Sub-response length mismatch" ) );
         }
+        // RxFrame ends with a 2-byte CRC; data must not run into or past it.
+        if ( off + dataBytes > RxFrame.size() - 2 ) {
+            throw EContextException( Context, _D( "Truncated response" ) );
+        }
         for ( RecordLengthType r = 0; r < SubRequests[i].RecordLength; ++r ) {
             *dataOut++ = static_cast<RegDataType>(
                 ( static_cast<uint16_t>( RxFrame[off] ) << 8 ) |
